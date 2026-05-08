@@ -62,7 +62,6 @@ local Utils                 = require 'Utils'
 ------------------------------------------------------------------------------]]
 local function showFocusPoint()
 
-
   LrFunctionContext.callWithContext("showFocusPointDialog", function(context)
 
     local catalog = LrApplication.activeCatalog()
@@ -75,8 +74,39 @@ local function showFocusPoint()
     local switchedToLibrary
     local userResponse
     local exitPlugin
+    local exitDialog        -- per-iteration flag: end wait loop / close floating dialog
+    local pendingNewPhoto   -- target photo set from selectionChangeObserver (auto-refresh on photo change in Library)
+    local dialogIteration = 0  -- generation counter to ignore stale callbacks from previous iterations
+    local floatingDialogClose  -- function to programmatically close the current floating dialog (set by onShow)
     local clicked
     local prefs = LrPrefs.prefsForPlugin( nil )
+
+    local floatingDialog = (prefs.secondScreenMode == true)
+
+    --[[----------------------------------------------------------------------------
+      Helper used by all callbacks (keyboard shortcuts, navigation buttons,
+      tagging-and-next, etc.) that previously closed the modal dialog via
+      LrDialogs.stopModalWithResult(...).
+      In the non-modal/floating dialog mode we set state variables that the wait
+      loop in the main flow checks AND call the close handle that was provided by
+      the onShow callback to actually dismiss the floating dialog window.
+      (Without calling the close handle the window would stay open and a new one
+      would be added on top with each iteration.)
+    ------------------------------------------------------------------------------]]
+    local function closeDialog(view, response)
+      if floatingDialog then
+        userResponse = response
+        exitDialog = true
+        if floatingDialogClose then
+          local closeFn = floatingDialogClose
+          floatingDialogClose = nil
+          closeFn()
+        end
+      else
+        LrDialogs.stopModalWithResult(view, response)
+      end
+    end
+
     local props = LrBinding.makePropertyTable(context)
     local LR5 = (LrApplication.versionTable().major == 5) -- or true -- to simulate running on LR5
     local LrC = (LrApplication.versionTable().major >= 8) -- or true -- to simulate running on LR < 7.4
@@ -329,7 +359,7 @@ local function showFocusPoint()
             -- Pick photo and advance to next
             elseif string.find(FocusPointPrefs.kbdShortcutsPickNext, char, 1, true) then
               LrSelection.flagAsPick()
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             -- Reject photo
             elseif string.find(FocusPointPrefs.kbdShortcutsReject, char, 1, true) then
               if LrSelection.getFlag() ~= -1 then   -- reject
@@ -341,7 +371,7 @@ local function showFocusPoint()
               if LrSelection.getFlag() ~= -1 then   -- reject
                 LrSelection.flagAsReject()
               end
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             -- Unflag photo
             elseif string.find(FocusPointPrefs.kbdShortcutsUnflag, char, 1, true) then
               LrSelection.removeFlag()
@@ -349,7 +379,7 @@ local function showFocusPoint()
             -- Unflag photo and advance to next
             elseif string.find(FocusPointPrefs.kbdShortcutsUnflagNext, char, 1, true) then
               LrSelection.removeFlag()
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             end
 
             -- Input of digits (unshifted/shifted top row keys) depends on intl keyboard layout!
@@ -370,9 +400,9 @@ local function showFocusPoint()
                 end
               end
               if shifted then
-                LrDialogs.stopModalWithResult(view, "next")
+                closeDialog(view, "next")
               elseif needSyncWithFilmStrip() then
-                LrDialogs.stopModalWithResult(view, "sync")
+                closeDialog(view, "sync")
               else
               end
               return true  -- done
@@ -385,11 +415,11 @@ local function showFocusPoint()
           --------------------------------------------------------------------------------------
           -- Next image
           if string.find(FocusPointPrefs.kbdShortcutsNext, char, 1, true) then
-            LrDialogs.stopModalWithResult(view, "next")
+            closeDialog(view, "next")
             return true  -- done
           -- Previous image
           elseif string.find(FocusPointPrefs.kbdShortcutsPrev, char, 1, true) then
-            LrDialogs.stopModalWithResult(view, "previous")
+            closeDialog(view,"previous")
             return true  -- done
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
@@ -409,24 +439,10 @@ local function showFocusPoint()
               Utils.openFileInApp(Log.getLogFileName())
             end
             return true  -- done
-          -- Toggle visibility of Image Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleImageInfo, char, 1, true) then
-            props.imageInfoEnabled = not props.imageInfoEnabled
-          -- Toggle visibility of Shooting Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleShootInfo, char, 1, true) then
-            props.shootInfoEnabled = not props.shootInfoEnabled
-          -- Toggle visibility of Focus Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleFocusInfo, char, 1, true) then
-            props.focusInfoEnabled = not props.focusInfoEnabled
-          -- Toggle visibility of Info View
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleInfoView, char, 1, true) then
-            props.imageInfoEnabled = not (props.imageInfoEnabled or props.shootInfoEnabled or props.focusInfoEnabled)
-            props.shootInfoEnabled = props.imageInfoEnabled
-            props.focusInfoEnabled = props.imageInfoEnabled
           -- Close
           elseif string.find(FocusPointPrefs.kbdShortcutsClose, char, 1, true)
           or (MAC_ENV and char == ".") then
-            LrDialogs.stopModalWithResult(view, "ok")
+            closeDialog(view,"ok")
           end
           -- always return true; in case of false the entire text is displayed in red color if visible
           return true
@@ -469,8 +485,6 @@ local function showFocusPoint()
 
     local function navigationControls()
       local f = LrView.osFactory()
-      props.fileName = ""
-      props.fileNameTooltip = ""
       return f:row {
         margin = 0,
         spacing = 0,     -- removes uniform spacing; we control it manually
@@ -481,7 +495,7 @@ local function showFocusPoint()
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!
             if clicked then return else clicked = true end
-            LrDialogs.stopModalWithResult(button, "previous")
+            closeDialog(button,"previous")
           end
         },
         f:spacer { width = 10 }, -- space before the file name
@@ -500,7 +514,7 @@ local function showFocusPoint()
             -- Prevent multiple executions - known LrC SDK quirk!
             if clicked then return else clicked = true end
             -- set index to next image, wrap around at end of list
-            LrDialogs.stopModalWithResult(button, "next")
+            closeDialog(button,"next")
           end
         },
       }
@@ -627,9 +641,11 @@ local function showFocusPoint()
       }
     end
 
-    local function miscControls()
+    local function kofiControl()
       local f = LrView.osFactory()
-
+      if prefs.hideKofiControl then
+        return f:spacer{width = 10}
+      end
       return f:row{
         spacing = 0,
         f:picture {
@@ -645,17 +661,23 @@ local function showFocusPoint()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
-      f:spacer { width = 20 },
-      f:spacer{fill_horizontal = 1},
-      f:static_text {
-        title = "User Manual " .. utfLinkSymbol,
-        text_color = LrColor("blue"),
-          tooltip = "Click to open user documentation (M)",
-        immediate = true,
-        mouse_down = function(_view)
-          LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
-        end,
-      },
+      }
+    end
+
+    local function userManualControl()
+      local f = LrView.osFactory()
+      return f:row{
+        spacing = 0,
+        f:spacer{fill_horizontal = 1},  -- make the control appear right next to Close button
+        f:static_text {
+          title = "User Manual " .. utfLinkSymbol,
+          text_color = LrColor("blue"),
+            tooltip = "Click to open user documentation (M)",
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
+          end,
+        },
       }
     end
 
@@ -668,7 +690,9 @@ local function showFocusPoint()
         f:spacer { width = 20 },
         taggingControls(),
         f:spacer { width = 20 },
-        miscControls(),
+        kofiControl(),
+        f:spacer { width = 20 },
+        userManualControl(),
         f:spacer { width = 5 },    -- space before 'Close' button
       }
       return result
@@ -689,13 +713,147 @@ local function showFocusPoint()
       props.fileNameTooltip = tooltip or ""
     end
 
-    -- Create static containers for use in dialog
-    local kbdShortcutInput = buildKbdShortcutInput()
-    local controlPanel     = buildControlPanel()
+    local function runModalDialog()
+      -- Create static containers for use in dialog
+      local kbdShortcutInput = buildKbdShortcutInput()
+      local controlPanel     = buildControlPanel()
 
-    props.imageInfoEnabled = true
-    props.shootInfoEnabled = true
-    props.focusInfoEnabled = true
+      userResponse = LrDialogs.presentModalDialog {
+        title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
+        accessoryView = controlPanel,
+        title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        actionVerb = "Close",
+        cancelVerb = "< exclude >",
+      }
+      return userResponse
+    end
+
+    local function runFloatingDialog()
+      -- Create static containers for use in dialog
+      local kbdShortcutInput = buildKbdShortcutInput()
+      local controlPanel     = buildControlPanel()
+
+      -- Reset per-iteration state for the floating dialog flow
+      userResponse        = nil
+      exitDialog          = false
+      pendingNewPhoto     = nil
+      floatingDialogClose = nil
+
+      -- Bump the generation counter so any stale callbacks from a previous
+      -- iteration's floating dialog become no-ops and don't corrupt the
+      -- state of the current iteration.
+      dialogIteration = dialogIteration + 1
+      local myIteration = dialogIteration
+
+      -- Helper that closes the currently shown floating dialog (if any).
+      -- The close handle is provided by Lightroom via the onShow callback.
+      local function dismissFloatingDialog()
+        if floatingDialogClose then
+          local closeFn = floatingDialogClose
+          floatingDialogClose = nil
+          closeFn()
+        end
+      end
+
+      local function dialogContents()
+        local f = LrView.osFactory()
+        local padPx = 16
+
+        local floatingContents = f:column {
+            spacing = f:control_spacing(),
+
+            -- top margin
+            f:spacer { height = 8 },
+
+            -- main dialog area
+            f:row {
+              f:spacer { width = 8 },
+              FocusPointDialog.createDialog(
+                targetPhoto, photoView, infoView, kbdShortcutInput),
+              f:spacer { width = 8 },
+            },
+
+            -- spacing before controls
+            f:spacer { height = 0 },
+
+            -- bottom controls
+            f:row {
+                f:spacer { width = 8 },
+
+                controlPanel,
+
+                -- spacing before close button
+                f:spacer { height = 8 },
+
+                f:push_button {
+                    title = "Close",
+                    action = function(button)
+                      closeDialog(button,"ok")
+                    end,
+                },
+
+                f:spacer { width = 12 },
+            },
+
+            -- bottom margin
+            f:spacer { height = 0 },
+        }
+
+        return floatingContents
+      end
+
+      LrDialogs.presentFloatingDialog(_PLUGIN, {
+        title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        contents = dialogContents(),
+        resizable = true,
+        save_frame = "FocusPointsFloatingDialogFrame",
+        -- onShow gives us the close/toFront handles for this dialog instance.
+        -- We need 'close' to programmatically dismiss the window when the
+        -- selection changes or a navigation/keyboard shortcut is used,
+        -- otherwise a new window would be stacked on top of the old one
+        -- on every iteration of the outer loop.
+        onShow = function(callForward)
+          if myIteration ~= dialogIteration then return end
+          floatingDialogClose = callForward and callForward.close
+        end,
+        -- User closed the floating dialog via window close button:
+        windowWillClose = function()
+          if myIteration ~= dialogIteration then return end
+          floatingDialogClose = nil  -- already closing, no need to call close()
+          if not exitDialog then
+            userResponse = "ok"
+            exitDialog = true
+          end
+        end,
+        -- The user changed photo selection in Lightroom's Library view.
+        -- Refresh the plugin window with the newly selected photo.
+        -- Note: setting catalog:setSelectedPhotos(targetPhoto, {}) below also
+        -- triggers this observer; we filter that case via 'newPhoto ~= targetPhoto'.
+        selectionChangeObserver = function()
+          if myIteration ~= dialogIteration then return end
+          if exitDialog then return end
+          local newPhoto = catalog:getTargetPhoto()
+          if newPhoto and newPhoto ~= targetPhoto then
+            pendingNewPhoto = newPhoto
+            userResponse = "selectionChanged"
+            exitDialog = true
+            -- Dismiss the current dialog so the outer repeat loop can
+            -- present a freshly-built one for the newly selected photo.
+            dismissFloatingDialog()
+          end
+        end,
+      })
+      -- Block this task here while the floating dialog is alive.
+      -- Every callback that wants the dialog to close must set
+      -- 'exitDialog = true' AND dismiss the floating dialog
+      -- (closeDialog(), selectionChangeObserver, windowWillClose).
+      while not exitDialog do
+        LrTasks.sleep(0.1)
+      end
+
+      return userResponse
+    end
 
     -- Find the index 'current' of the target photo in set of selectedPhotos
     current = getPositionInSelection(targetPhoto, selectedPhotos)
@@ -716,42 +874,37 @@ local function showFocusPoint()
       -- Make the current photo the only selected one:
       -- otherwise potential flagging operations will apply to all selected photos
       catalog:setSelectedPhotos(targetPhoto, {})
-      LrFunctionContext.callWithContext("innerContext", function(dialogContext)
-        dialogScope = LrDialogs.showModalProgressDialog {
-          title = "Loading Data",
-          caption = "Calculating Focus Point",
-          width = 200,
-          cannotCancel = false,
-          functionContext = dialogContext,
-        }
-        dialogScope:setIndeterminate()
 
-        errorMsg = nil
-        if (targetPhoto:checkPhotoAvailability()) then
-          local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
-          rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
+      -- Build the views for the current photo. The 'Loading Data / Calculating
+      -- Focus Point' progress dialog has been removed: in the new non-modal
+      -- workflow it would flash up briefly each time the photo is changed in
+      -- the Library view, which is distracting.
+      photoView = nil
+      infoView  = nil
+      errorMsg  = nil
 
-          if rendererTable then
-            metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
-            photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-            infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
-            if not (photoView and infoView) then
-              errorMsg = "Internal error: Unable to create main window"
-            end
-          else
-            -- just to have this case covered - normally this condition should not occur
-            errorMsg = "Internal error: Unmapped points renderer"
+      if (targetPhoto:checkPhotoAvailability()) then
+        local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
+        rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
+
+        if rendererTable then
+          metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
+          photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
+          infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
+          if not (photoView and infoView) then
+            errorMsg = "Internal error: Unable to create main window"
           end
         else
-          errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
+          -- just to have this case covered - normally this condition should not occur
+          errorMsg = "Internal error: Unmapped points renderer"
         end
-      end)
-      LrTasks.sleep(0.02) -- this actually closes the dialog. go figure.
+      else
+        errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
+      end
 
-      -- "Loading Data" dialog has been canceled
       -- photoView should never be nil in the absence of a fatal error
       local skipMainWindow
-      if (dialogScope:isCanceled() or not photoView) then
+      if not photoView then
         skipMainWindow = true
       end
 
@@ -779,24 +932,34 @@ local function showFocusPoint()
 
         local f = LrView.osFactory()
         clicked = false
-        userResponse = LrDialogs.presentModalDialog {
-          title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
-          contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
-          accessoryView = controlPanel,
-          actionVerb = "Close",
-          cancelVerb = "< exclude >",
-        }
+
+        if floatingDialog then
+          userResponse = runFloatingDialog()
+        else
+          userResponse = runModalDialog()
+        end
 
         if userResponse == "next" then
           nextPhoto()
         elseif userResponse == "previous" then
           previousPhoto()
+        elseif userResponse == "selectionChanged" and pendingNewPhoto then
+          -- Make the photo selected in Library the next one to be displayed
+          targetPhoto = pendingNewPhoto
+          -- If the new photo happens to be in the original 'selectedPhotos' set,
+          -- update the running index so navigation stays consistent.
+          for i, photo in ipairs(selectedPhotos) do
+            if photo == pendingNewPhoto then
+              current = i
+              break
+            end
+          end
         end
 
         -- Clean up
         rendererTable.cleanup()
 
-        -- Close the windows if user clicked <Exit> button or pressed <Esc>
+        -- Close the plugin if user closed the floating dialog window
         exitPlugin = (userResponse == "ok") or (userResponse == "cancel")
       end
 

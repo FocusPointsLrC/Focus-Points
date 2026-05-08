@@ -70,8 +70,8 @@ FocusPointPrefs.urlLatestRelease   = "https://github.com/musselwhizzle/Focus-Poi
 FocusPointPrefs.urlReleases        = "https://github.com/musselwhizzle/Focus-Points/releases/"
 
 FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
 FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/master/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
 
 -- URL definitions for accessing documents from the UI
 FocusPointPrefs.urlUserManual      = "https://musselwhizzle.github.io/Focus-Points/docs/Focus-Points.html"
@@ -116,8 +116,11 @@ function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
   if not prefs.screenScaling               then prefs.screenScaling              = 0 end
   if not prefs.pluginWindowScaling         then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
+  if     prefs.secondScreenMode    == nil  then prefs.secondScreenMode           = false     end
+  if not prefs.previewWidth                then prefs.previewWidth               = 1400      end
   if     prefs.truncateLongText    == nil  then prefs.truncateLongText           = true      end
   if not prefs.truncateLimit               then prefs.truncateLimit              = 32        end
+  if     prefs.hideKofiControl     == nil  then prefs.hideKofiControl            = false     end
   if not prefs.focusBoxSize                then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
   if not prefs.focusBoxColor               then prefs.focusBoxColor              = "red"     end
   if     prefs.taggingControls     == nil  then prefs.taggingControls            = true      end
@@ -481,6 +484,33 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         bind_to_object = prefs,
         spacing = f:control_spacing(),
         f:popup_menu {
+          title = "secondScreenMode",
+          value = bind("secondScreenMode"),
+          width = dropDownWidth,
+          items = {
+            { title = "On", value = true },
+            { title = "Off", value = false },
+          },
+        },
+        f:static_text {
+          title = 'Can run on second screen. Fixed width of photo view:'
+        },
+        f:edit_field {
+          value = bind ("previewWidth"),
+          width_in_chars = 4,
+          min = 400,
+          max = 4000,
+          precision = 0,
+        },
+        f:static_text {
+          title = 'px',
+        },
+
+      },
+      f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
           title = "pluginWindowScaling",
           value = bind ("pluginWindowScaling"),
           width = dropDownWidth,
@@ -539,9 +569,24 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           title = 'characters',
         },
       },
-
       taggingControlsSetting(),   -- empty for LR5
       keyboardLayoutSetting(),    -- empty for LR5
+      f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "hideControl",
+          value = bind("hideKofiControl"),
+          width = dropDownWidth,
+          items = {
+            { title = "On", value = true },
+            { title = "Off", value = false },
+          },
+        },
+        f:static_text {
+          title = 'I have already donated / I am not willing to donate'
+        },
+      },
     }
   end
   local function sectionViewingOptions()
