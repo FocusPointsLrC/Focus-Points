@@ -18,4 +18,5 @@ SetWorkingDir(A_ScriptDir)  ; Ensures a consistent starting directory.
 {
   NumpadMult::  MenuSelect(, , "Datei", "Zusatzmoduloptionen", "` ` ` Show Focus Point")
   NumpadDiv::   MenuSelect(, , "Datei", "Zusatzmoduloptionen", "` ` ` Show Metadata")
+ ^NumpadSub::   MenuSelect(, , "Datei", "Zusatzmoduloptionen", "` ` ` Straighten Images")
 }

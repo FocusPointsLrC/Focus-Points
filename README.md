@@ -8,10 +8,10 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Visualize faces and subjects detected by the camera <sup>3,5</sup>
 - Tagging (flagging, rating and coloring) of photos within the plugin UI <sup>7</sup>
 - Display and search (EXIF) metadata of the selected image 
-- Straightening images by applying compensation for camera roll angle<sup>6</sup>
+- Straightening images by applying compensation for camera roll angle<sup>3,6,7</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple. See full [list of supported cameras](../README.md#supported-cameras).<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple. See full [list of supported cameras](#supported-cameras).<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
 <sup>5</sup> Currently supported for Fuji, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
@@ -24,15 +24,18 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 
 If you have any questions, comments or suggestions for improving this plugin, please share your feedback in **[Focus-Points Discusssions](https://github.com/musselwhizzle/Focus-Points/discussions)**.
 
-To understand the principles of this plugin, how to use it and how to interpret the results, please refer to the **[User Manual](docs/Focus%20Points.md)**. **It is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
+To understand the principles of this plugin, how to use it and how to interpret the results, please refer to the **[User Manual](docs/Focus-Points.md)**. **It is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 
 
 ### New features and changes:
 
 * **User Interface**
-  * Straighten images by making use of RollAngle metadata information [#365](https://github.com/musselwhizzle/Focus-Points/issues/365). 
+  * Straighten images by making use of RollAngle metadata information [#365](https://github.com/musselwhizzle/Focus-Points/issues/365). <br>
   Supported for:
-    - Canon (R5 (FW 1.5), R5m2, R6m2, R7)
+    - Canon 
+      - R5 (FW 1.5), R5m2
+      - R6m2 (FW 1.4), R6m3
+      - R7 (FW 1.3), R8 (FW 1.2), R10??
     - Nikon (D5, D500 and later models)
     - Fuji (XT-5 and later models)
     - Olympus/OM (EM-1/5/10 III and later models)
@@ -40,7 +43,9 @@ To understand the principles of this plugin, how to use it and how to interpret 
     - Pentax (K-7 and later models)
     - Ricoh (GR III and later models)  
     
-    Please refer to the [User Manual](docs/Focus%20Points.md#24-straighten-images) for a description of this feature.
+    Not supported for LR5.
+  
+    Please refer to the [User Manual](docs/Focus-Points.md#24-straighten-images) for a description of this feature.
   
 * **Bugfixes**
   * Ricoh GR DNG images can cause plug-in to crash [#367](https://github.com/musselwhizzle/Focus-Points/issues/367)
@@ -50,13 +55,13 @@ To understand the principles of this plugin, how to use it and how to interpret 
     
 * **Camera Support:**
   * Ricoh GR IV Monochrome
-  * in addition to the cameras supported by V3.2. [See here for full list](https://github.com/musselwhizzle/Focus-Points/blob/master/README.md#supported-cameras)
-
+  * in addition to the cameras supported by V3.2. [See here for full list](#supported-cameras).
+  
 * **Other**
   * ExifTool 13.55 (April 7, 2026)
   * ImageMagick 7.1.2-17 
-  * New plugin landing page and documentation without confusing Github details [#363](https://github.com/musselwhizzle/Focus-Points/issues/363)
-  https://musselwhizzle.github.io/Focus-Points/
+  * New plugin landing page and documentation without confusing Github details [#363](https://github.com/musselwhizzle/Focus-Points/issues/363)<br>
+  [https://musselwhizzle.github.io/Focus-Points/](https://musselwhizzle.github.io/Focus-Points/)
 
 
 
@@ -136,7 +141,7 @@ The plugin also features a metadata viewer with live search:
 
 The Metadata Viewer is useful for viewing information that is neither visible in Lightroom's Metadata panel nor in the Information pane of the focus windows. The information is retrieved directly from the image file on disk, giving a complete picture of the metadata written by the camera. Metadata can be filtered by key or value. The filter accepts pattern matching with common 'magic characters':
 
- | Char  | <div align="left">Meaning</div>                | 
+ | Char  | Meaning                                        | 
  |:-----:|------------------------------------------------|
  |   .   | any character                                  | 
  |   +   | one or more repetitions of previous character  |
@@ -148,6 +153,48 @@ The Metadata Viewer is useful for viewing information that is neither visible in
 <img src="docs/images/metadata1.jpg" alt="Screenshot" style="width: 200px;"/>         <img src="docs/images/metadata2.jpg" alt="Screenshot" style="width: 200px;"/>         <img src="docs/images/metadata3.jpg" alt="Screenshot" style="width: 200px;"/>
 
 <br>
+
+## Straighten Images
+
+Straightening images is a new plugin function in V3.3:
+
+- `Library → Plug-in Extras → Straighten Images`, or
+- `File → Plug-in Extras → Straighten Images`
+
+This function reads the camera roll angle from the metadata of the selected photos, one by one, and applies compensation by rotating the photos accordingly.
+
+Straightening individual images manually is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature can come in handy for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the captured scenes lack clear reference information to help you (or the Transform tool) straighten the images.
+
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to
+
+- Canon 
+  - R5 (FW 1.5), R5m2
+  - R6m2 (FW 1.4), R6m3
+  - R7 (FW 1.3), R8 (FW 1.2), R10??
+- Nikon (D5, D500 and later models)
+- Fuji (XT-5 and later models)<sup>1</sup>
+- Olympus/OM (EM-1/5/10 III and later models)
+- Panasonic (Lumix G6 and later models)
+- Pentax (K-7 and later models)<sup>2</sup>
+- Ricoh (GR III and later models)<sup>2</sup>
+
+<sup>1</sup> Fuji represents roll angle information within the range of -1° to +1° as `RollAngle=0`. <br>
+<sup>2</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other brands.
+
+Unfortunately, it seems that Sony does not record roll angle information in photo metadata. Even a deep analysis of a series of custom-made A7RV test images did not reveal any evidence of its presence.
+
+Straighten Images is not available for LR5, since version 5.x of the Lightroom SDK does not yet supported the  required functionality.
+
+### Example
+
+The photo has a roll angle of 2.5°. Applying a crop angle of -2.5° compensates for the tilt. Please note that a non-zero crop angle will change the crop of the photo. Straightening the photo will result in the corners being lost.
+
+Using the 'Straighten Images' tool produces the same result as entering the roll angle compensation manually in Lightroom's 'Crop & Straighten' tool. You can then modify or even revert the compensation as desired.
+
+<img src="docs/images/Straighten%201.jpg" alt="User Interface" style="width: 1000px;"/>
+
+Please refer to the [relevant section](https://musselwhizzle.github.io/Focus-Points/docs/Focus-Points.html#24-straighten-images) of the User Manual to learn how to use and customise this feature.  
+
 
 ## Supported Cameras
 
@@ -214,7 +261,7 @@ rderimay, philmoz, project802, jandhollander, DeziderMesko, StefLedof, roguephys
 <a href="https://github.com/musselwhizzle/Focus-Points/graphs/contributors">Full list can be seen here.</a>
 
 Special thanks go to [John R. Ellis](https://johnrellis.com/) for providing the code that mimics a rectangular crop while rotating a photo and preserving its aspect ratio. This is something that Lightroom's Crop & Straighten Tool can do, but the SDK cannot.
-John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit,without which this plugin wouldn't exist.
+John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit, without which this plugin wouldn't exist.
 
 
 ## Licenses

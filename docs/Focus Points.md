@@ -12,10 +12,8 @@
 *  [Focus Point Viewer](#22-focus-point-viewer)<br>
    - [User Interface](#user-interface), [User Messages](#user-messages), [Plugin Status](#plugin-status), [Keyboard Shortcuts](#keyboard-shortcuts) 
 *  [Metadata Viewer](#23-metadata-viewer)
-*  [Straighten Images](#24-straighten-images)
-   - [Operation](#operation), [Customization](#Customization), [Keyboard Shortcut](#keyboard-shortcut), [General Remarks](#general-remarks) 
-*  [Configuration and Settings](#25-configuration-and-settings)
-   - [Screen Scaling](#screen-scaling), [User Interface](#user-interface-settings), [Viewing Options](#viewing-options), [Logging](#logging), [Straightening Options](#straightening-options), [Update Check](#update-check)
+*  [Configuration and Settings](#24-configuration-and-settings)
+   - [Screen Scaling](#screen-scaling), [User Interface](#user-interface-settings), [Viewing Options](#viewing-options), [Logging](#logging), [Update Check](#update-check)
 
 ### [Display of Focus Points](#3-display-of-focus-points)
 
@@ -52,18 +50,15 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Show which focus point was active when the picture was taken <sup>2</sup>
 - Display user-selected autofocus points/area <sup>3,4</sup>
 - Visualize faces and subjects detected by the camera <sup>3,5</sup>
-- Tagging (flagging, rating and coloring) of photos within the plugin UI <sup>7</sup>
+- Tagging (flagging, rating and coloring) of photos within the plugin UI <sup>6</sup>
 - Display and search (EXIF) metadata of the selected image 
-- Straightening images by applying compensation for camera roll angle<sup>6</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
 <sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple. See full [list of supported cameras](../README.md#supported-cameras).<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
 <sup>5</sup> Currently supported for Fuji, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
-<sup>6</sup> Currently supported for Canon, Nikon, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
-<sup>7</sup> Not for LR5.<br>
-
+<sup>6</sup> Not for LR5.<br>
 
 To understand the principles of this plugin, how to use it and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 <br>
@@ -226,7 +221,7 @@ A link to the User Guide (this document) provides quick and easy access to the o
 The window can be closed by clicking `Exit` or pressing \<Enter> or \<Esc> or \<Space>.
 <br>
 
-#### Focus Distance, Depth of Field, Hyperfocal Distance
+#### Depth of Field, Hyperfocal Distance
 
 Most camera makers include subject or focus distance information in makernotes. Sony, Fuji and Pentax do not, so this section is not relevant to images taken with their cameras.
 
@@ -416,98 +411,7 @@ This has been improved in V3.2:
 
 <br>
 
-## 2.4 Straighten Images
-
-Straighten Images is a new plugin function in V3.3:
-
-* Library → Plug-in Extras → Straighten Images, or
-* File → Plug-in Extras → Straighten Images
-
-This function reads the camera roll angle from the metadata of the selected photos, one by one, and applies compensation by rotating the photos accordingly.
-
-Straightening individual images manually is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature can come in handy for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the captured scenes lack clear reference information to help you (or the Transform tool) straighten the images.
-
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to
-
-- Canon (R5 (FW 1.5), R5m2, R6m2, R7)
-- Nikon (D5, D500 and later models)
-- Fuji (XT-5 and later models)
-- Olympus/OM (EM-1/5/10 III and later models)
-- Panasonic (Lumix G6 and later models)
-- Pentax (K-7 and later models)<sup>1</sup>
-- Ricoh (GR III and later models)<sup>1</sup>
-
-<sup>1</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other brands:
-
-- The value's numeric precision is 0.5°, so you will see roll angle values of 0, 0.5, 1.0, 1.5, and so on.
-- The recorded roll angle value does not always seem to correspond reasonably to the actual tilt angle. Consequently, images aligned based on the RollAngle tag do not always appear straight.
-- With older Pentax models in particular, a Roll Angle of -45/+45° is sometimes recorded, despite this value bearing no relation to the captured image.
-
-Nevertheless, the plugin will support the straightening of photos taken with Pentax and Ricoh cameras.
-Whether this feature is useful for straightening images is up to the individual user to decide.
-
-
-### Example
-The photo has a roll angle of 2.5°. Applying a crop angle of -2.5° compensates for the tilt. Please note that a non-zero crop angle will change the crop of the photo. Straightening the photo will result in the corners being lost. The result obtained by using the 'Straighten Images' tool is the same as if you enter the roll angle compensation manually in Lightroom's 'Crop & Straighten' tool. This also means, that you can modify or even revert the result by
-
-<img src="../screens/Straighten%201.jpg" alt="User Interface" style="width: 1000px;"/>
-
-
-### Operation
-
-To use the Straighten Images plugin, select the photos you want to straighten and open Plug-in Extras > Straighten Images.
-
-The plugin then processes all the selected photos, retrieving 'RollAngle' information from their metadata if available, and applies the relevant correction by adjusting the crop angle of each photo. The standard progress bar in the top-left corner of Lightroom shows the progress of the operation. You can interrupt the process by clicking the 'x' icon to the right of the progress bar.
-
-<img src="../screens/Straighten%202.jpg" alt="User Interface" style="width: 1000px;"/>
-
-By default, the plugin notifies you of successful completion of the process with a 'bezel' — a brief pop-up window — upon completion.
-
-<img src="../screens/Straighten%203.jpg" alt="User Interface" style="width: 1000px;"/>
-
-If any of the selected photos cannot be straightened, a dialog box will provide a summary. You can configure the conditions that trigger this window.
-
-<img src="../screens/Straighten%204.jpg" alt="User Interface" style="width: 1000px;"/>
-
-If you require more detailed information, you can access it by clicking 'See details', which opens the log file.
-
-<img src="../screens/Straighten%205.jpg" alt="User Interface" style="width: 1000px;"/>
-
-
-### Customization
-
-Various options allow you to customize and fine-tune the process of straightening images:
-
-<img src="../screens/Straighten%206.jpg" alt="User Interface"/>
-
-For a detailed explanation of these settings, see [Straightening Options](#straightening-options)
-
-
-### Keyboard Shortcut
-
-The FocusPointsHotkey script files and precompiled executables have been extented by a third keyboard shortcut `Ctrl NumpadSub`.
-
-
-### General Remarks
-
-The quality of the result of straightening depends essentially on two factors:
-
-- Precision of roll angle measurement by the camera
-- Accuracy of the camera's level gauge adjustment
-
-The benefits of straightening photos of man-made structures can be limited. In such cases, great precision is often desired, as well as compensation for vertical tilt.
-
-Conversely, the Straighten Images feature is extremely useful for genres such as nature, wildlife, sports and action photography. It is not uncommon to find that there is no clear reference information to help you straighten images manually. This feature is also useful for burst shoots, such as photographing birds in flight, when it is easy to tilt the camera while tracking your subject.
-
-The plugin generally produces better and more reliable level correction results than Lightroom's Auto Transform feature. This is because it responds directly to horizontal camera imbalance. Auto Transform looks for straight lines in a photo and uses them as a reference point to straighten the image. However, if there are structures in an image that are not actually straight, the result will be incorrect.
-
-Lightroom Auto Transform ('Level'):
-<img src="../screens/Straighten%207.jpg" alt="User Interface" style="width: 1000px;"/>
-
-This plugin's Straighten Image function:
-<img src="../screens/Straighten%208.jpg" alt="User Interface" style="width: 1000px;"/>
-
-## 2.5 Configuration and Settings
+## 2.4 Configuration and Settings
 
 Selecting 'Focus Point Viewer' from the list of installed plugins (_Library → File → Plug-in Manager_) opens the plugin's settings page:
 
@@ -595,33 +499,7 @@ The logging mechanism provides a fine-grained hierarchy of levels at which infor
    | Auto    | Same as 'Info'. Recommended setting. No noticeable slow down of plugin. |
 
 
-<u>Hint</u>: `Auto`logging will start on an empty log file for each image. When you open such a log file, it will immediately focus on the most recent image. The log file will be emptied when the plugin starts for all other logging levels.
-
-
-### Straightening Options
-
-These settings control the process of [straightening images](#24-Straighten-images):
-
-<img src="../screens/Settings%20-%20Straightening%20Options.jpg" alt="User Interface"/>
-
-**_Overwrite existing crop angle setting_**. Default setting: `Off`<br>
-Roll angle compensation will be applied regardless of whether the photo has already been rotated. The straightening angle will replace the existing crop angle, rather than being added to it.
-
-**_Apply straightening only for angles between x and y_**. Default setting: `Off`<br>
-Roll angle compensation will only be applied for angles within the range of x to y degrees.  
-You can use this option to define a deadband to prevent small, often invisible, corrections from triggering Lightroom cropping. You can also set an upper limit for straightening angles. For example, if a photo has been taken with the camera tilted 25° horizontally, this is likely to be a deliberate creative choice rather than an unintended tilt. The lower and upper limits apply to both camera directions. (In Lightroom's Crop & Straighten tool, positive values rotate the image clockwise and negative values rotate it counterclockwise).
-  
-Example:  
-Applying straightening only for angles between 0.2° and 10° means that no straightening (and cropping) will occur for angles between -0.2° and 0.2°, or for angles outside the range of -10° to 10°.  
-
-**_Apply calibration offset_**. Default setting: `Off`<br>
-If you are straightening photos captured using an improperly calibrated level gauge, you can specify a calibration offset in degrees here. This offset will be added to the roll angle compensation to compensate for the incorrect calibration of the level gauge. 
-
-**_Condition to open the summary dialog when straightening is complete_**. Default setting: `Skipped Images`<br>
-Specify the least critical condition that will trigger the summary window to open at the end of the straightening process. The dropdown list shows the available conditions in ascending order of criticality.
-
-Example:  
-The default setting, 'Skipped Images', will trigger the summary to show for skipped images, as well as warnings and errors that occurred during the process. Selecting the 'Errors' setting will only show the summary for errors that occurred, but not for warnings or skipped images.
+<u>Hint</u>: `Auto`logging will start on an empty log file for each image. When you open such a log file, it will immediately focus on the most recent image. The log file will be emptied when the plugin starts for all other logging levels. 
 
 
 ### Update Check
@@ -1147,9 +1025,8 @@ However, at the system level, there are ways to automate the startup of the plug
 On Windows, you can use the free [AutoHotkey](https://www.autohotkey.com/) utility together with a small script to assign the command _File → Plug-in Extras → Show Focus Point_ to a key. The same applies to _Show Metadata_.
 
 The plugin comes with a ready-to-run, compiled Autohotkey script that assigns:<br>
-\-  `NumPad *` as a shortcut for `Show Focus Point`<br>
-\-  `NumPad /` as a shortcut for `Show Metadata`<br>
-\-`^NumPad -` as a shortcut for `Straighten Images`
+\- `NumPad *` as a shortcut for `Show Focus Point`<br>
+\- `NumPad /` as a shortcut for `Show Metadata`
 
 The **FocusPointsHotkey.exe** file (for the English UI) can be found in the `ahk` folder of the focuspoints.lrplugin file. If you use the German language UI in Lightroom, use FocusPointsHotkey_de.exe instead.
 
