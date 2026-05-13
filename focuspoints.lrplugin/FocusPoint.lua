@@ -261,20 +261,20 @@ local function showFocusPoint()
     -- if launched in Develop module switch to Library to enforce that a preview of the image is available
     -- must switch to loupe view because only in this view previews will be rendered
     -- perform module switch as early as possible to give Library time to create a preview if none exists
-    if WIN_ENV and LrC then
-      local done
-      LrTasks.startAsyncTask(function()
+    if WIN_ENV and LrC and not floatingDialog then
         LrApplicationView = import 'LrApplicationView'
         local moduleName = LrApplicationView.getCurrentModuleName()
         if moduleName == "develop" then
           LrApplicationView.switchToModule("library")
           LrApplicationView.showView("loupe")
           switchedToLibrary = true
+
+          local waited = 0
+          while LrApplicationView.getCurrentModuleName() ~= "library" and waited < 5.0 do
+            LrTasks.sleep(0.2)
+            waited = waited + 0.2
+          end
         end
-        done = true
-      end)
-      -- wait for async task to end
-      while not done do LrTasks.sleep(0.2) end
     end
 
     local function inputFieldWidth()

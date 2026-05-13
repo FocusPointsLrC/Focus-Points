@@ -571,22 +571,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       },
       taggingControlsSetting(),   -- empty for LR5
       keyboardLayoutSetting(),    -- empty for LR5
-      f:row {
-        bind_to_object = prefs,
-        spacing = f:control_spacing(),
-        f:popup_menu {
-          title = "hideControl",
-          value = bind("hideKofiControl"),
-          width = dropDownWidth,
-          items = {
-            { title = "On", value = true },
-            { title = "Off", value = false },
-          },
-        },
-        f:static_text {
-          title = 'I have already donated / I am not willing to donate'
-        },
-      },
     }
   end
   local function sectionViewingOptions()
@@ -792,6 +776,34 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       },
     }
   end
+  local function sectionSupport()
+    return
+    {
+      title = "Support the Author",
+      bind_to_object = prefs,
+      spacing = f:control_spacing(),
+      f:row{
+        fill_horizontal = 1,
+        spacing = f:control_spacing(),
+        f:picture {
+          value = _PLUGIN:resourceId("assets/icons/kofi.png")
+        },
+        f:static_text {
+          title = "Buy me a coffee on Ko-fi.com!",
+          text_color = LrColor("blue"),
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
+          end,
+        },
+        f:spacer{fill_horizontal = 1},
+        f:checkbox {
+          title = 'I have already donated. Hide Ko-fi icon and link from the plugin window.',
+          value = bind("hideKofiControl")
+        },
+      },
+    }
+  end
   local function sectionAcknowledgements()
     return
     {
@@ -886,6 +898,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     sectionLogging(),
     sectionStraighteningOptions(),
     sectionUpdates(),
+    sectionSupport(),
     sectionAcknowledgements(),
   }
 end
