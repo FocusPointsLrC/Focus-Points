@@ -89,8 +89,14 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
   end
 
   if prefs.secondScreenMode then
+    -- Store preview panel dimensions for later view creation
     previewHeight = photoHeight
     previewWidth  = photoHeight * prefs.previewAspectRatio
+    -- Adjust dimensions of photo if it does not fit preview panel
+    if photoWidth > previewWidth then
+      photoHeight = previewHeight * previewWidth/photoWidth
+      photoWidth  = previewWidth
+    end
   end
 
   return math.floor(photoWidth), math.floor(photoHeight)
@@ -109,12 +115,17 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
   local function previewPanel()
     if prefs.secondScreenMode then
       -- Place photo in the center of the preview area, which has a fixed aspect ratio.
-      return f:row {
-        width  = previewWidth,
-        heigth = previewHeight,
+      return f:column {
+        height = previewHeight,
+        f:spacer { fill_vertical = 1 },
+        f:row {
+          width = previewWidth,
         f:spacer { fill_horizontal = 1 },
         photoView,
         f:spacer { fill_horizontal = 1 },
+          f:spacer { fill_vertical = 1 },
+        },
+        f:spacer { fill_vertical = 1 },
       }
     else
       -- Preview area has the same dimensions as the photo
