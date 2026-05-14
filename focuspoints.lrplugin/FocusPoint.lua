@@ -758,20 +758,26 @@ local function showFocusPoint()
 
       local function dialogContents()
         local f = LrView.osFactory()
-        local padPx = 16
+        local leftMargin   =  9
+        local rightMargin  =  3
+        local topMargin    =  8
+        local bottomMargin =  4
 
         local floatingContents = f:column {
             spacing = f:control_spacing(),
 
             -- top margin
-            f:spacer { height = 8 },
+            f:spacer { height = topMargin },
 
             -- main dialog area
             f:row {
-              f:spacer { width = 8 },
+              spacing = f:control_spacing(),
+              -- left margin
+              f:spacer { width = leftMargin },
               FocusPointDialog.createDialog(
                 targetPhoto, photoView, infoView, kbdShortcutInput),
-              f:spacer { width = 8 },
+              -- right margin
+              f:spacer { width = rightMargin },
             },
 
             -- spacing before controls
@@ -779,7 +785,8 @@ local function showFocusPoint()
 
             -- bottom controls
             f:row {
-                f:spacer { width = 8 },
+                spacing = f:control_spacing(),
+                f:spacer { width = leftMargin },
 
                 controlPanel,
 
@@ -787,17 +794,17 @@ local function showFocusPoint()
                 f:spacer { height = 8 },
 
                 f:push_button {
-                    title = "Close",
+                    title = "    Close    ",
                     action = function(button)
                       closeDialog(button,"ok")
                     end,
                 },
 
-                f:spacer { width = 12 },
+                f:spacer { width = rightMargin },
             },
 
             -- bottom margin
-            f:spacer { height = 0 },
+            f:spacer { height = bottomMargin },
         }
 
         return floatingContents

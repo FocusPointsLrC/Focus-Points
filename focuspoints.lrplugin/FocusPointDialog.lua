@@ -36,6 +36,8 @@ local Utils            = require 'Utils'
 
 GlobalDefs.currentPhoto = nil
 
+local previewWidth, previewHeight
+
 --[[----------------------------------------------------------------------------
   public int width, int height
   calculatePhotoViewDimens(table photo)
@@ -47,6 +49,7 @@ GlobalDefs.currentPhoto = nil
   - On Windows: Display scaling factor (Auto or user-defined)
 ------------------------------------------------------------------------------]]
 function FocusPointDialog.calculatePhotoViewDimens(photo)
+  local prefs = LrPrefs.prefsForPlugin( nil )
 
   -- Retrieve photo dimensions
   local dimens = photo:getFormattedMetadata("croppedDimensions")
@@ -85,9 +88,9 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     end
   end
 
-  local prefs = LrPrefs.prefsForPlugin( nil )
   if prefs.secondScreenMode then
-    photoWidth = photoHeight * prefs.previewAspectRatio
+    previewHeight = photoHeight
+    previewWidth  = photoHeight * prefs.previewAspectRatio
   end
 
   return math.floor(photoWidth), math.floor(photoHeight)
@@ -98,35 +101,37 @@ end
   createDialog(_photo, photoView, infoView, kbdShortcutInput, controlPanel)
 
   Creates the view container for the entire dialog.
-  When 'controlPanel' is provided (used in non-modal/floating dialog mode),
-  it is appended at the bottom of the layout, since floating dialogs do
-  not support the 'accessoryView' attribute that modal dialogs use.
-------------------------------------------------------------------------------]]
-function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput, controlPanel)
+  ----------------------------------------------------------------------------]]
+function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput)
+  local prefs = LrPrefs.prefsForPlugin( nil )
   local f = LrView.osFactory()
 
-  -- Build the column children list. We assemble the table BEFORE creating the
-  -- view, because LR SDK view objects cannot be modified after construction.
-  local columnChildren = {
-    f:row {
-      kbdShortcutInput,
-    },
-    f:row {
-      f:column { photoView },
-      f:column { fill_vertical = 1, infoView },
-    },
-  }
-
-  if controlPanel then
-    -- In non-modal/floating dialog mode, the control panel (Prev/Next, tagging
-    -- buttons, links, etc.) is part of the contents, since floating dialogs do
-    -- not support the 'accessoryView' attribute used by modal dialogs.
-    table.insert(columnChildren, f:spacer { height = 8 })
-    table.insert(columnChildren, controlPanel)
+  local function previewPanel()
+    if prefs.secondScreenMode then
+      -- Place photo in the center of the preview area, which has a fixed aspect ratio.
+      return f:row {
+        width  = previewWidth,
+        heigth = previewHeight,
+        f:spacer { fill_horizontal = 1 },
+        photoView,
+        f:spacer { fill_horizontal = 1 },
+      }
+    else
+      -- Preview area has the same dimensions as the photo
+      return f:row {
+        f:spacer {}, photoView, f:spacer {},
+      }
+    end
   end
 
   return f:view {
-    f:column(columnChildren),
+    f:row {
+      f:spacer {}, kbdShortcutInput,
+    },
+    f:row {
+      previewPanel(),
+      f:column { fill_vertical = 1, infoView },
+    },
   }
 end
 

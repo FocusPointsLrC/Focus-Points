@@ -423,7 +423,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Scaling",
-          value = bind ("screenScaling"),
+          value = bind("screenScaling"),
           width = dropDownWidth,
           items = {
             { title = "Auto", value = 0    },
@@ -444,23 +444,22 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   local function sectionUserInterface()
     local function taggingControlsSetting()
       if LR5 then return f:control_spacing{} end  -- return empty space
-      return
-        f:row {
-          bind_to_object = prefs,
-          spacing = f:control_spacing(),
-          f:popup_menu {
-            title = "taggingControls",
-            value = bind ("taggingControls"),
-            width = dropDownWidth,
-            items = {
-              { title = "On",  value = true  },
-              { title = "Off", value = false },
-            }
-          },
-          f:static_text {
-            title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
-          },
-        }
+      return f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "taggingControls",
+          value = bind("taggingControls"),
+          width = dropDownWidth,
+          items = {
+            { title = "On",  value = true  },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
+        },
+      }
     end
     local function keyboardLayoutSetting()
       if LR5 then return f:control_spacing{} end  -- return empty space
@@ -469,7 +468,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "keyboardLayout",
-          value = bind ("keyboardLayout"),
+          value = bind("keyboardLayout"),
           width = dropDownWidth,
           items = KeyboardLayout.buildDropdownItems(),
         },
@@ -497,13 +496,12 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
         f:popup_menu {
           title = "previewAspectRatio",
-          value = bind ("previewAspectRatio"),
---          width = dropDownWidth,
+          value = bind("previewAspectRatio"),
           items = {
-            { title = "1 x 1",  value =  1/1 },
-            { title = "4 x 3",  value =  4/3 },
-            { title = "3 x 2",  value =  3/2 },
-            { title = "16 x 9", value = 16/9 },
+            { title = "1 x 1",  value = 1.0    },
+            { title = "4 x 3",  value = 1.333  },
+            { title = "3 x 2",  value = 1.5    },
+            { title = "16 x 9", value = 1.778  },
           },
         },
 
@@ -513,7 +511,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "pluginWindowScaling",
-          value = bind ("pluginWindowScaling"),
+          value = bind("pluginWindowScaling"),
           width = dropDownWidth,
           items = {
             { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
@@ -532,7 +530,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "keyboardInput",
-          value = bind ("keyboardInput"),
+          value = bind("keyboardInput"),
           width = dropDownWidth,
           items = {
             { title = "Invisible",  value = FocusPointPrefs.kbdInputInvisible },
@@ -549,7 +547,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "truncateLongText",
-          value = bind ("truncateLongText"),
+          value = bind("truncateLongText"),
           width = dropDownWidth,
           items = {
             { title = "On",  value = true  },
@@ -560,7 +558,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = 'Truncate or wrap strings after'
         },
         f:edit_field {
-          value = bind ("truncateLimit"),
+          value = bind("truncateLimit"),
           width_in_chars = 3,
           min = 10,
           max = 100,
@@ -622,7 +620,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Logging level",
-          value = bind ('loggingLevel'),
+          value = bind('loggingLevel'),
           width = dropDownWidth,
           items = {
             { title = "Auto",  value = "AUTO"  },
