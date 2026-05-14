@@ -85,6 +85,11 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     end
   end
 
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  if prefs.secondScreenMode then
+    photoWidth = photoHeight * prefs.previewAspectRatio
+  end
+
   return math.floor(photoWidth), math.floor(photoHeight)
 end
 
@@ -98,35 +103,7 @@ end
   not support the 'accessoryView' attribute that modal dialogs use.
 ------------------------------------------------------------------------------]]
 function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput, controlPanel)
-  local prefs = LrPrefs.prefsForPlugin( nil )
   local f = LrView.osFactory()
-
-  local function previewPanel()
-    if prefs.secondScreenMode then
-
-      return f:row {
-        width = prefs.previewWidth,
-
-        fill_horizontal = 1,
-        fill_vertical = 1,
-
-        -- left flexible spacer
-        f:spacer {
-          fill_horizontal = 1,
-        },
-
-        -- actual image
-        photoView,
-
-        -- right flexible spacer
-        f:spacer {
-          fill_horizontal = 1,
-        },
-      }
-    else
-      return f:column { photoView }
-    end
-  end
 
   -- Build the column children list. We assemble the table BEFORE creating the
   -- view, because LR SDK view objects cannot be modified after construction.
@@ -135,7 +112,7 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
       kbdShortcutInput,
     },
     f:row {
-      previewPanel(),
+      f:column { photoView },
       f:column { fill_vertical = 1, infoView },
     },
   }

@@ -117,7 +117,7 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if not prefs.screenScaling               then prefs.screenScaling              = 0 end
   if not prefs.pluginWindowScaling         then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
   if     prefs.secondScreenMode    == nil  then prefs.secondScreenMode           = false     end
-  if not prefs.previewWidth                then prefs.previewWidth               = 1400      end
+  if not prefs.previewAspectRatio          then prefs.previewAspectRatio         = 3/2       end
   if     prefs.truncateLongText    == nil  then prefs.truncateLongText           = true      end
   if not prefs.truncateLimit               then prefs.truncateLimit              = 32        end
   if     prefs.hideKofiControl     == nil  then prefs.hideKofiControl            = false     end
@@ -493,17 +493,18 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           },
         },
         f:static_text {
-          title = 'Can run on second screen. Fixed width of photo view:'
+          title = 'Can run on second screen. Fixed aspect ratio of photo view:'
         },
-        f:edit_field {
-          value = bind ("previewWidth"),
-          width_in_chars = 4,
-          min = 400,
-          max = 4000,
-          precision = 0,
-        },
-        f:static_text {
-          title = 'px',
+        f:popup_menu {
+          title = "previewAspectRatio",
+          value = bind ("previewAspectRatio"),
+--          width = dropDownWidth,
+          items = {
+            { title = "1 x 1",  value =  1/1 },
+            { title = "4 x 3",  value =  4/3 },
+            { title = "3 x 2",  value =  3/2 },
+            { title = "16 x 9", value = 16/9 },
+          },
         },
 
       },
