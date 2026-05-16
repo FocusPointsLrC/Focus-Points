@@ -156,11 +156,11 @@ end
 local function exportToDisk(photo, xSize, ySize)
   local prefs = LrPrefs.prefsForPlugin( nil )
 
-  if prefs.secondScreenMode then
-    -- Preview cache is unreliable in Develop mode; use a real export
+  if prefs.secondScreenMode or prefs.exportViaDisk then
+    -- Preview cache is unreliable in Develop mode; need to use an 'exported' JPG
     return exportViaDisk(photo, xSize, ySize)
   else
-    -- Library mode: preview cache is fine, use the fast thumbnail path
+    -- We're in Library: use thumbnails (which are basically previews)
     return exportViaThumbnail(photo, xSize, ySize)
   end
 end
@@ -169,7 +169,7 @@ function exportViaThumbnail(photo, xSize, ySize)
   -- New code for V3.4 that includes a retry mechanism and a check for 'invalid' (blank) previews
 
   local function getJpegDimensions(data)
-    -- helper function to retrieve the dimensions of the image returned by requestJpegThumbnail()
+    -- Helper function to retrieve the dimensions of the image returned by requestJpegThumbnail()
     if #data < 4 then return nil, nil end
 
     -- verify JPEG SOI marker
@@ -215,31 +215,41 @@ function exportViaThumbnail(photo, xSize, ySize)
     return nil, nil
   end
 
-  local function isValidPreview(w, h, xSize, ySize, photo)
-    -- helper function that determines whether the image returned by requestJpegThumbnail() is a valid preview
-    -- invalid (blank) previews always seem to have the same dimensions as the original photo (far from what was requested)
-    local tol = 0.95
+  local function isBlankImage(data)
+    -- Helper function that determines whether the image returned by requestJpegThumbnail() is a valid preview
+    -- invalid previews are blank/white images with the same 16-byte pattern cycling endlessly, with only
+    -- 24 unique byte values out of 256. A real photo would have 200+ unique values and no such repetition.
+    -- This function performs a byte entropy check on 'data' to detect such low-entropy content
 
-    if w == nil or w == 0 or h == 0 then
-      return false  -- couldn't parse dimensions
+    -- Find SOS marker (FF DA) to locate start of scan data
+    local sosPos = nil
+    for i = 1, #data - 1 do
+      if data:byte(i) == 0xFF and data:byte(i+1) == 0xDA then
+        sosPos = i
+        break
+      end
+    end
+    if not sosPos then return false end
+
+    -- Skip SOS header to get to actual scan data
+    local sosHeaderLen = data:byte(sosPos+2) * 256 + data:byte(sosPos+3)
+    local scanStart = sosPos + 2 + sosHeaderLen
+
+    -- Sample up to 2000 bytes of scan data
+    local sampleEnd = math.min(scanStart + 2000, #data)
+    local seen = {}
+    local count = 0
+    for i = scanStart, sampleEnd do
+      local b = data:byte(i)
+      if not seen[b] then
+        seen[b] = true
+        count = count + 1
+      end
     end
 
-    -- get original photo dimensions
-    local orgW = photo:getRawMetadata("width")
-    local orgH = photo:getRawMetadata("height")
-
-    -- if requesting near-original size, accept anything close to original
-    local requestingFullSize = (xSize >= orgW * tol and ySize >= orgH * tol)
-    if requestingFullSize then
-      return (w >= orgW * tol and h >= orgH * tol)
-    end
-
-    -- otherwise: valid preview must be smaller than original
-    -- and reasonably close to requested size (within 50% tolerance)
-    local smallerThanOriginal = (w < orgW * tol and h < orgH * tol)
-    local closeToRequested    = (w <= xSize * 1.5 and h <= ySize * 1.5)
-
-    return smallerThanOriginal or closeToRequested
+    -- A blank/white image has very low byte entropy (24 unique values observed)
+    -- A real photo will have 100+ unique byte values
+    return count < 50
   end
 
   local orgPath   = photo:getRawMetadata("path")
@@ -274,11 +284,14 @@ function exportViaThumbnail(photo, xSize, ySize)
         -- Check preview dimensions against what was requested
         if w == nil or w == 0 or h == 0 then
           -- couldn't parse dimensions, retry
-        elseif not isValidPreview(w, h, xSize, ySize, photo) then
+          Log.logInfo('Mogrify', string.format(
+            "Attempt %d: invalid dimensions, retrying...", attempt))
+          -- blank preview, retry
+        elseif isBlankImage(data) then
           -- this identifies instances where LR returns an empty preview with the original photo's dimensions
           Log.logInfo('Mogrify', string.format(
-            "Attempt %d: invalid thumbnail, retrying...",
-            attempt, w or 0, h or 0, xSize, ySize))
+            "Attempt %d: invalid thumbnail, retrying...", attempt))
+          -- blank preview, retry
         else
           -- Dimensions look right, write image to disk and proceed
           local ok, errorCode = pcall(function()

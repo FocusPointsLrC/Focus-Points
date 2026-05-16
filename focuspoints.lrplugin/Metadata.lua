@@ -25,8 +25,6 @@ local Metadata = {}
 
 -- Imported LR namespaces
 local LrApplication     = import  'LrApplication'
-local LrDialogs         = import  'LrDialogs'
-local LrFileUtils       = import  'LrFileUtils'
 local LrFunctionContext = import  'LrFunctionContext'
 local LrPrefs           = import  'LrPrefs'
 local LrStringUtils     = import  'LrStringUtils'
@@ -76,35 +74,23 @@ local function showMetadata()
     Log.logInfo("Metadata", "Image: " .. targetPhoto:getRawMetadata("path"))
 
     LrTasks.startAsyncTask(function(_context)
-      --https://forums.adobe.com/thread/359790
 
       LrFunctionContext.callWithContext("function", function(_dialogContext)
-        local column1, column2, column1Length, column2Length, numLines
+        local column1, column2, column3, column1Length, column2Length, column3Length, numLines
 
-        -- Read metadata from image file
-        LrFunctionContext.callWithContext("function2", function(dialogContext2)
-            local dialogScope = LrDialogs.showModalProgressDialog {
-              title = "Loading Data",
-              caption = "Reading Metadata",
-              width = 200,
-              cannotCancel = false,
-              functionContext = dialogContext2,
-            }
-            dialogScope:setIndeterminate()
 
-            -- Read metadata from file
-            local metadata = ExifUtils.readMetadata(targetPhoto)
+        -- Read metadata from image file.
+        -- The 'Loading Data' dialog has been removed.
+        local metadata = ExifUtils.readMetadata(targetPhoto, true)
             metadata = ExifUtils.filterInput(metadata)
 
             -- Split the text output into two columns, one for the labels and one for the values.
-            column1, column2, column1Length, column2Length, numLines = splitForColumns(metadata)
+        column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
 
-            dialogScope:done()
-          end)
-        LrTasks.sleep(0)
 
         -- Present metadata in dialog
-        local result = MetadataDialog.showDialog(targetPhoto, column1, column2, column1Length, column2Length, numLines)
+        local result = MetadataDialog.showDialog(
+          targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
 
         -- Check whether dialog has been left by pressing "Open as text"
         local metadataFileName = ExifUtils.getMetadataFileName()
@@ -131,25 +117,30 @@ end
 function splitForColumns(metadata)
 
   local parts = createParts(metadata)
+  local groups = ""
   local labels = ""
   local values = ""
+  local maxGroupLength = 0
   local maxLabelLength = 0
   local maxValueLength = 0
   local numOfLines = 0
-  local limitLabelLength =  32  -- to avoid super-long value strings that whill slow down display
-  local limitValueLength = 128  -- to avoid long tag names
+  local limitGroupLength =  32   -- to avoid long group names
+  local limitLabelLength =  32   -- to avoid long tag names
+  local limitValueLength = 128   -- to avoid super-long value strings that whill slow down display
   local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
 
   for k in pairs(parts) do
 
-    -- Get next label/value pair
-    local l = parts[k].label
-    local v = parts[k].value
-    if not l then l = "" end
-    if not v then v = "" end
+    -- Get next group/label/value pair
+    local g = parts[k].group or ""
+    local l = parts[k].label or ""
+    local v = parts[k].value or ""
 
     -- Limit length of a displayed value string, indicate spillover by ellipsis dots.
     -- The original text can still be examined by opening the metadata text file in an editor
+    if string.len(g) > limitGroupLength then
+      g = LrStringUtils.truncate(g, limitGroupLength) .. utfEllipsis
+    end
     if string.len(l) > limitLabelLength then
       l = LrStringUtils.truncate(l, limitLabelLength) .. utfEllipsis
     end
@@ -158,22 +149,26 @@ function splitForColumns(metadata)
     end
 
     -- Update table dimension parameters
+    maxGroupLength = math.max(maxGroupLength, string.len(g))
     maxLabelLength = math.max(maxLabelLength, string.len(l))
     maxValueLength = math.max(maxValueLength, string.len(v))
     numOfLines = numOfLines + 1
 
     -- Append current label/value pair to the table columns
+    groups = groups .. g .. "\r"
     labels = labels .. l .. "\r"
     values = values .. v .. "\r"
   end
 
+  Log.logDebug("ShowMetadata", "splitForColumns: Groups: " .. groups)
   Log.logDebug("ShowMetadata", "splitForColumns: Labels: " .. labels)
   Log.logDebug("ShowMetadata", "splitForColumns: Values: " .. values)
+  Log.logDebug("ShowMetadata", "splitForColumns: maxGroupLength: " .. maxGroupLength)
   Log.logDebug("ShowMetadata", "splitForColumns: maxLabelLength: " .. maxLabelLength)
   Log.logDebug("ShowMetadata", "splitForColumns: maxValueLength: " .. maxValueLength)
   Log.logDebug("ShowMetadata", "splitForColumns: numOfLines: " .. numOfLines)
 
-  return labels, values, maxLabelLength, maxValueLength, numOfLines
+  return groups, labels, values, maxGroupLength, maxLabelLength, maxValueLength, numOfLines
 
 end
 
@@ -190,19 +185,23 @@ function createParts(metadata)
   local parts = {}
   local num = 1;
 
-  local function createPart(label, value)
+  local function createPart(group, label, value)
   -- Takes label & value strings for a metadata tag to package them in a table element
     local p = {}
+    p.group = LrStringUtils.trimWhitespace(group)
     p.label = LrStringUtils.trimWhitespace(label)
     p.value = LrStringUtils.trimWhitespace(value)
-    Log.logFull("ShowMetadata", "Parsed '" .. p.label .. "' = '" .. p.value .. "'")
+    Log.logFull("ShowMetadata", "Parsed '" .. p.group .. "  " .. p.label .. "' = '" .. p.value .. "'")
     return p
   end
 
-  -- Parses the text output of ExifTool line by line, decomposing each line into a label and a value.
-  for label, value in string.gmatch(metadata, "([^\:]+)\:([^\r\n]*)\r?\n") do
-    parts[num] = createPart(label, value)
-    num = num+1
+  -- Parse ExifTool output line by line
+  for line in metadata:gmatch("[^\r\n]+") do
+    local group, label, value = line:match("^%[([^%]]+)%]%s*(.-)%s*:%s*(.*)$")
+    if group then
+      parts[num] = createPart(group, label, value)
+      num = num + 1
+    end
   end
   return parts
 end

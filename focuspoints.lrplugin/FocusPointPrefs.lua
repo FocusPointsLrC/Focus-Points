@@ -65,7 +65,10 @@ FocusPointPrefs.kbdInputInvisible  = 0
 FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
--- URL to handle Update mechanism
+-- Definitions to handle Update mechanism
+local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
+local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
+
 FocusPointPrefs.urlLatestRelease   = "https://github.com/musselwhizzle/Focus-Points/releases/latest/"
 FocusPointPrefs.urlReleases        = "https://github.com/musselwhizzle/Focus-Points/releases/"
 
@@ -125,6 +128,7 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if not prefs.focusBoxColor               then prefs.focusBoxColor              = "red"     end
   if     prefs.taggingControls     == nil  then prefs.taggingControls            = true      end
   if     prefs.keyboardLayout      == nil  then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
+  if     prefs.exportViaDisk       == nil  then prefs.exportViaDisk              = false     end
   if not prefs.loggingLevel                then prefs.loggingLevel               = "AUTO"    end
   if     prefs.overwriteCropAngle  == nil  then prefs.overwriteCropAngle         = false     end
   if     prefs.straightenLimits    == nil  then prefs.straightenLimits           = false     end
@@ -328,18 +332,18 @@ function FocusPointPrefs.isUpdateAvailable()
             elseif tonumber(revision) == pluginVersion.revision then
               -- major, minor versions and revision numbers are the same, so check the build version
               if build then
-                if tonumber(build) >= 9000 then
+                if tonumber(build) >= preReleaseBuildNumbers then
                   -- latest release is a pre-release
                   if  pluginVersion.build
-                  and pluginVersion.build >= 9000
+                  and pluginVersion.build >= preReleaseBuildNumbers
                   and pluginVersion.build < tonumber(build) then
                     -- new pre-release available
                     result = true
                   end
-                else
+                elseif tonumber(build) < previewBuildNumbers then
                   -- latest release is a regular release
                   if pluginVersion.build then
-                    if tonumber(pluginVersion.build) >= 9000 then
+                    if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
                       -- release available for local pre-release version
                       result = true
                     elseif tonumber(build) > pluginVersion.build then
@@ -347,6 +351,8 @@ function FocusPointPrefs.isUpdateAvailable()
                       result = true
                     end
                   end
+                else
+                  -- no update mechanism for preview builds
                 end
               end
             end
@@ -372,7 +378,7 @@ end
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
   local pluginVersion = Info.VERSION
-  if tonumber(pluginVersion.build) >= 9000 then
+  if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
     -- pre-release
     return FocusPointPrefs.urlReleases
   else
@@ -415,7 +421,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   local dropDownWidth = 75
 
   local function sectionScreenScaling()
-    if not WIN_ENV then return {} end
+    if not WIN_ENV then return f:control_spacing{} end  -- return empty space
     return {
       title = "Screen Scaling",
       f:row {
@@ -477,6 +483,27 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
       }
     end
+    local function exportViaDiskSetting()
+      if not WIN_ENV then return f:control_spacing{} end  -- return empty space
+      return
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+          f:popup_menu {
+            title = "exportViaDisk",
+            value = bind("exportViaDisk"),
+            width = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
+          },
+          f:static_text {
+            title = 'Use JPG export instead of LR preview for photo view'
+          },
+        }
+    end
+
     return {
       title = "User Interface",
       f:row {
@@ -499,9 +526,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           value = bind("previewAspectRatio"),
           items = {
             { title = "1 x 1",  value = 1.0    },
-            { title = "4 x 3",  value = 1.333  },
+            { title = "4 x 3",  value = 1.3333 },
             { title = "3 x 2",  value = 1.5    },
-            { title = "16 x 9", value = 1.778  },
+            { title = "16 x 9", value = 1.7778 },
           },
         },
 
@@ -570,6 +597,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       },
       taggingControlsSetting(),   -- empty for LR5
       keyboardLayoutSetting(),    -- empty for LR5
+      exportViaDiskSetting(),     -- relevant for WIN only
     }
   end
   local function sectionViewingOptions()

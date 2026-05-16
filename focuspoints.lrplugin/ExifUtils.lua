@@ -201,11 +201,19 @@ end
   metadata from the photo's image file and write the output to a text file.
   Returns the command line string and the name of the output file.
 ------------------------------------------------------------------------------]]
-local function getExifCmd(targetPhoto)
+local function getExifCmd(targetPhoto, includeGroupNames)
   local path = targetPhoto:getRawMetadata("path")
   local singleQuoteWrap = '\'"\'"\''
-  local options = '-a -u -sort --XMP-crs:all --XMP-crss:all'
+  local focusPointOptions = '-a -u -sort --XMP-crs:all --XMP-crss:all'
+  local metadataOptions   = '-a -u -sort -G1 --XMP-crs:all --XMP-crss:all'
+  local options
   local cmd
+
+  if includeGroupNames then
+    options = metadataOptions
+  else
+    options = focusPointOptions
+  end
   if WIN_ENV then
     -- WIN needs " around the entire command and then " around each path
     -- Example: ""C:\Users\Joshua\Desktop\Focus Points\focuspoints.lrdevplugin\bin\exiftool.exe" -a -u -sort "C:\Users\Joshua\Desktop\DSC_4636.NEF" > "C:\Users\Joshua\Desktop\DSC_4636-metadata.txt""
@@ -234,8 +242,8 @@ end
   output to a text file.
   Returns the output as string.
 ------------------------------------------------------------------------------]]
-function ExifUtils.readMetadata(targetPhoto)
-  local cmd, outputFileName = getExifCmd(targetPhoto)
+function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
+  local cmd, outputFileName = getExifCmd(targetPhoto, includeGroupNames)
   local rc = LrTasks.execute(cmd)
 
   -- Avoid Windows process queue saturation
@@ -264,7 +272,7 @@ end
   Transforms the output of readMetadata() and returns a key/value table
 ------------------------------------------------------------------------------]]
 function ExifUtils.readMetadataAsTable(targetPhoto)
-  local metadata = ExifUtils.readMetadata(targetPhoto)
+  local metadata = ExifUtils.readMetadata(targetPhoto, false)
   if metadata == nil then
     return nil
   end

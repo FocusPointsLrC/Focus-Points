@@ -92,6 +92,7 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     -- Store preview panel dimensions for later view creation
     previewHeight = photoHeight
     previewWidth  = photoHeight * prefs.previewAspectRatio
+
     -- Adjust dimensions of photo if it does not fit preview panel
     if photoWidth > previewWidth then
       photoHeight = previewHeight * previewWidth/photoWidth
@@ -120,9 +121,9 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
         f:spacer { fill_vertical = 1 },
         f:row {
           width = previewWidth,
-        f:spacer { fill_horizontal = 1 },
-        photoView,
-        f:spacer { fill_horizontal = 1 },
+          f:spacer { fill_horizontal = 1 },
+          photoView,
+          f:spacer { fill_horizontal = 1 },
           f:spacer { fill_vertical = 1 },
         },
         f:spacer { fill_vertical = 1 },

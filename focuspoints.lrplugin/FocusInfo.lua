@@ -134,8 +134,8 @@ local metaKeyIsoSpeedRating         = "isoSpeedRating"
 
 -- Keywords for retrieving language-dependent items from English EXIF metadata
 local metaKeyExposureBias           = "Exposure Compensation"
-local metaKeyExposureProgram        = "Exposure Program"
-local metaKeyMeteringMode           = "Metering Mode"
+local metaKeyExposureProgram        = "Exposure Mode Custom"
+local metaKeyMeteringMode           = "Metering Mode Custom"
 local metaKeyExposureTime           = "Exposure Time"
 local metaKeyFNumber                = "F Number"
 

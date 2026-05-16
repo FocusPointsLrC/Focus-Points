@@ -261,7 +261,7 @@ local function showFocusPoint()
     -- if launched in Develop module switch to Library to enforce that a preview of the image is available
     -- must switch to loupe view because only in this view previews will be rendered
     -- perform module switch as early as possible to give Library time to create a preview if none exists
-    if WIN_ENV and LrC and not floatingDialog then
+    if WIN_ENV and LrC and not (floatingDialog or prefs.exportViaDisk) then
         LrApplicationView = import 'LrApplicationView'
         local moduleName = LrApplicationView.getCurrentModuleName()
         if moduleName == "develop" then
@@ -918,8 +918,8 @@ local function showFocusPoint()
       -- a fatal error has occured for the current image: ask user whether to "Exit" the plugin
       -- or "Continue" with the next image in multi-image mode (which means repeat in single-image mode)
       if errorMsg then
-        userResponse = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
-        if userResponse == "cancel" then
+        local action = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
+        if action == "cancel" then
           -- Stop plugin operation
           return
         else
@@ -930,8 +930,12 @@ local function showFocusPoint()
 
       if skipMainWindow then
         -- A fatal error has occured for the current image, "Exit" the plugin operation or
-        -- "Continue" to next image (in multi-image mode) or repeat (single-image mode)
+        -- "Continue" with the next image as per last user response
+        if userResponse == "previous" then
+          previousPhoto()
+        else
         nextPhoto()
+        end
       else
 
         -- Open main window
