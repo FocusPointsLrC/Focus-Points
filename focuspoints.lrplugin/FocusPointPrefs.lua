@@ -421,8 +421,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   local dropDownWidth = 75
 
   local function sectionScreenScaling()
-    local f = LrView.osFactory()
-    if not WIN_ENV then return f:row{} end
+    if not WIN_ENV then return nil end
     return {
       title = "Screen Scaling",
       f:row {
@@ -449,11 +448,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionUserInterface()
-    local f = LrView.osFactory()
-
     local function taggingControlsSetting()
-      local f = LrView.osFactory()
-      if LR5 then return f:control_spacing{} end  -- return empty space
+      if LR5 then return LrView.kIgnoredView end
       return f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -472,8 +468,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       }
     end
     local function keyboardLayoutSetting()
-      local f = LrView.osFactory()
-      if LR5 then return f:control_spacing{} end  -- return empty space
+      if LR5 then return LrView.kIgnoredView end
       return f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -489,8 +484,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       }
     end
     local function exportViaDiskSetting()
-      local f = LrView.osFactory()
-      if not WIN_ENV then return f:row{} end
+      if not WIN_ENV then return LrView.kIgnoredView end
       return
         f:row {
           bind_to_object = prefs,
@@ -603,7 +597,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       },
       taggingControlsSetting(),   -- empty for LR5
       keyboardLayoutSetting(),    -- empty for LR5
-      exportViaDiskSetting(),     -- relevant for WIN only
+      exportViaDiskSetting(),     -- empty for MAC
     }
   end
   local function sectionViewingOptions()
@@ -689,7 +683,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionStraighteningOptions()
-    local f = LrView.osFactory()
     return
     {
       title = "Straightening Options",
@@ -795,7 +788,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionUpdates()
-    local f = LrView.osFactory()
     return
     {
       title = "Updates",
@@ -812,7 +804,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionSupport()
-    local f = LrView.osFactory()
     return
     {
       title = "Support the Author",
@@ -841,7 +832,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionAcknowledgements()
-    local f = LrView.osFactory()
     return
     {
       title = "Acknowledgements",
@@ -928,16 +918,25 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
 
-  return {
-    sectionScreenScaling(),
-    sectionUserInterface(),
-    sectionViewingOptions(),
-    sectionLogging(),
-    sectionStraighteningOptions(),
-    sectionUpdates(),
-    sectionSupport(),
-    sectionAcknowledgements(),
-  }
+  -- Non-relevant sections (e.g. not relevant to LR5) need to be omitted from the table
+  local sections = {}
+  local function add(section)
+    if section then
+      sections[#sections + 1] = section
+    end
+  end
+
+  add(sectionScreenScaling())
+  add(sectionUserInterface())
+  add(sectionViewingOptions())
+  add(sectionLogging())
+  add(sectionStraighteningOptions())
+  add(sectionUpdates())
+  add(sectionSupport())
+  add(sectionAcknowledgements())
+
+  return sections
+
 end
 
 return FocusPointPrefs -- ok
