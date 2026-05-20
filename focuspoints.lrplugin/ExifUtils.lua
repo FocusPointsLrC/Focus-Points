@@ -141,6 +141,8 @@ function ExifUtils.getBinaryValue(photo, key)
       cmd = "'" .. exiftool .. "' -u -b -" .. key .. " '" .. path .. "' > '" .. output .. "'"
     end
 
+    Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
+
     -- Call ExifTool to output key's value in binary format
     rc = LrTasks.execute(cmd)
 
@@ -231,6 +233,7 @@ local function getExifCmd(targetPhoto, includeGroupNames)
       exiftool, exiftoolConfigFile, options, path, metadataFileName)
   end
 
+  Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
   return cmd, metadataFileName
 end
 
@@ -252,7 +255,6 @@ function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
       LrTasks.yield()
   end
 
-  Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
   if rc ~= 0 then
     -- something went wrong
     local errorText = "FATAL error: unable to read photo metadata (ExifTool rc=" .. rc .. ")"
