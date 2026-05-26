@@ -18,56 +18,34 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 <sup>6</sup> Currently supported for Canon, Nikon, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
 <sup>7</sup> Not for LR5.<br>
 
-## Current Release: [V3.3 updated April 9, 2026](https://github.com/musselwhizzle/Focus-Points/releases/latest)
+## Current Release: [V3.3.1 updated May 26, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
 
-**[Download the latest release](https://github.com/musselwhizzle/Focus-Points/releases/latest)**  or see detailed **[installation instructions](#installation)**.
+**[Download the latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)**  or see detailed **[installation instructions](#installation)**.
 
-If you have any questions, comments or suggestions for improving this plugin, please share your feedback in **[Focus-Points Discusssions](https://github.com/musselwhizzle/Focus-Points/discussions)**.
+If you have any questions, comments or suggestions for improving this plugin, please share your feedback in **[Focus-Points Discusssions](https://github.com/FocusPointsLrC/Focus-Points/discussions)**.
 
 To understand the principles of this plugin, how to use it and how to interpret the results, please refer to the **[User Manual](docs/Focus-Points.md)**. **It is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 
 
-### New features and changes:
+### Changes:
 
-* **User Interface**
-  * Straighten images by making use of RollAngle metadata information [#365](https://github.com/musselwhizzle/Focus-Points/issues/365). <br>
-  Supported for:
-    - Canon 
-      - R5 (FW 1.5), R5m2
-      - R6m2 (FW 1.4), R6m3
-      - R7 (FW 1.3), R8 (FW 1.2), R10??
-    - Nikon (D5, D500 and later models)
-    - Fuji (XT-5 and later models)
-    - Olympus/OM (EM-1/5/10 III and later models)
-    - Panasonic (Lumix G6 and later models)
-    - Pentax (K-7 and later models)
-    - Ricoh (GR III and later models)  
-    
-    Not supported for LR5.
-  
-    Please refer to the [User Manual](docs/Focus-Points.md#24-straighten-images) for a description of this feature.
-  
-* **Bugfixes**
-  * Ricoh GR DNG images can cause plug-in to crash [#367](https://github.com/musselwhizzle/Focus-Points/issues/367)
-  * Next/Previous button issue (no function when clicked) [#368](https://github.com/musselwhizzle/Focus-Points/issues/368)
-  * FATAL error calling 'mogrify.exe' [#370](https://github.com/musselwhizzle/Focus-Points/issues/370)
-  * Straighten Images stops with "Internal Error" for non-numeric RollAngle values [#372](https://github.com/musselwhizzle/Focus-Points/issues/372)
-    
-* **Camera Support:**
-  * Ricoh GR IV Monochrome
-  * in addition to the cameras supported by V3.2. [See here for full list](#supported-cameras).
-  
-* **Other**
-  * ExifTool 13.55 (April 7, 2026)
-  * ImageMagick 7.1.2-17 
-  * New plugin landing page and documentation without confusing Github details [#363](https://github.com/musselwhizzle/Focus-Points/issues/363)<br>
-  [https://musselwhizzle.github.io/Focus-Points/](https://musselwhizzle.github.io/Focus-Points/)
+**Transfer of Ownership [#383](https://github.com/FocusPointsLrC/Focus-Points/issues/383)**
 
+Ownership and copyright of the plugin have been transferred from Whizzbang Inc. to the FocusPointsLrC organization on GitHub.
+
+Consequently, the repository and related files are no longer available at https://github.com/musselwhizzle/Focus-Points. 
+They can now be found at https://github.com/FocusPointsLrC/Focus-Points. 
+Links to the old repository on GitHub will automatically redirect to the new one.
+
+However, redirection of links does not occur for GitHub Pages, which hosts user documentation. The previous landing page, https://musselwhizzle.github.io/Focus-Points/ is no longer accessible via this link. The same applies to the user manual and troubleshooting guide. These documents are now hosted at focuspointslrc.github.io.
+
+**Since the plugin UI provides controls for opening these documents, it is necessary to update the plugin to maintain this functionality.**
+<br>
 
 
 ## Installation
 
-1. Download the [latest release](https://github.com/musselwhizzle/Focus-Points/releases/latest) of the plugin package.<br>
+1. Download the [latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest) of the plugin package.<br>
 A file named `Focus-Points-[plugin_version].zip` will be downloaded to your computer.
 
 
@@ -193,7 +171,7 @@ Using the 'Straighten Images' tool produces the same result as entering the roll
 
 <img src="docs/images/Straighten%201.jpg" alt="User Interface" style="width: 1000px;"/>
 
-Please refer to the [relevant section](https://musselwhizzle.github.io/Focus-Points/docs/Focus-Points.html#24-straighten-images) of the User Manual to learn how to use and customise this feature.  
+Please refer to the [relevant section](docs/Focus-Points.html#24-straighten-images) of the User Manual to learn how to use and customise this feature.  
 
 
 ## Supported Cameras
@@ -258,7 +236,7 @@ There's been a lot of man-hours put into this effort so far. All volunteer. So h
 
 rderimay, philmoz, project802, jandhollander, DeziderMesko, StefLedof, roguephysicist, ropma, capricorn8 (Karsten Gieselmann)
 
-<a href="https://github.com/musselwhizzle/Focus-Points/graphs/contributors">Full list can be seen here.</a>
+<a href="https://github.com/FocusPointsLrC/Focus-Points/graphs/contributors">Full list can be seen here.</a>
 
 Special thanks go to [John R. Ellis](https://johnrellis.com/) for providing the code that mimics a rectangular crop while rotating a photo and preserving its aspect ratio. This is something that Lightroom's Crop & Straighten Tool can do, but the SDK cannot.
 John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit, without which this plugin wouldn't exist.
