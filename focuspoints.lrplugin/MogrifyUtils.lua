@@ -1,5 +1,6 @@
 --[[
-  Copyright 2019 Whizzbang Inc, ropma
+  Original work © Whizzbang Inc, ropma
+  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -331,4 +332,4 @@ function MogrifyUtils.cleanup()
   end
 end
 
-return MogrifyUtils -- ok
+return MogrifyUtils

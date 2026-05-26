@@ -1,5 +1,6 @@
 --[[
-  Copyright 2016 Whizzbang Inc
+  Original work © Whizzbang Inc
+  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -57,7 +58,7 @@ return {
     },
   },
 
-	VERSION = { major=3, minor=3, revision=0, build=1, display="3.3" },
+	VERSION = { major=3, minor=3, revision=1, build=1, display="3.31" },
 
   LrPluginInfoProvider = 'FocusPointsInfoProvider.lua',
 

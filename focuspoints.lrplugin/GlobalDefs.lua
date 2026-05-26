@@ -1,5 +1,5 @@
 --[[
-  Copyright Karsten Gieselmann (capricorn8)
+  Copyright © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -43,4 +43,4 @@ GlobalDefs.pluginDisplayVersion  = Info.VERSION.display
 GlobalDefs.pluginDetailedVersion = string.format("%s (%s.%s.%s.%s)",
   Info.VERSION.display, Info.VERSION.major, Info.VERSION.minor, Info.VERSION.revision, Info.VERSION.build)
 
-return GlobalDefs -- ok
+return GlobalDefs

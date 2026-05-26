@@ -1,5 +1,6 @@
 --[[
-  Copyright 2016 Whizzbang Inc
+  Original work © Whizzbang Inc
+  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -27,4 +28,4 @@ FocusPointPrefs.InitializePrefs(LrPrefs.prefsForPlugin(nil))
 -- that must not be performed in INFO section so it's done here
 FocusPointPrefs.retrieveVersionOfLatestRelease()
 
-return FocusPointsInitialize -- ok
+return FocusPointsInitialize
