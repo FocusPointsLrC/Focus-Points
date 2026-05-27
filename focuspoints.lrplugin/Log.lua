@@ -237,13 +237,22 @@ end
 function Log.sysInfo()
   local prefs = LrPrefs.prefsForPlugin( nil )
   local osName = ""
+  local function pluginMode()
+    if prefs.secondScreenMode then
+      return " in 'Second Screen' mode "
+    else
+      return ""
+    end
+  end
+
   if not WIN_ENV then
     osName = "macOS "
   end
   Log.logInfo("System", "'" .. prefs.loggingLevel .. "' logging to " .. Log.getLogFileName())
-  Log.logInfo("System", string.format("Running plugin version %s in Lightroom Classic %s.%s on %s%s",
-    GlobalDefs.pluginDetailedVersion, LrApplication.versionTable().major, LrApplication.versionTable().minor,
-    osName, LrSystemInfo.osVersion()))
+  Log.logInfo("System",
+    string.format("Running plugin version %s%s in Lightroom Classic %s.%s on %s%s",
+      GlobalDefs.pluginDetailedVersion, pluginMode(), LrApplication.versionTable().major, LrApplication.versionTable().minor,
+      osName, LrSystemInfo.osVersion()))
   if prefs.keyboardLayout then
     Log.logInfo(
       "System",

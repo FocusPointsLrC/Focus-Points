@@ -70,7 +70,6 @@ local metaKeyAfPointsUsed                = "AF Points Used"
 
 -- Image and Shooting Information relevant tags
 local metaKeyAPSCSizeCapture             = "APS-C Size Capture"
-local metaKeyMeteringMode2               = "Metering Mode 2"
 local metaKeySceneMode                   = "Scene Mode"
 local metaKeyReleaseMode                 = "Release Mode"
 local metaKeySequenceNumber              = "Sequence Number"
@@ -433,7 +432,6 @@ function SonyDelegates.getShootingInfo(_photo, props, metadata)
   shootingInfo = f:column {
     fill = 1,
     spacing = 2,
-    addInfo("Metering Mode2"     , metaKeyMeteringMode2     , props, metadata),
     addInfo("Scene Mode"         , metaKeySceneMode         , props, metadata),
     addInfo("Image Stabilization", metaKeyImageStabilization, props, metadata),
     addInfo("Release Mode"       , metaKeyReleaseMode       , props, metadata),

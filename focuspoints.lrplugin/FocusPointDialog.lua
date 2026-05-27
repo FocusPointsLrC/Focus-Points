@@ -25,6 +25,7 @@
 local FocusPointDialog = {}
 
 -- Imported LR namespaces
+local LrPrefs          = import  'LrPrefs'
 local LrView           = import  'LrView'
 
 -- Required Lua definitions
@@ -35,6 +36,8 @@ local _strict          = require 'strict'
 local Utils            = require 'Utils'
 
 GlobalDefs.currentPhoto = nil
+
+local previewWidth, previewHeight
 
 --[[----------------------------------------------------------------------------
   public int width, int height
@@ -47,6 +50,7 @@ GlobalDefs.currentPhoto = nil
   - On Windows: Display scaling factor (Auto or user-defined)
 ------------------------------------------------------------------------------]]
 function FocusPointDialog.calculatePhotoViewDimens(photo)
+  local prefs = LrPrefs.prefsForPlugin( nil )
 
   -- Retrieve photo dimensions
   local dimens = photo:getFormattedMetadata("croppedDimensions")
@@ -85,28 +89,62 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     end
   end
 
+  if prefs.secondScreenMode then
+    -- Store preview panel dimensions for later view creation
+    previewHeight = photoHeight
+    previewWidth  = photoHeight * prefs.previewAspectRatio
+
+    -- Adjust dimensions of photo if it does not fit preview panel
+    if photoWidth > previewWidth then
+      photoHeight = previewHeight * previewWidth/photoWidth
+      photoWidth  = previewWidth
+    end
+  end
+
   return math.floor(photoWidth), math.floor(photoHeight)
 end
 
 --[[----------------------------------------------------------------------------
   public table
-  createDialog(_photo, photoView, infoView, kbdShortcutInput)
+  createDialog(_photo, photoView, infoView, kbdShortcutInput, controlPanel)
 
-  Creates the view container for the entire dialog except the accessory view.
-------------------------------------------------------------------------------]]
+  Creates the view container for the entire dialog.
+  ----------------------------------------------------------------------------]]
 function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput)
+  local prefs = LrPrefs.prefsForPlugin( nil )
   local f = LrView.osFactory()
 
+  local function previewPanel()
+    if prefs.secondScreenMode then
+      -- Place photo in the center of the preview area, which has a fixed aspect ratio.
+      return f:column {
+        height = previewHeight,
+        f:spacer { fill_vertical = 1 },
+        f:row {
+          width = previewWidth,
+          f:spacer { fill_horizontal = 1 },
+          photoView,
+          f:spacer { fill_horizontal = 1 },
+          f:spacer { fill_vertical = 1 },
+        },
+        f:spacer { fill_vertical = 1 },
+      }
+    else
+      -- Preview area has the same dimensions as the photo
+      return f:row {
+        f:spacer {}, photoView, f:spacer {},
+      }
+    end
+  end
+
   return f:view {
-    f:column {
-       f:row {
-         kbdShortcutInput,
-       },
-       f:row {
-         f:column { photoView },
-         f:column { fill_vertical = 1, infoView },
-       }
-    }
+    f:row {
+      f:spacer {}, kbdShortcutInput,
+    },
+    f:row {
+      previewPanel(),
+      f:column { fill_vertical = 1, infoView },
+    },
   }
 end
 

@@ -134,8 +134,8 @@ local metaKeyIsoSpeedRating         = "isoSpeedRating"
 
 -- Keywords for retrieving language-dependent items from English EXIF metadata
 local metaKeyExposureBias           = "Exposure Compensation"
-local metaKeyExposureProgram        = "Exposure Program"
-local metaKeyMeteringMode           = "Metering Mode"
+local metaKeyExposureProgram        = "Exposure Mode Custom"
+local metaKeyMeteringMode           = "Metering Mode Custom"
 local metaKeyExposureTime           = "Exposure Time"
 local metaKeyFNumber                = "F Number"
 
@@ -184,8 +184,7 @@ end
   Returns an "empty row" that is really empty - f:row{} is not
 ------------------------------------------------------------------------------]]
 function FocusInfo.emptyRow()
-  local f = LrView.osFactory()
-  return f:control_spacing{}
+  return LrView.kIgnoredView
 end
 
 --[[----------------------------------------------------------------------------
