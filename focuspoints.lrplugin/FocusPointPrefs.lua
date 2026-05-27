@@ -1,5 +1,6 @@
 --[[
-  Copyright 2016 JWhizzbang Inc
+  Original work © Whizzbang Inc
+  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -65,21 +66,18 @@ FocusPointPrefs.kbdInputInvisible  = 0
 FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
--- Definitions to handle Update mechanism
-local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
-local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
+-- URL to handle Update mechanism
+FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
+FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
 
-FocusPointPrefs.urlLatestRelease   = "https://github.com/musselwhizzle/Focus-Points/releases/latest/"
-FocusPointPrefs.urlReleases        = "https://github.com/musselwhizzle/Focus-Points/releases/"
-
-FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/musselwhizzle/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
 
 -- URL definitions for accessing documents from the UI
-FocusPointPrefs.urlUserManual      = "https://musselwhizzle.github.io/Focus-Points/docs/Focus-Points.html"
-FocusPointPrefs.urlTroubleShooting = "https://musselwhizzle.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
-FocusPointPrefs.urlkbdShortcuts    = "https://musselwhizzle.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
+FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
+FocusPointPrefs.urlTroubleShooting = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
+FocusPointPrefs.urlkbdShortcuts    = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
 FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
@@ -939,4 +937,4 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
 
 end
 
-return FocusPointPrefs -- ok
+return FocusPointPrefs

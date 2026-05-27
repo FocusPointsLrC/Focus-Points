@@ -1,5 +1,5 @@
 --[[
-  Copyright Karsten Gieselmann (capricorn8)
+  Copyright © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -583,4 +583,4 @@ function FocusInfo.createInfoView(photo, props, metadata, funcGetImageInfo, func
   return infoView
 end
 
-return FocusInfo -- ok
+return FocusInfo

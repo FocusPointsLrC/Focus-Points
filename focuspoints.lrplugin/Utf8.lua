@@ -1,5 +1,5 @@
 --[[
-  Copyright Karsten Gieselmann (capricorn8)
+  Copyright © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -192,4 +192,4 @@ function Utf8.next_char(s, i)
   return s:sub(i, i + len - 1), i + len
 end
 
-return Utf8 -- ok
+return Utf8

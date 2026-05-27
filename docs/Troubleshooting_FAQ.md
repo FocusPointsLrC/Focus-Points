@@ -122,7 +122,7 @@ This message is displayed when something serious and unexpected happens during t
 
 This can be anything from installation problems, unexpected metadata, or simply that the programmer did not handle a particular situation properly in the plugin code. The log file may give some indication of what the problem is, but usually it is not something a user can fix.
 
-If you encounter this problem and cannot fix it yourself, please go to the plugin home page on Github, sign up for a free account if you don't already have one, and [create a new issue](https://github.com/musselwhizzle/Focus-Points/issues) that describes the problem. This way you can help make the plugin better and more reliable!
+If you encounter this problem and cannot fix it yourself, please go to the plugin home page on Github, sign up for a free account if you don't already have one, and [create a new issue](https://github.com/FocusPointsLrC/Focus-Points/issues) that describes the problem. This way you can help make the plugin better and more reliable!
 
 
 Example error:

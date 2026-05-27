@@ -1,5 +1,5 @@
 --[[
-  Copyright Karsten Gieselmann (capricorn8)
+  Copyright © 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -287,4 +287,4 @@ function KeyboardLayout.mapTypedCharToDigit(char, layoutId)
   return nil, nil
 end
 
-return KeyboardLayout -- ok
+return KeyboardLayout
