@@ -418,7 +418,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   end
 
   -- Width of the drop-down lists in px, to make the naming aligned across rows
-  local dropDownWidth = 75
+  local dropDownWidth = 6
 
   local function sectionScreenScaling()
     if not WIN_ENV then return nil end
@@ -430,7 +430,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "Scaling",
           value = bind("screenScaling"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Auto", value = 0    },
             { title = "100%", value = 1.0  },
@@ -456,7 +456,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "taggingControls",
           value = bind("taggingControls"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On",  value = true  },
             { title = "Off", value = false },
@@ -475,7 +475,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "keyboardLayout",
           value = bind("keyboardLayout"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = KeyboardLayout.buildDropdownItems(),
         },
         f:static_text {
@@ -492,7 +492,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           f:popup_menu {
             title = "exportViaDisk",
             value = bind("exportViaDisk"),
-            width = dropDownWidth,
+            width_in_chars = dropDownWidth,
             items = {
               { title = "On", value = true },
               { title = "Off", value = false },
@@ -512,7 +512,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "secondScreenMode",
           value = bind("secondScreenMode"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -539,7 +539,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "pluginWindowScaling",
           value = bind("pluginWindowScaling"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
             { title = "XL",  value = FocusPointPrefs.pluginWindowXL  },
@@ -558,7 +558,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "keyboardInput",
           value = bind("keyboardInput"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Invisible",  value = FocusPointPrefs.kbdInputInvisible },
             { title = "Small",      value = FocusPointPrefs.kbdInputSmall     },
@@ -575,7 +575,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "truncateLongText",
           value = bind("truncateLongText"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On",  value = true  },
             { title = "Off", value = false },
@@ -610,7 +610,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "focusBoxColor",
           value = bind("focusBoxColor"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Red",   value = "red" },
             { title = "Green", value = "green" },
@@ -626,7 +626,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "focusBoxSize",
           value = bind("focusBoxSize"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Small", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeSmall] },
             { title = "Medium", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeMedium] },
@@ -649,7 +649,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "Logging level",
           value = bind('loggingLevel'),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Auto",  value = "AUTO"  },
             { title = "Full",  value = "FULL"  },
@@ -694,7 +694,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "overwriteCropAngle",
           value = bind("overwriteCropAngle"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -710,7 +710,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "straightenLimits",
           value = bind("straightenLimits"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -746,7 +746,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "straightenApplyBias",
           value = bind("straightenApplyBias"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -772,7 +772,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "Straighten Summary Condition",
           value = bind('straightenSummaryCondition'),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Always", value = "ALWAYS" },
             { title = "Skipped Images", value = "SKIPPED" },
