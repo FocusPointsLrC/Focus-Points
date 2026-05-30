@@ -35,7 +35,6 @@ local LrView               = import  'LrView'
 local ExifUtils            = require 'ExifUtils'
 local FocusPointPrefs      = require 'FocusPointPrefs'
 local Log                  = require 'Log'
-local _strict              = require 'strict'
 local Utf8                 = require 'Utf8'
 local Utils                = require 'Utils'
 

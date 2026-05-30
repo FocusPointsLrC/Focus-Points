@@ -38,6 +38,7 @@ local LrView                = import  'LrView'
 local LrSelection          -- import only for SDK 6.0 and later
 
 -- Required Lua definitions
+local Crop                  = require 'Crop'
 local ExifUtils             = require 'ExifUtils'
 local FocusInfo             = require 'FocusInfo'
 local FocusPointDialog      = require 'FocusPointDialog'
@@ -46,7 +47,7 @@ local GlobalDefs            = require 'GlobalDefs'
 local KeyboardLayout        = require 'KeyboardLayout'
 local Log                   = require 'Log'
 local PointsRendererFactory = require 'PointsRendererFactory'
-local _strict               = require 'strict'
+local Straighten            = require 'Straighten'
 local Utf8                  = require 'Utf8'
 local Utils                 = require 'Utils'
 
@@ -69,7 +70,6 @@ local function showFocusPoint()
     local current
     local errorMsg
     local photoView, infoView
-    local dialogScope
     local rendererTable
     local metadata
     local switchedToLibrary
@@ -79,7 +79,9 @@ local function showFocusPoint()
     local pendingNewPhoto   -- target photo set from selectionChangeObserver (auto-refresh on photo change in Library)
     local dialogIteration = 0  -- generation counter to ignore stale callbacks from previous iterations
     local floatingDialogClose  -- function to programmatically close the current floating dialog (set by onShow)
-    local clicked
+    local clicked = false
+    local straightenBusy = false
+    local undoCrops = {}
     local prefs = LrPrefs.prefsForPlugin( nil )
 
     local floatingDialog = (prefs.secondScreenMode == true)
@@ -111,6 +113,9 @@ local function showFocusPoint()
     local props = LrBinding.makePropertyTable(context)
     local LR5 = (LrApplication.versionTable().major == 5) -- or true -- to simulate running on LR5
     local LrC = (LrApplication.versionTable().major >= 8) -- or true -- to simulate running on LR < 7.4
+    local rollAngleNA         = 'Roll: n/a'
+    local rollAngleStraighten = 'Straighten'
+    local rollAngleReset      = 'Reset'
 
     -- special Unicode characters used as replacement for icons
     local utfRightPointingTriangle = string.char(0xe2, 0x96, 0xb6)
@@ -130,6 +135,7 @@ local function showFocusPoint()
     local utfGreenLargeSquare      = string.char(0xf0, 0x9f, 0x9f, 0xa9)
     local utfBlueLargeSquare       = string.char(0xf0, 0x9f, 0x9f, 0xa6)
     local utfPurpleLargeSquare     = string.char(0xf0, 0x9f, 0x9f, 0xaa)
+    local utfDegree                = string.char(194, 176)
     local buttonNextImage = "Next image " .. utfRightPointingTriangle
     local buttonPreviousImage      =  utfLeftPointingTriangle .. " Previous image"
     local taggingSymbols = {
@@ -292,6 +298,18 @@ local function showFocusPoint()
         return nil -- automatic
       end
     end
+    -- Forward reference
+    local straightenControlHandler
+    local function straightenAndRefresh(view)
+      if straightenBusy then return else straightenBusy = true end
+      LrTasks.startAsyncTask(function()
+        local success = straightenControlHandler()
+        straightenBusy = false
+        if success then
+          closeDialog(view, "refresh")
+        end
+      end)
+    end
 
     local function kbdShortcutInputField()
       local f = LrView.osFactory()
@@ -330,12 +348,12 @@ local function showFocusPoint()
           -- Get the most recently entered character
           local char = Utf8.last_char(text)
           Log.logDebug("FocusPoint", string.format("Shortcut input: c = '%s'", char))
-          Log.logDebug("FocusPoint", string.format("Text length: text = '%s', previous = '%s'", string.len(text), prevTextLen))
-          if not char or char == "" or string.len(text) < prevTextLen then
-            prevTextLen = string.len(text)
+          Log.logDebug("FocusPoint", string.format("Text length: text = '%s', previous = '%s'", Utf8.len(text), prevTextLen))
+          if not char or char == "" or Utf8.len(text) < prevTextLen then
+            prevTextLen = Utf8.len(text)
             return true
           end
-          prevTextLen = string.len(text)
+          prevTextLen = Utf8.len(text)
           --------------------------------------------------------------------------------------
           -- Parse character and perform designated operation if it is a shortcut
           -- Tagging operations: flagging / rating / coloring
@@ -422,6 +440,9 @@ local function showFocusPoint()
           elseif string.find(FocusPointPrefs.kbdShortcutsPrev, char, 1, true) then
             closeDialog(view,"previous")
             return true  -- done
+          elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
+            straightenAndRefresh(view)
+            return true
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
@@ -532,9 +553,8 @@ local function showFocusPoint()
         LrSelection.setRating(rating)
       end
 
-      if not prefs.taggingControls or LR5 then
-        return f:spacer{width = 10}
-      end
+      if not prefs.taggingControls or LR5 then return LrView.kIgnoredView end
+
       return f:row{
         spacing = 0,
         --------------------------------------------------------------------
@@ -642,6 +662,141 @@ local function showFocusPoint()
       }
     end
 
+    local function initializeStraightenControl(photo)
+      local function formatAngle(x)
+        local str = string.format("%+0.1f", x)
+        -- Matches either +0.0 or -0.0 and replaces it with just 0.0
+        return str:gsub("([%-%+])0%.0", "0.0")
+      end
+      -- Retrieve crop information from Develop settings
+      props.crop             = Crop.ofPhoto(photo)
+      props.cropAngle        = props.crop.a
+      props.cropAngleText    = string.format("Crop: %s%s", formatAngle(props.cropAngle), utfDegree)
+      props.cropAngleTooltip = "Angle of current crop"
+      -- Retrieve RollAngle information from metadata, normalize and create text controls
+      local rollAngle, status, message = Straighten.getRollAngleCW(photo, metadata)
+      if status > 0 then
+        -- Roll angle information not available for this photo
+        props.rollAngle        = nil
+        props.rollAngleText    = rollAngleNA
+        props.rollAngleTooltip = message
+      else
+        -- Normalize roll angle with respect to different handling of landscape/portait formats by some makers
+        props.rollAngle        = -Straighten.calculateStraightenAngle(rollAngle)
+        props.rollAngleText    = string.format("Roll: %s%s", formatAngle(props.rollAngle), utfDegree)
+        props.rollAngleTooltip = "Camera angle at the time of capture"
+      end
+    end
+    function straightenControlHandler()
+    -- Returns true if the crop angle of the photo has been cropped, false otherwise.
+      -- Handle 'Reset' first because here we don't need to go through all the checks
+      if props.rollAngleAction == rollAngleReset then
+        if undoCrops[targetPhoto.localIdentifier] then
+          -- existing crop has been saved by preceding 'Straighten' action
+          catalog:withWriteAccessDo("Undo Straighten Images", function()
+            Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Reset Crop")
+          end)
+        else
+          -- if no crop is available we just revert the roll angle correction
+          if not Straighten.straightenImage(targetPhoto, props.rollAngle, "Undo Roll Angle Correction") then
+            LrDialogs.message(errorMsg, "Error: Roll angle correction could not be reversed")
+          end
+        end
+        return true
+      end
+      -- Retrieve existing crop angle of photo
+      local settings = targetPhoto:getDevelopSettings()
+      local photoTransformed = Straighten.hasTransform(settings)
+      if Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
+        LrDialogs.message(
+          "Correction not applied",
+          "Photo has been already straightened")
+        return false
+      end
+      if photoTransformed then
+        LrDialogs.message(
+          "Correction not applied",
+          "Transform operations have been applied to this photo.\n\n" ..
+          "Hint: You can 'Straighten' only images that have not been changed using 'Transform'"
+        )
+        return false
+      end
+      if props.cropAngle ~= 0 and not prefs.overwriteCropAngle then
+        LrDialogs.message(
+          "Correction not applied",
+          "A non-zero crop angle exists for this photo.\n\n" ..
+          "Hint: To overwrite an existing crop angle, go to 'Straightening' options on the plugin's settings page."
+        )
+        return false
+      end
+      if prefs.straightenLimits and
+      ((math.abs(props.rollAngle) < prefs.straightenLimitLow) or
+       (math.abs(props.rollAngle) > prefs.straightenLimitHigh)) then
+        LrDialogs.message(
+          "Correction not applied",
+          "Roll angle exceeds user-defined limits.\n\n" ..
+          "Hint: To set the limits, go to 'Straightening' options on the plugin's settings page."
+        )
+        return false
+      end
+      -- Save crop of photo for use with 'Reset' action
+      undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
+      if props.cropAngle ~= 0 then
+        -- Reset existing crop before "overwriting" crop angle
+        catalog:withWriteAccessDo("Straighten Images", function()
+          Crop.photoReset(targetPhoto, "Reset Crop")
+        end)
+      end
+      if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
+        return true
+      else
+        LrDialogs.message(errorMsg, "Error: Roll angle correction could not be applied")
+      end
+      return false
+    end
+    local function straightenControl()
+      local f = LrView.osFactory()
+      local status = {
+        { text = rollAngleStraighten, tooltip = "Apply roll angle correction to straighten image", color = LrColor("red") },
+        { text = rollAngleReset,      tooltip = "Undo roll angle correction", color = LrColor(0, 0.66, 0)  },
+        { text = rollAngleStraighten, tooltip = "", color = LrColor("black") },
+      }
+      if not prefs.straightenControls or LR5 then return LrView.kIgnoredView end
+      local condition = 1
+      if not props.rollAngle then
+        condition = 3
+      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle, 0.05) then
+        condition = 2
+      end
+      props.rollAngleAction = status[condition].text
+      return f:row {
+        margin = 0,
+        spacing = 0,
+        f:static_text {
+          margin = 0,
+          title   = LrView.bind {key = "rollAngleText",    object = props},
+          tooltip = LrView.bind {key = "rollAngleTooltip", object = props},
+          text_color = status[condition].color,
+        },
+        f:static_text {
+          margin = 0,
+          title   = LrView.bind {key = "cropAngleText",    object = props},
+          tooltip = LrView.bind {key = "cropAngleTooltip", object = props},
+          text_color = status[condition].color,
+        },
+        f:spacer { width = 5 },  -- space before the button
+        f:push_button {
+          title   = status[condition].text,
+          tooltip = status[condition].tooltip,
+          enabled = props.rollAngleText ~= rollAngleNA and props.rollAngle ~= 0,
+          margin  = 0,
+          action = function(button)
+            -- Prevent multiple executions - known LrC SDK quirk!
+            straightenAndRefresh(button)
+          end
+        },
+      }
+    end
     local function kofiControl()
       local f = LrView.osFactory()
       if prefs.hideKofiControl then
@@ -690,6 +845,8 @@ local function showFocusPoint()
         navigationControls(),
         f:spacer { width = 20 },
         taggingControls(),
+        f:spacer { width = 20 },
+        straightenControl(),
         f:spacer { width = 20 },
         kofiControl(),
         f:spacer { width = 20 },
@@ -902,6 +1059,9 @@ local function showFocusPoint()
           if not (photoView and infoView) then
             errorMsg = "Internal error: Unable to create main window"
           end
+          -- Update initial roll angle display
+--          if not userResponse or userResponse ~= "refresh" then initializeStraightenControl(targetPhoto) end
+          initializeStraightenControl(targetPhoto)
         else
           -- just to have this case covered - normally this condition should not occur
           errorMsg = "Internal error: Unmapped points renderer"
@@ -966,6 +1126,7 @@ local function showFocusPoint()
               break
             end
           end
+        else -- userResponse == "refresh" -> refresh display for this photo
         end
 
         -- Clean up

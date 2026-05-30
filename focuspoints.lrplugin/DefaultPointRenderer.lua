@@ -40,7 +40,6 @@ local FocusPointPrefs  = require 'FocusPointPrefs'
 local GlobalDefs       = require 'GlobalDefs'
 local Log              = require 'Log'
 local MogrifyUtils     = require 'MogrifyUtils'
-local _strict          = require 'strict'
 local Utils            = require 'Utils'
 
 local prefs = LrPrefs.prefsForPlugin( nil )

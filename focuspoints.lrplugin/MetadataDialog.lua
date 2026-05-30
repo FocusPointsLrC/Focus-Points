@@ -32,7 +32,6 @@ local LrBinding         = import  'LrBinding'
 -- Required Lua definitions
 local FocusPointPrefs   = require 'FocusPointPrefs'
 local GlobalDefs        = require 'GlobalDefs'
-local _strict           = require 'strict'
 local Log               = require 'Log'
 
 --[[----------------------------------------------------------------------------

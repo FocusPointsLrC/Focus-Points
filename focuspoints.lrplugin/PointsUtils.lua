@@ -33,7 +33,6 @@ local LrStringUtils = import  'LrStringUtils'
 -- Required Lua definitions
 local FocusInfo     = require 'FocusInfo'
 local Log           = require 'Log'
-local _strict       = require 'strict'
 local Utils         = require 'Utils'
 
 --[[----------------------------------------------------------------------------

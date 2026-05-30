@@ -1,6 +1,6 @@
 --[[
-  Original work © Whizzbang Inc
-  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
+  Original work � Whizzbang Inc
+  Ongoing maintenance and modifications � 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ local LrView          = import  'LrView'
 local Info            = require 'Info'
 local KeyboardLayout  = require 'KeyboardLayout'
 local Log             = require 'Log'
-local _strict         = require 'strict'
 local Utils           = require 'Utils'
 
 -- Important plugin definitions and settings -----------------------------------
@@ -66,7 +65,10 @@ FocusPointPrefs.kbdInputInvisible  = 0
 FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
--- URL to handle Update mechanism
+-- Definitions to handle Update mechanism
+local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
+local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
+
 FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
 FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
 
@@ -89,10 +91,7 @@ FocusPointPrefs.kbdShortcutsReject          = "x"
 FocusPointPrefs.kbdShortcutsPickNext        = "P"
 FocusPointPrefs.kbdShortcutsUnflagNext      = "U"
 FocusPointPrefs.kbdShortcutsRejectNext      = "X"
-FocusPointPrefs.kbdShortcutsToggleImageInfo = "iI"
-FocusPointPrefs.kbdShortcutsToggleShootInfo = "sS"
-FocusPointPrefs.kbdShortcutsToggleFocusInfo = "fF"
-FocusPointPrefs.kbdShortcutsToggleInfoView  = "vV"
+FocusPointPrefs.kbdShortcutsStraightenReset = "rsRS"
 FocusPointPrefs.kbdShortcutsCheckLog        = "lL"
 FocusPointPrefs.kbdShortcutsTroubleShooting = "?hH"
 FocusPointPrefs.kbdShortcutsHelp            = "kK"
@@ -124,6 +123,7 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.hideKofiControl     == nil  then prefs.hideKofiControl            = false     end
   if not prefs.focusBoxSize                then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
   if not prefs.focusBoxColor               then prefs.focusBoxColor              = "red"     end
+  if     prefs.straightenControls  == nil  then prefs.straightenControls         = true      end
   if     prefs.taggingControls     == nil  then prefs.taggingControls            = true      end
   if     prefs.keyboardLayout      == nil  then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
   if     prefs.exportViaDisk       == nil  then prefs.exportViaDisk              = false     end
@@ -446,6 +446,25 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionUserInterface()
+    local function straightenControlsSetting()
+      if LR5 then return LrView.kIgnoredView end
+      return f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "straightenControls",
+          value = bind("straightenControls"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title = "On",  value = true  },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = 'Enable controls to straighten a photo (mouse and keyboard)'
+        },
+      }
+    end
     local function taggingControlsSetting()
       if LR5 then return LrView.kIgnoredView end
       return f:row {
@@ -593,9 +612,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           title = 'characters',
         },
       },
-      taggingControlsSetting(),   -- empty for LR5
-      keyboardLayoutSetting(),    -- empty for LR5
-      exportViaDiskSetting(),     -- empty for MAC
+      straightenControlsSetting(), -- empty for LR5
+      taggingControlsSetting(),    -- empty for LR5
+      keyboardLayoutSetting(),     -- empty for LR5
+      exportViaDiskSetting(),      -- empty for MAC
     }
   end
   local function sectionViewingOptions()

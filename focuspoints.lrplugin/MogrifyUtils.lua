@@ -35,7 +35,6 @@ local LrTasks         = import  'LrTasks'
 
 -- Required Lua definitions
 local Log             = require 'Log'
-local _strict         = require 'strict'
 local Utils           = require 'Utils'
 
 -- Forward references to local functions

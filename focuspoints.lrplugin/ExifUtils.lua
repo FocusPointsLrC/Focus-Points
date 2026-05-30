@@ -36,7 +36,6 @@ local LrTasks           = import  'LrTasks'
 -- Required Lua definitions
 local DefaultDelegates  = require 'DefaultDelegates'
 local Log               = require 'Log'
-local _strict           = require 'strict'
 local Utils             = require 'Utils'
 
 ExifUtils.metaKeyExifToolVersion = "ExifTool Version Number"
