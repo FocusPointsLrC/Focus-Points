@@ -880,6 +880,7 @@ local function showFocusPoint()
         title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
         accessoryView = controlPanel,
+        save_frame = "FocusPointsModalDialogFrame",
         title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         actionVerb = "Close",
         cancelVerb = "< exclude >",
