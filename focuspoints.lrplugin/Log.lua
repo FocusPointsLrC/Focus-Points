@@ -36,7 +36,6 @@ local LrSystemInfo     = import  'LrSystemInfo'
 -- Required Lua definitions
 local GlobalDefs       = require 'GlobalDefs'
 local KeyboardLayout   = require 'KeyboardLayout'
-local _strict          = require 'strict'
 
 local logName   = "FocusPoints"
 local logger    = LrLogger(logName)

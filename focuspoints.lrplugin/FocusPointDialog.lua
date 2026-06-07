@@ -31,7 +31,6 @@ local LrView           = import  'LrView'
 local FocusPointPrefs  = require 'FocusPointPrefs'
 local GlobalDefs       = require 'GlobalDefs'
 local Log              = require 'Log'
-local _strict          = require 'strict'
 local Utils            = require 'Utils'
 
 GlobalDefs.currentPhoto = nil

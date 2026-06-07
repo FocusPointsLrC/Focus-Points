@@ -36,7 +36,6 @@ local LrTasks           = import  'LrTasks'
 -- Required Lua definitions
 local DefaultDelegates  = require 'DefaultDelegates'
 local Log               = require 'Log'
-local _strict           = require 'strict'
 local Utils             = require 'Utils'
 
 ExifUtils.metaKeyExifToolVersion = "ExifTool Version Number"
@@ -142,6 +141,8 @@ function ExifUtils.getBinaryValue(photo, key)
       cmd = "'" .. exiftool .. "' -u -b -" .. key .. " '" .. path .. "' > '" .. output .. "'"
     end
 
+    Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
+
     -- Call ExifTool to output key's value in binary format
     rc = LrTasks.execute(cmd)
 
@@ -202,11 +203,19 @@ end
   metadata from the photo's image file and write the output to a text file.
   Returns the command line string and the name of the output file.
 ------------------------------------------------------------------------------]]
-local function getExifCmd(targetPhoto)
+local function getExifCmd(targetPhoto, includeGroupNames)
   local path = targetPhoto:getRawMetadata("path")
   local singleQuoteWrap = '\'"\'"\''
-  local options = '-a -u -sort --XMP-crs:all --XMP-crss:all'
+  local focusPointOptions = '-a -u -sort --XMP-crs:all --XMP-crss:all'
+  local metadataOptions   = '-a -u -sort -G1 --XMP-crs:all --XMP-crss:all'
+  local options
   local cmd
+
+  if includeGroupNames then
+    options = metadataOptions
+  else
+    options = focusPointOptions
+  end
   if WIN_ENV then
     -- WIN needs " around the entire command and then " around each path
     -- Example: ""C:\Users\Joshua\Desktop\Focus Points\focuspoints.lrdevplugin\bin\exiftool.exe" -a -u -sort "C:\Users\Joshua\Desktop\DSC_4636.NEF" > "C:\Users\Joshua\Desktop\DSC_4636-metadata.txt""
@@ -224,6 +233,7 @@ local function getExifCmd(targetPhoto)
       exiftool, exiftoolConfigFile, options, path, metadataFileName)
   end
 
+  Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
   return cmd, metadataFileName
 end
 
@@ -235,8 +245,8 @@ end
   output to a text file.
   Returns the output as string.
 ------------------------------------------------------------------------------]]
-function ExifUtils.readMetadata(targetPhoto)
-  local cmd, outputFileName = getExifCmd(targetPhoto)
+function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
+  local cmd, outputFileName = getExifCmd(targetPhoto, includeGroupNames)
   local rc = LrTasks.execute(cmd)
 
   -- Avoid Windows process queue saturation
@@ -245,7 +255,6 @@ function ExifUtils.readMetadata(targetPhoto)
       LrTasks.yield()
   end
 
-  Log.logDebug("ExifUtils", "ExifTool command: " .. cmd)
   if rc ~= 0 then
     -- something went wrong
     local errorText = "FATAL error: unable to read photo metadata (ExifTool rc=" .. rc .. ")"
@@ -265,7 +274,7 @@ end
   Transforms the output of readMetadata() and returns a key/value table
 ------------------------------------------------------------------------------]]
 function ExifUtils.readMetadataAsTable(targetPhoto)
-  local metadata = ExifUtils.readMetadata(targetPhoto)
+  local metadata = ExifUtils.readMetadata(targetPhoto, false)
   if metadata == nil then
     return nil
   end
