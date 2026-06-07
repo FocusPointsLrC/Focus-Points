@@ -73,8 +73,8 @@ FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Po
 FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
 
 FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
 FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v3.4_pre/focuspoints.lrplugin/Version.txt"
 
 -- URL definitions for accessing documents from the UI
 FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
