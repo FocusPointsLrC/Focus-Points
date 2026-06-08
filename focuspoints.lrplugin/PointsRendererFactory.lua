@@ -37,7 +37,6 @@ local OlympusDelegates     = require 'OlympusDelegates'
 local PanasonicDelegates   = require 'PanasonicDelegates'
 local PentaxDelegates      = require 'PentaxDelegates'
 local SonyDelegates        = require 'SonyDelegates'
-local _strict              = require 'strict'
 
 --[[----------------------------------------------------------------------------
   public table renderer

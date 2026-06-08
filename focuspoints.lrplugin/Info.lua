@@ -53,12 +53,12 @@ return {
     },
     {
       title = "Straighten Images",
-      file = "Straighten.lua",
+      file = "StraightenImages.lua",
       enabledWhen = "photosSelected"
     },
   },
 
-	VERSION = { major=3, minor=3, revision=1, build=1, display="3.31" },
+	VERSION = { major=3, minor=5, revision=0, build=8000, display="3.5 Preview" },
 
   LrPluginInfoProvider = 'FocusPointsInfoProvider.lua',
 

@@ -31,7 +31,6 @@ local LrUUID           = import  'LrUUID'
 
 -- Required Lua definitions
 local GlobalDefs       = require 'GlobalDefs'
-local _strict          = require 'strict'
 
 --[[----------------------------------------------------------------------------
   public table
@@ -262,4 +261,17 @@ function Utils.getPhotoFileName(photo)
   end
 end
 
+--[[----------------------------------------------------------------------------
+  public boolean
+  floatsEqual(float a, b, epsilon)
+
+  Returns true if a and b are equal within a tolerance of epsilon
+------------------------------------------------------------------------------]]
+function Utils.floatsEqual(a, b, epsilon)
+  epsilon = epsilon or 1e-4
+  return math.abs(a - b) < epsilon
+end
+
+
 return Utils
+

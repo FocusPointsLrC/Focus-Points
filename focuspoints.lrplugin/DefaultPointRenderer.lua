@@ -40,7 +40,6 @@ local FocusPointPrefs  = require 'FocusPointPrefs'
 local GlobalDefs       = require 'GlobalDefs'
 local Log              = require 'Log'
 local MogrifyUtils     = require 'MogrifyUtils'
-local _strict          = require 'strict'
 local Utils            = require 'Utils'
 
 local prefs = LrPrefs.prefsForPlugin( nil )
@@ -67,7 +66,7 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
 
   Log.logDebug("DefaultPointRenderer", "Create photo view: " .. photoDisplayWidth .. " x " .. photoDisplayHeight)
 
-  if WIN_ENV then
+  if WIN_ENV and not (prefs.displayMethod == FocusPointPrefs.directView) then
     local fileName = MogrifyUtils.createDiskImage(photo, photoDisplayWidth, photoDisplayHeight)
     MogrifyUtils.drawFocusPoints(photo,fpTable)
     photoView = f:view {
@@ -77,7 +76,9 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
         value = fileName,
       },
     }
+
   else
+
     -- create base view, i.e. only the image
     local imageView = f:catalog_photo {
       width = photoDisplayWidth,
@@ -87,6 +88,7 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
 
     overlayViews = createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
+--[[
     if overlayViews then
       -- create compound view incl. overlays
       photoView = f:view {
@@ -96,9 +98,28 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
     else      -- no overlays, just display the image
       photoView = imageView
     end
+--]]
+
+    -- Create a table of the child views that make up the photo view
+    local children = { place = "overlapping" }
+
+    -- In MAC, the photo must be the first item in the overlay view order to be used as a background image
+    if MAC_ENV then table.insert(children, imageView) end
+
+    -- Insert the focus point overlays
+    for _, v in ipairs(overlayViews) do
+      table.insert(children, v)
+    end
+
+    -- On Windows, the photo must be the last item in the overlay view order to be used as a background image
+    if WIN_ENV then table.insert(children, imageView) end
+
+    -- Create the parent view
+    photoView = f:view(children)
 
   end
 
+  -- This prevents the focus from being taken from the keyboard shortcut entry field by accidentally clicking the image
   photoView.mouse_down = function()
     return true
   end
@@ -436,7 +457,6 @@ function createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
 local viewsTable = {
   place = "overlapping"
-
 }
 
   if fpTable then
@@ -469,13 +489,14 @@ local viewsTable = {
         if fpPoint.points.br.x >= 0 and fpPoint.points.br.x <= photoDisplayWidth and fpPoint.points.br.y >= 0 and fpPoint.points.br.y <= photoDisplayHeight then
           table.insert(viewsTable, createPointView(fpPoint.points.br.x, fpPoint.points.br.y, fpPoint.rotation - 180, fpPoint.userMirroring, cornerTemplate.fileTemplate, cornerTemplate.anchorX, cornerTemplate.anchorY, fpPoint.template.angleStep))
         end
-        if fpPoint.points.bl.y >= 0 and fpPoint.points.bl.x <= photoDisplayWidth and fpPoint.points.bl.y >= 0 and fpPoint.points.bl.y <= photoDisplayHeight then
+        if fpPoint.points.bl.x >= 0 and fpPoint.points.bl.x <= photoDisplayWidth and fpPoint.points.bl.y >= 0 and fpPoint.points.bl.y <= photoDisplayHeight then
           table.insert(viewsTable, createPointView(fpPoint.points.bl.x, fpPoint.points.bl.y, fpPoint.rotation - 270, fpPoint.userMirroring, cornerTemplate.fileTemplate, cornerTemplate.anchorX, cornerTemplate.anchorY, fpPoint.template.angleStep))
         end
       end
     end
   end
-  return LrView.osFactory():view(viewsTable)
+--  return LrView.osFactory():view(viewsTable)
+   return viewsTable
 end
 
 --[[----------------------------------------------------------------------------
@@ -608,15 +629,15 @@ function createPointView(x, y, rotation, horizontalMirroring, iconFileTemplate, 
 
   local f = LrView.osFactory()
 
-  local view = f:view {
+  local view = f:row {
     f:picture {
       value = _PLUGIN:resourceId(fileName)
     },
     margin_left = x - anchorX,
     margin_top = y - anchorY,
-  }
+    }
 
-  return view
+   return view
 end
 
 return DefaultPointRenderer -- ok

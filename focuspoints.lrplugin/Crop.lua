@@ -192,8 +192,8 @@ caller's responsibility to wrap the call with catalog:withWriteAccessDo()
 if not currently in Develop.
 ------------------------------------------------------------------------------]]
 
-function Crop.photoReset (photo)
-    photoSetDevelopCrop (photo, 0, 0, 1, 0, 1) 
+function Crop.photoReset (photo, title)
+    photoSetDevelopCrop (photo, 0, 0, 1, 0, 1, title)
     end    
 
 --[[----------------------------------------------------------------------------
