@@ -88,6 +88,7 @@ local function showFocusPoint()
     local props = LrBinding.makePropertyTable(context)
     local LR5 = (LrApplication.versionTable().major == 5) -- or true -- to simulate running on LR5
     local LrC = (LrApplication.versionTable().major >= 8) -- or true -- to simulate running on LR < 7.4
+
     local rollAngleNA         = 'Roll: n/a'
     local rollAngleStraighten = 'Straighten'
     local rollAngleReset      = 'Reset'
@@ -423,8 +424,8 @@ local function showFocusPoint()
             end
           elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
             if props.rollAngleAction == rollAngleReset then
-            straightenAndRefresh(view)
-            return true
+              straightenAndRefresh(view)
+              return true
             end
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
