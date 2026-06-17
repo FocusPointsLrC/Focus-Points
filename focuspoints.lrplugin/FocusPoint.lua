@@ -84,8 +84,10 @@ local function showFocusPoint()
     local undoCrops = {}
     local prefs = LrPrefs.prefsForPlugin( nil )
     local buildCropSignature
+
     local function getCropSignature(photo)
       local settings = photo:getDevelopSettings()
+
       return table.concat({
         settings.CropLeft   or "",
         settings.CropRight  or "",
@@ -94,6 +96,8 @@ local function showFocusPoint()
         settings.CropAngle  or "",
       }, "|")
     end
+
+
 
     local floatingDialog = (prefs.secondScreenMode == true)
 
@@ -124,6 +128,7 @@ local function showFocusPoint()
     local props = LrBinding.makePropertyTable(context)
     local LR5 = (LrApplication.versionTable().major == 5) -- or true -- to simulate running on LR5
     local LrC = (LrApplication.versionTable().major >= 8) -- or true -- to simulate running on LR < 7.4
+
     local rollAngleNA         = 'Roll: n/a'
     local rollAngleStraighten = 'Straighten'
     local rollAngleReset      = 'Reset'
@@ -262,6 +267,7 @@ local function showFocusPoint()
         previousPhotoOfFilmStrip()
       end
     end
+
     -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
     FocusPointPrefs.InitializePrefs(prefs)
     -- Initialize logging, log system level information
@@ -280,19 +286,18 @@ local function showFocusPoint()
     -- must switch to loupe view because only in this view previews will be rendered
     -- perform module switch as early as possible to give Library time to create a preview if none exists
     if prefs.displayMethod == FocusPointPrefs.previewImage then
-        LrApplicationView = import 'LrApplicationView'
-        local moduleName = LrApplicationView.getCurrentModuleName()
-        if moduleName == "develop" then
-          LrApplicationView.switchToModule("library")
-          LrApplicationView.showView("loupe")
-          switchedToLibrary = true
-
-          local waited = 0
-          while LrApplicationView.getCurrentModuleName() ~= "library" and waited < 5.0 do
-            LrTasks.sleep(0.2)
-            waited = waited + 0.2
-          end
+      LrApplicationView = import 'LrApplicationView'
+      local moduleName = LrApplicationView.getCurrentModuleName()
+      if moduleName == "develop" then
+        LrApplicationView.switchToModule("library")
+        LrApplicationView.showView("loupe")
+        switchedToLibrary = true
+        local waited = 0
+        while LrApplicationView.getCurrentModuleName() ~= "library" and waited < 5.0 do
+          LrTasks.sleep(0.2)
+          waited = waited + 0.2
         end
+      end
     end
 
     local function inputFieldWidth()
@@ -309,8 +314,10 @@ local function showFocusPoint()
         return nil -- automatic
       end
     end
+
     -- Forward reference
     local straightenControlHandler
+
     local function straightenAndRefresh(view)
       if straightenBusy then return else straightenBusy = true end
       LrTasks.startAsyncTask(function()
@@ -458,8 +465,8 @@ local function showFocusPoint()
             end
           elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
             if props.rollAngleAction == rollAngleReset then
-            straightenAndRefresh(view)
-            return true
+              straightenAndRefresh(view)
+              return true
             end
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
@@ -681,16 +688,19 @@ local function showFocusPoint()
     end
 
     local function initializeStraightenControl(photo)
+
       local function formatAngle(x)
         local str = string.format("%+0.1f", x)
         -- Matches either +0.0 or -0.0 and replaces it with just 0.0
         return str:gsub("([%-%+])0%.0", "0.0")
       end
+
       -- Retrieve crop information from Develop settings
       props.crop             = Crop.ofPhoto(photo)
       props.cropAngle        = props.crop.a
       props.cropAngleText    = string.format("Crop: %s%s", formatAngle(props.cropAngle), utfDegree)
       props.cropAngleTooltip = "Angle of current crop"
+
       -- Retrieve RollAngle information from metadata, normalize and create text controls
       local rollAngle, status, message = Straighten.getRollAngleCW(photo, metadata)
       if status > 0 then
@@ -705,8 +715,10 @@ local function showFocusPoint()
         props.rollAngleTooltip = "Camera angle at the time of capture"
       end
     end
+
     function straightenControlHandler()
     -- Returns true if the crop angle of the photo has been cropped, false otherwise.
+
       -- Handle 'Reset' first because here we don't need to go through all the checks
       if props.rollAngleAction == rollAngleReset then
         if undoCrops[targetPhoto.localIdentifier] then
@@ -722,15 +734,18 @@ local function showFocusPoint()
         end
         return true
       end
+
       -- Retrieve existing crop angle of photo
       local settings = targetPhoto:getDevelopSettings()
       local photoTransformed = Straighten.hasTransform(settings)
+
       if Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
         LrDialogs.message(
           "Correction not applied",
           "Photo has been already straightened")
         return false
       end
+
       if photoTransformed then
         LrDialogs.message(
           "Correction not applied",
@@ -739,6 +754,7 @@ local function showFocusPoint()
         )
         return false
       end
+
       if props.cropAngle ~= 0 and not prefs.overwriteCropAngle then
         LrDialogs.message(
           "Correction not applied",
@@ -747,6 +763,7 @@ local function showFocusPoint()
         )
         return false
       end
+
       if prefs.straightenLimits and
       ((math.abs(props.rollAngle) < prefs.straightenLimitLow) or
        (math.abs(props.rollAngle) > prefs.straightenLimitHigh)) then
@@ -757,21 +774,26 @@ local function showFocusPoint()
         )
         return false
       end
+
       -- Save crop of photo for use with 'Reset' action
       undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
+
       if props.cropAngle ~= 0 then
         -- Reset existing crop before "overwriting" crop angle
         catalog:withWriteAccessDo("Straighten Images", function()
           Crop.photoReset(targetPhoto, "Reset Crop")
         end)
       end
+
       if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
         return true
       else
         LrDialogs.message(errorMsg, "Error: Roll angle correction could not be applied")
       end
+
       return false
     end
+
     local function straightenControl()
       local f = LrView.osFactory()
       local status = {
@@ -779,14 +801,18 @@ local function showFocusPoint()
         { text = rollAngleReset,      tooltip = "Undo roll angle correction (R)", color = LrColor(0, 0.66, 0)  },
         { text = rollAngleStraighten, tooltip = "", color = LrColor("black") },
       }
+
       if not prefs.straightenControls or LR5 then return LrView.kIgnoredView end
+
       local condition = 1
       if not props.rollAngle then
         condition = 3
       elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle, 0.05) then
         condition = 2
       end
+
       props.rollAngleAction = status[condition].text
+
       return f:row {
         margin = 0,
         spacing = 0,
@@ -815,6 +841,7 @@ local function showFocusPoint()
         },
       }
     end
+
     local function kofiControl()
       local f = LrView.osFactory()
       if prefs.hideKofiControl then
@@ -894,14 +921,15 @@ local function showFocusPoint()
       local controlPanel     = buildControlPanel()
 
       LrFunctionContext.callWithContext("focusPointsModalDialog", function(_context)
-      userResponse = LrDialogs.presentModalDialog {
+        userResponse = LrDialogs.presentModalDialog {
           title         = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
           contents      = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
-        accessoryView = controlPanel,
+          accessoryView = controlPanel,
           save_frame    = "FocusPointsModalDialogFrame",
           actionVerb    = "Close",
-          cancelVerb    = "< exclude >",
-      }
+--          cancelVerb    = "< exclude >",
+          cancelVerb    = "Stop",
+        }
       end)
       return userResponse
     end
@@ -982,6 +1010,7 @@ local function showFocusPoint()
 
             -- bottom margin
             f:spacer { height = bottomMargin },
+
         }
 
         return floatingContents
@@ -1000,7 +1029,9 @@ local function showFocusPoint()
           LrTasks.sleep(0.5)
         end
       end)
+
       local currentPhoto = catalog:getTargetPhoto()
+
       if currentPhoto ~= targetPhoto or getCropSignature(targetPhoto) ~= buildCropSignature and not MAC_ENV then
         return "refresh"
       end
@@ -1079,6 +1110,7 @@ local function showFocusPoint()
 
       -- Save reference to selected photo and its crop to detect whether were any missed updates during processing
       buildCropSignature = getCropSignature(targetPhoto)
+
       -- Build the views for the current photo. The 'Loading Data / Calculating
       -- Focus Point' progress dialog has been removed: in the new non-modal
       -- workflow it would flash up briefly each time the photo is changed in
@@ -1134,7 +1166,7 @@ local function showFocusPoint()
         if userResponse == "previous" then
           previousPhoto()
         else
-        nextPhoto()
+          nextPhoto()
         end
       else
 
