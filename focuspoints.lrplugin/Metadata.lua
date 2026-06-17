@@ -82,9 +82,9 @@ local function showMetadata()
         -- Read metadata from image file.
         -- The 'Loading Data' dialog has been removed.
         local metadata = ExifUtils.readMetadata(targetPhoto, true)
-            metadata = ExifUtils.filterInput(metadata)
+        metadata = ExifUtils.filterInput(metadata)
 
-            -- Split the text output into two columns, one for the labels and one for the values.
+        -- Split the text output into two columns, one for the labels and one for the values.
         column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
 
 
@@ -186,7 +186,7 @@ function createParts(metadata)
   local num = 1;
 
   local function createPart(group, label, value)
-  -- Takes label & value strings for a metadata tag to package them in a table element
+    -- Takes label & value strings for a metadata tag to package them in a table element
     local p = {}
     p.group = LrStringUtils.trimWhitespace(group)
     p.label = LrStringUtils.trimWhitespace(label)
@@ -203,6 +203,7 @@ function createParts(metadata)
       num = num + 1
     end
   end
+
   return parts
 end
 
