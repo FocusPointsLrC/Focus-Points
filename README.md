@@ -18,7 +18,7 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 <sup>6</sup> Currently supported for Canon, Nikon, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
 <sup>7</sup> Not for LR5.<br>
 
-## Current Release: [V3.3.1 updated May 26, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
+## Current Release: [V3.5 PRE 1 updated Jun xx 26, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.5_pre1)
 
 **[Download the latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)**  or see detailed **[installation instructions](#installation)**.
 
