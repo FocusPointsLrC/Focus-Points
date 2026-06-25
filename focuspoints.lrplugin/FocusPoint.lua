@@ -29,6 +29,7 @@ local LrApplication         = import  'LrApplication'
 local LrApplicationView    -- import only for SDK 7.4 and later
 local LrBinding             = import  'LrBinding'
 local LrColor               = import  'LrColor'
+local LrDate                = import  'LrDate'
 local LrDialogs             = import  'LrDialogs'
 local LrFunctionContext     = import  'LrFunctionContext'
 local LrHttp                = import  'LrHttp'
@@ -75,6 +76,7 @@ local function showFocusPoint()
     local switchedToLibrary
     local userResponse
     local exitPlugin
+    local startTimer, stopTimer
     local clicked = false
     local straightenBusy = false
     local undoCrops = {}
@@ -168,6 +170,7 @@ local function showFocusPoint()
       end
       return current
     end
+
     local function needSyncWithFilmStrip()
       local result = false
       local activePhoto = catalog:getTargetPhoto()
@@ -179,6 +182,7 @@ local function showFocusPoint()
       end
       return result
     end
+
     local function nextPhoto()
       -- Advance to the next photo of user selection or film strip (if only a single image was selected)
       local function nextPhotoOfSelection()
@@ -203,6 +207,7 @@ local function showFocusPoint()
         nextPhotoOfFilmStrip()
       end
     end
+
     local function previousPhoto()
       -- Advance to the previous photo of user selection or film strip (if only a single image was selected)
       local function previousPhotoOfSelection()
@@ -661,34 +666,38 @@ local function showFocusPoint()
       props.cropAngleTooltip = "Angle of current crop"
 
       -- Retrieve RollAngle information from metadata, normalize and create text controls
-      local rollAngle, status, message = Straighten.getRollAngleCW(photo, metadata)
-      if status > 0 then
+      -- Note: props.rollAngle is same as -straightenAngle used in the code handling batch mode straightening!
+      local cameraRollAngle, status, message = Straighten.getRollAngleCW(photo, metadata)
+      if (status == Straighten.WARNING) or (status == Straighten.ERROR) then
         -- Roll angle information not available for this photo
         props.rollAngle        = nil
         props.rollAngleText    = rollAngleNA
         props.rollAngleTooltip = message
       else
         -- Normalize roll angle with respect to different handling of landscape/portait formats by some makers
-        props.rollAngle        = -Straighten.calculateStraightenAngle(rollAngle)
+        props.rollAngle        = -Straighten.calculateStraightenAngle(cameraRollAngle)
         props.rollAngleText    = string.format("Roll: %s%s", formatAngle(props.rollAngle), utfDegree)
         props.rollAngleTooltip = "Camera angle at the time of capture"
       end
     end
 
     function straightenControlHandler()
-    -- Returns true if the crop angle of the photo has been cropped, false otherwise.
 
-      -- Handle 'Reset' first because here we don't need to go through all the checks
+      -- Reset bypasses the normal validation rules because it restores a
+      -- previously saved crop state rather than applying a new correction.
       if props.rollAngleAction == rollAngleReset then
+        -- key is localIdentifier (integer), not the photo object itself
         if undoCrops[targetPhoto.localIdentifier] then
           -- existing crop has been saved by preceding 'Straighten' action
           catalog:withWriteAccessDo("Undo Straighten Images", function()
             Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Reset Crop")
           end)
+          -- Remove the table entry to avoid it growing over time
+          undoCrops[targetPhoto.localIdentifier] = nil
         else
           -- if no crop is available we just revert the roll angle correction
           if not Straighten.straightenImage(targetPhoto, props.rollAngle, "Undo Roll Angle Correction") then
-            LrDialogs.message(errorMsg, "Error: Straightening could not be undone")
+            LrDialogs.message("Straightening could not be undone")
           end
         end
         return true
@@ -734,7 +743,8 @@ local function showFocusPoint()
         return false
       end
 
-      -- Save crop of photo for use with 'Reset' action
+      -- Preserve the original crop the first time Straighten is applied
+      -- so that Reset can restore the exact previous crop later
       undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
 
       if props.cropAngle ~= 0 then
@@ -747,7 +757,7 @@ local function showFocusPoint()
       if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
         return true
       else
-        LrDialogs.message(errorMsg, "Error: Straightening could not be applied")
+        LrDialogs.message("Straightening could not be applied", "An internal error occured")
       end
 
       return false
@@ -763,10 +773,12 @@ local function showFocusPoint()
 
       if not prefs.straightenControls or LR5 then return LrView.kIgnoredView end
 
+      -- Button title, tooltip, and enabled state are all set from condition at dialog-construction time.
+      -- Which is fine because the dialog needs to be created freshly for every image.
       local condition = 1
       if not props.rollAngle then
         condition = 3
-      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle, 0.05) then
+      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
         condition = 2
       end
 
@@ -791,7 +803,7 @@ local function showFocusPoint()
         f:push_button {
           title   = status[condition].text,
           tooltip = status[condition].tooltip,
-          enabled = props.rollAngleText ~= rollAngleNA and props.rollAngle ~= 0,
+          enabled = props.rollAngleText ~= rollAngleNA and not Utils.floatsEqual(props.rollAngle, 0),
           margin  = 0,
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!
@@ -885,7 +897,6 @@ local function showFocusPoint()
         contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
-        title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         actionVerb = "Close",
         cancelVerb = "< exclude >",
       }
@@ -899,8 +910,11 @@ local function showFocusPoint()
     -- let the renderer build the view now and show progress dialog
     repeat
       -- Get logging ready for next photo
-      Log.logInfo("FocusPoint", string.rep("=", 72))
+      Log.logInfo("FocusPoint", string.rep("=", 79))
       Log.resetErrorsWarnings()
+
+      -- Start timer to measure the time taken to create the dialog
+      startTimer = LrDate.currentTime()
 
       -- Save link to current photo, eg. as supplementary information in user messages
       GlobalDefs.currentPhoto = targetPhoto
@@ -925,7 +939,6 @@ local function showFocusPoint()
       if (targetPhoto:checkPhotoAvailability()) then
         local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
         rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
-
         if rendererTable then
           metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
           photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
@@ -972,9 +985,13 @@ local function showFocusPoint()
         end
       else
 
-        -- Open main window
-        Log.logInfo("FocusPoint", "Present dialog and information")
+        -- Write the final log entries for this photo before opening the dialog window
+        stopTimer = LrDate.currentTime()
+        Log.logInfo("FocusPoint", string.format(
+          "Present dialog and information (time to open: %.2f seconds, method=%s)",
+           stopTimer-startTimer, rendererTable.displayMethod))
 
+        -- Open the plugin window and dialog
         clicked = false
         userResponse = runModalDialog()
 
