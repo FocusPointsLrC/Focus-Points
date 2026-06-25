@@ -59,7 +59,7 @@ function MetadataDialog.showDialog(
     local properties = LrBinding.makePropertyTable( context )
     local delimiter = "\r"  -- carriage return; used to separate individual entries in column1 and column2 strings
 
-    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..XXL
+    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..3XL
     local contentHeight = GlobalDefs.appHeight * windowSize
     local contentWidth  = contentHeight * 0.7                    -- minimum width of dialog window
 
