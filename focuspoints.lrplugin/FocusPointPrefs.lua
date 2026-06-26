@@ -137,10 +137,9 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
   if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
   if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
-  if not prefs.previewTimeout                 then prefs.previewTimeout             = 2.0       end
+  if not prefs.previewTimeout                 then prefs.previewTimeout             = 1.0       end
   if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
   if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 1.0       end
-  if not prefs.previewProgressDuration        then prefs.previewProgressDuration    = 2.0       end
 
   -- get the latest plugin version for update checks
   FocusPointPrefs.retrieveVersionOfLatestRelease()
