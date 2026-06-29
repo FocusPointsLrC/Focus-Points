@@ -6,7 +6,7 @@ Version 4 is the largest update since the project was revived. It introduces the
 - #### [Second Screen Mode](#1-second-screen-mode)
 - #### [Display Modes](#2-display-modes)
 - #### [Direct View on Windows](#3-direct-view)
-
+<br>
 
 ### 1. Second Screen Mode
 
