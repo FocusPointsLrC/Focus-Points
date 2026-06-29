@@ -1,4 +1,4 @@
-# Focus Points for Lightroom Classic
+# Introduction
 
 <img src="docs/images/ReadMe 1.jpg" alt="Screenshot" style="width: 800px;"/>
 
