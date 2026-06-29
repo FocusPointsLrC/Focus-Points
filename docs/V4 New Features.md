@@ -6,7 +6,7 @@ Version 4 is the largest update since the project was revived. It introduces the
 - #### [Second Screen Mode](#1-second-screen-mode)
 - #### [Display Modes](#2-display-modes)
 - #### [Direct View on Windows](#3-direct-view)
-<br>
+
 
 ### 1. Second Screen Mode
 
@@ -25,10 +25,10 @@ Second Screen mode is also useful for single-monitor setups. When checking the f
 Although the plugin largely retains its look and feel in Second Screen mode, there are a few important differences worth noting:
 
 - Interaction between the plugin and Lightroom can impact use of keyboard shortcuts  
-In Second Screen mode, the plugin runs in an independent window. Whenever the displayed photo changes, Windows gives keyboard focus to the plugin window. To continue using Lightroom keyboard shortcuts, simply click once inside Lightroom.<br><br>
+In Second Screen mode, the plugin runs in an independent window. Whenever the displayed photo changes, Windows gives keyboard focus to the plugin window. To continue using Lightroom keyboard shortcuts, simply click once inside Lightroom.
 
 - The plugin window has a fixed width  
-The window keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Images are centered within the reserved display area while the information panel stays aligned on the right.<br><br>
+The window keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Images are centered within the reserved display area while the information panel stays aligned on the right.
 
 - Display mode  
 When using the plugin in Preview Image mode, it will immediately use Export Image in the Develop module. This is necessary because Lightroom's preview generation is not sufficiently reliable in the Develop module for the plugin's requirements. 
