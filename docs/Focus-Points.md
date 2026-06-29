@@ -1,4 +1,4 @@
-# Focus Points – User Manual
+# User Manual
 
 ## Content
 

@@ -1,4 +1,4 @@
-## Focus Points V4 – What's New?
+## V4 – What's New?
 
 Version 4 is the largest update since the project was revived. It introduces the new Second Screen mode, adds multiple display modes, and brings the high-performance Direct View renderer to Windows. These changes make the plugin considerably faster and much more convenient to use while working in Lightroom.
 
