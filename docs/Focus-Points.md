@@ -1,6 +1,6 @@
 # Focus Points – User Manual
 
-## Content ##
+## Content
 
 ### [Troubleshooting / FAQ](Troubleshooting_FAQ.md#troubleshooting--faq)
 
