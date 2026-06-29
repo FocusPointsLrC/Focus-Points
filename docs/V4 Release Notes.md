@@ -1,4 +1,4 @@
-# V3.5 PRE 1 updated June xx, 2026
+# V4 PRE 1 updated July xx, 2026
 
 **[Download plugin](https://github.com/FocusPointsLrC/Focus-Points/releases/download/v3.5_pre1/Focus-Points-3.5_pre1.zip)** and see detailed **[installation instructions]( https://FocusPointsLrC.github.io/Focus-Points/docs/Focus-Points.html#21-installation)**.
 
@@ -11,7 +11,7 @@
  [#379](https://github.com/FocusPointsLrC/Focus-Points/issues/379)
   * Photo View display method can be configured in one of three ways [#388](https://github.com/FocusPointsLrC/Focus-Points/issues/388)
 
-  For a detailed description of these features, please refer to **[V3.5 New Features](https://FocusPointsLrC.github.io/Focus-Points/docs/V3.5%20New%20Features.html)**.<br>
+  For a detailed description of these features, please refer to **[V3.4 What's New](https://FocusPointsLrC.github.io/Focus-Points/docs/V4%20New%20Features.html)**.<br>
 
 ### Limitations
   * **'Second Screen' mode does not work on macOS secondary display with LrC 15.4 or earlier**.  
