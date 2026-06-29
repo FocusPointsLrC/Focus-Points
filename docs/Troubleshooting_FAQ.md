@@ -1,6 +1,6 @@
 # Troubleshooting / FAQ
 
-## Focus Points Viewer ##
+## Focus Point Viewer ##
 
 * [No focus points recorded](#no-focus-points-recorded)
 * [Manual focus, no AF points recorded](#manual-focus-no-AF-points-recorded)
@@ -17,7 +17,7 @@
 * [Plugin window exceeds screen dimensions](#Plugin-window-exceeds-screen-dimensions)
 
 
-## Focus Points Viewer
+## Focus Point Viewer
 
 
 ### "No focus points recorded"
