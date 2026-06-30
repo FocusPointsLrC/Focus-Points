@@ -301,7 +301,7 @@ V3.4 enables you to level the image currently displayed in the Focus Point windo
 
 **How the Straighten Control Works**
 
-1. Images supported by this feature contain two relevant angle values:
+1. Images supported by this feature have two relevant angle values associated with them:  
    - Roll Angle – the horizontal tilt of the camera at the time the image was captured.
    - Crop Angle – the rotation angle currently applied to the image in Lightroom.
 
@@ -309,20 +309,22 @@ V3.4 enables you to level the image currently displayed in the Focus Point windo
 
 3. If the camera was tilted by x° when the image was captured, applying a Crop Angle of −x° compensates for that tilt and displays the image as if the camera had been held level. 
 
-4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the Straighten button rotates the image by the opposite of the Roll Angle, resulting in a level image.
+4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the `Straighten` button rotates the image by the opposite of the Roll Angle, resulting in a level image.
 
-5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the Straighten button changes to Reset. Clicking Reset restores the crop settings that were in effect before the image was straightened.
+5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the `Straighten` button changes to `Reset`. Clicking `Reset` restores the crop settings that were in effect before the image was straightened.
 <br>
 
-**Example:** 
-The user opens a photo in the Focus Point Viewer. The Straighten control is displayed in red, indicating that Roll Angle and Crop Angle are not balanced and the image is not level.  The Straighten button can be used to rotate the image resulting in a level image:
+**Example:**  
+
+The user opens a photo in the Focus Point Viewer. The red Straighten control indicates that the roll and crop angles are unbalanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
 
 <img src="images/Straighten Control 1.jpg" alt="Straighten Control 1" style="width: 1000px;"/>
 
-The result of the straightening process will be displayed in a refreshed window. The text now indicates in green color that Roll Angle and Crop Angle are balanced, the image is level:
+The result of the straightening process is displayed in a refreshed window. The text now indicates in green color that Roll Angle and Crop Angle are balanced, the image is level:
 
 <img src="images/Straighten Control 2.jpg" alt="Straighten Control 2" style="width: 1000px;"/>
-If the result is not satisfactory, it can be undone using the Reset button, which returns the image to its original state.
+
+If the result is not satisfactory, it can be undone using the `Reset` button, which returns the image to its original state.
 
 The performed edits are recorded in Lightroom's History panel:
 
@@ -336,7 +338,7 @@ For images that cannot be straightened because Roll Angle information is unavail
 
 To simplify the operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, so the plugin can be controlled entirely by the keyboard, without the need to touch the mouse.
 
-Some shortcuts in V3.1 have been changed to avoid collision with Lightroom tagging shortcuts. Previously, 'p' was used for 'previous', 'x' for 'exit', and 'u' for 'user manual'. Instead of 'Exit', the plugin will now close using the 'Close' button (shortcut 'C').
+Some shortcuts in V3.1 have been changed to avoid collision with Lightroom tagging shortcuts. Previously, `P` was used for 'previous', `X` for 'exit', and `U` for 'user manual'. Instead of 'Exit', the plugin will now close using the `Close` button (shortcut `C`).
 
 
 | Action                                      | Keyboard shortcuts |
