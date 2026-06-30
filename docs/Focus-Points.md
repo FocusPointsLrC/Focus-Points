@@ -316,7 +316,7 @@ V3.4 enables you to level the image currently displayed in the Focus Point windo
 
 **Example:**  
 
-The user opens a photo in the Focus Point Viewer. The red Straighten control indicates that the roll and crop angles are unbalanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
+The user opens a photo in the Focus Point Viewer. The red text displayed in the 'Straighten' control indicates that the roll and crop angles are not balanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
 
 <img src="images/Straighten Control 1.jpg" alt="Straighten Control 1" style="width: 1000px;"/>
 
@@ -405,12 +405,13 @@ Payments are processed securely via PayPal or credit/debit card, and no account 
 <br>                               
 
 ## 2.3 Metadata Viewer
-The plugin also features a Metadata Viewer with live search:
+
+The Metadata Viewer enables you to interactively explore all the information recorded by the camera when the picture was taken. This goes far beyond what Lightroom or even the Focus Point Viewer covers. In short, it contains all the information that ExifTool knows.
 
 * _Library → Plug-in Extras → Show Metadata_, or
 * _File → Plug-in Extras → Show Metadata_
 
-This is useful for viewing information that is not visible in the info sections of the focus point window. The data is retrieved by ExifTool directly from the image file on disk, so it gives a complete picture of the metadata written by the camera. Metadata can be filtered by key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
+Metadata can be filtered by group, key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
 
  | Char  | Meaning                                        |
  |:-----:|------------------------------------------------|
@@ -425,20 +426,21 @@ The plugin is written in the Lua programming language and uses Lua string.find()
 
 For further processing as text, the full metadata (retrieved via 'exiftool -a -u -sort <file>') can also be opened in a text editor.
 
-### Sizing of the Metadata Viewer window
+Let's look at an example how to use it - a shot of a White-tailed Eagle: 
 
-In V3.1, tag names that were significantly longer than 40 characters could result in an unusual display in the metadata viewer.
+<img src="images/metadata1.jpg" alt="Metadata 1" style="width: 1000px;"/>
 
-This has been improved in V3.2:
+I can still remember that, when I took the shot, the eagle was quite close by and not flying very high. But I want to know exactly what the heigth was.
 
-- The maximum length of tags displayed is limited to 32 characters.
-- The maximum length of values displayed is limited to 128 characters.
-- Truncated strings are indicated by an ellipsis symbol '...'.<br>If the truncated part contains  relevant information, it can still be reviewed by opening the metadata as text.
-- The edit fields for the 'Tag' and 'Value' filters are the same size as in point 1.
-- The height of the metadata window is given by the Size of plugin window setting S .. 3XL
-- The width of the metadata window is chosen so that the head line (filter entry fields, hint) fits in but is minimum 70% of the window height.
+My OM-1 camera records the roll and pitch angles, which define the tilt of the camera in the horizontal and vertical planes. We are looking for the pitch angle. We can either scroll through the entire list of metadata and search for the relevant tag:
 
-<img src="images/metadata1.jpg" alt="Metdata 1" style="width: 200px;"/>         <img src="images/metadata2.jpg" alt="Metadata 2" style="width: 200px;"/>         <img src="images/metadata3.jpg" alt="Metadata 3" style="width: 200px;"/>
+<img src="images/metadata2.jpg" alt="Metadata 2" style="width: 800px;"/>
+
+Or we filter the list by showing only tags than contain 'angle'
+
+<img src="images/metadata3.jpg" alt="Metadata 3" style="width: 800px;"/>
+
+The pitch angle is 4.1°, which means that it's height was approximately 50m * sin(4.1°) ~ 3.60m. Quite close for such a majestic bird!
 
 <br>
 
