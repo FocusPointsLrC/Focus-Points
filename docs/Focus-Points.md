@@ -24,6 +24,7 @@
 ### [Special Topics](#4-special-topics)
 
 * [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
+* [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
 ___
 
@@ -160,8 +161,9 @@ Click on the following links for more detailed information:
 3. [Plugin Status](#plugin-status)
 4. [Navigation Controls](#navigation-controls)
 5. [Flagging Controls](#flagging-controls)
-6. [Keyboard Shortcuts](#keyboard-shortcuts)
-7. [Buy me a coffee](#buy-me-a-coffee)
+6.  [Straightening Control](#straightening-control)
+7. [Keyboard Shortcuts](#keyboard-shortcuts)
+8. [Buy me a coffee](#buy-me-a-coffee)
 
 
 ### Photo View
@@ -293,6 +295,43 @@ The keyboard layout in use can be configured in the plugin preferences, under th
 - Note: Tagging features use the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, these features is not available on LR5.7 (which is still in use by a few plugin users!).
 
 
+### Straightening Control
+
+V3.4 enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the ['Straightening Images'](#24-straighten-images) batch process introduced in V3.3. The same options and restrictions apply.
+
+**How the Straighten Control Works**
+
+1. Images supported by this feature contain two relevant angle values:
+   - Roll Angle – the horizontal tilt of the camera at the time the image was captured.
+   - Crop Angle – the rotation angle currently applied to the image in Lightroom.
+
+2. Both angles are measured in degrees. A negative value indicates rotation to the left, while a positive value indicates rotation to the right.
+
+3. If the camera was tilted by x° when the image was captured, applying a Crop Angle of −x° compensates for that tilt and displays the image as if the camera had been held level. 
+
+4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the Straighten button rotates the image by the opposite of the Roll Angle, resulting in a level image.
+
+5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the Straighten button changes to Reset. Clicking Reset restores the crop settings that were in effect before the image was straightened.
+<br>
+
+**Example:** 
+The user opens a photo in the Focus Point Viewer. The Straighten control is displayed in red, indicating that Roll Angle and Crop Angle are not balanced and the image is not level.  The Straighten button can be used to rotate the image resulting in a level image:
+
+<img src="images/Straighten Control 1.jpg" alt="Straighten Control 1" style="width: 1000px;"/>
+
+The result of the straightening process will be displayed in a refreshed window. The text now indicates in green color that Roll Angle and Crop Angle are balanced, the image is level:
+
+<img src="images/Straighten Control 2.jpg" alt="Straighten Control 2" style="width: 1000px;"/>
+If the result is not satisfactory, it can be undone using the Reset button, which returns the image to its original state.
+
+The performed edits are recorded in Lightroom's History panel:
+
+<img src="images/Straighten Control 3.jpg" alt="Straighten Control 3" style="width: 600px;"/><br><br>
+For images that cannot be straightened because Roll Angle information is unavailable, the text is displayed in black and the control is disabled. Hovering the mouse pointer over the text displays a tooltip explaining the reason (e.g. unsupported camera model or missing Roll Angle information).
+
+<img src="images/Straighten Control 4.jpg" alt="Straighten Control 4" style="width: 1000px;"/>
+<br><br>
+
 ### Keyboard Shortcuts
 
 To simplify the operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, so the plugin can be controlled entirely by the keyboard, without the need to touch the mouse.
@@ -321,6 +360,9 @@ Some shortcuts in V3.1 have been changed to avoid collision with Lightroom taggi
 | Assign a green label                        | `8`                |
 | Assign a blue label                         | `9`                |
 | Assign a color label and go to next photo   | `Shift`+`6`-`9`    |
+| **Straighten**                              | &nbsp;             |
+| Straighten image                            | `S`                |
+| Reset crop (Undo straightening)             | `R`               |
 | **Miscelleanous**                           | &nbsp;             |
 | Open User Manual                            | `M`                |
 | Open Troubleshooting Information (Help)     | `?`, `H`           |
@@ -1131,7 +1173,7 @@ Face detection for an image exported from Apple Photos:
 
 Although the plugin supports multi-image operation by selecting multiple images in Lightroom before launching the plugin, it can be tedious to navigate Lightroom's menu structure each time you want to use the plugin. How much more convenient would it be to launch the plugin with the press of a button?
 
-Unfortunately, there is no solution to this problem *within* Lightroom. Plugins like [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) or [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) are limited to assigning custom shortcuts to commands that are part of the predefined, static portion of Lightroom's menus. They do not support assigning shortcuts to commands (menu items) that are part of the menus that Lightroom dynamically creates and maintains based on user-defined additions to Lightroom (e.g. _Plug-in Extras_, _Edit in_, _Export with Preset_). The Focus-Points plugin is one such user-defined extension.
+Unfortunately, there is no solution to this problem *within* Lightroom. Plugins like [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) or [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) are limited to assigning custom shortcuts to commands that are part of the predefined, static portion of Lightroom's menus. They do not support assigning shortcuts to commands (menu items) that are part of the menus that Lightroom dynamically creates and maintains based on user-defined additions to Lightroom (e.g. _Plug-in Extras_, _Edit in_, _Export with Preset_). The Focus Points plugin is one such user-defined extension.
 
 However, at the system level, there are ways to automate the startup of the plugin.
 
@@ -1202,3 +1244,57 @@ Note: `NumPad *` and `NumPad /` may not work because macOS sometimes treats NumP
 
 Note:<br> 
 Of course, you can use any other keys you like. Just note, that if you assign the same shortcut to two different items, macOS picks one unpredictably.
+
+
+## How to reduce long wait times when opening the plugin window on Windows
+
+Until V3.3, the time taken for the plugin window to appear in Windows has mainly been determined by the time taken to **obtain a preview of the current photo**. If a preview is available in Lightroom, this can be obtained instantly. Otherwise, it can take several seconds for the plugin window to appear.
+
+The time required for preview generation depends on image size and system performance. For RAW files this can range from less than one second to several seconds. The plugin window size also impacts the rendering time: the more space it occupies on the screen, the longer it takes to create the image to be displayed.
+
+The following chart compares the typical plug-in start-up time for different camera models when using different methods to create the image displayed in [Photo View](#photo-view). Direct View is the display mode used on macOS.
+
+<img src="images/Time to Open Plugin Window.jpg" alt="Time to Open Plugin Window" style="width: 1000px;"/>
+
+If the plugin window takes more than a second to open, the main reason for the delay is usually the time taken for Lightroom to make a usable preview available. However, if the plugin window takes considerably longer than one to two seconds to open, it is usually quicker not to wait for the preview to become available, but to instead generate the image file using Lightroom's Export function.
+
+V3.4 introduces the 'Performance Control' feature, enabling you to customise the process of 
+creating the displayed Photo View image:  
+Once the configured waiting time has elapsed, the image will be created for display using Lightroom's Export function rather than waiting for the preview to become available. Sometimes, it can take longer for Lightroom to generate a preview than it takes to create an image via Export. For example, consider Z8/Z9 in the chart. Switching to Export after a short timeout can significantly reduce the time required for the plugin window to appear in these cases.
+
+The plugin settings allow you to configure when the plugin should stop waiting for a preview and switch to Lightroom Export.
+
+<img width="622" height="290" alt="Image" src="https://github.com/user-attachments/assets/b5c9ae65-bc62-46ba-b6ea-0c9e4f3d0ed8" />
+
+The first setting controls whether a fallback from preview acquisition to export is enabled, along with the corresponding waiting time for the preview. If this duration is set to zero, the plugin bypasses the preview stage and proceeds directly to export.
+
+The second setting controls whether a progress indicator is displayed to notify the user that the plugin is waiting for an image to be created. This indicator appears after the configured time period has elapsed and disappears when the plugin window is opened.
+
+<img width="310" alt="Image" src="`https://github.com/user-attachments/assets/c16ad621-e152-467e-bfcd-bcd22b0bfd51`" />
+<br><br>
+
+The optimum values for the preview acquisition timeout and the progress indicator display depend largely on the hardware setup and the image files. These, in turn, depend on the camera manufacturer and model. As such, there is no one-fits-all recommendation, and each user must determine the optimal timeout value for their specific environment. The default values timeout = 2s and progress indicator delay = 1s should be a good starting point.
+
+To help you find a reasonable setting that will ensure the plugin performs well overall, the log file output has been enhanced to provide insight into the timing required to create and display the plugin window:
+
+<img width="1272" alt="Image" src="https://github.com/user-attachments/assets/6622274d-4a17-43b5-809a-4677718415d3" />
+<br><br>
+
+The above log contains information on opening the same photo three times under different conditions and with different settings.
+
+1. First section, relevant information highlighted in green
+   A preview of the image is already available because Lightroom created it when the image was imported. The preview can be obtained instantly — the time taken to open the dialogue is less than one second.
+
+2. Second section, relevant information highlighted in red
+  Straightening the image from the plugin user interface causes a refresh of the plugin window. Straightening, cropping, and certain other Develop adjustments can invalidate Lightroom's existing preview and force Lightroom to create a new one. With the 'Use temporary export' setting disabled, the plugin waits for the preview to become available. This takes 6.6 seconds, meaning the plugin window only opens after 7.39 seconds.
+
+3. Third, relevant information highlighted in yellow
+It's the same image again, with no preview available. This time, the 'Use temporary export' setting has been enabled with a timeout of 1.0 seconds. The plugin stops acquiring the preview after 1.1 seconds and uses the export instead. The plugin window opens after 4.21 seconds.
+
+**How can you use this information to determine the optimal settings for your setup?**
+
+To begin with, consider how long it takes to obtain a preview that is already available. Add a small buffer to this number and enter it as the timeout value.
+
+In the above case 3., a timeout of 1.0 seconds has been chosen, which is too conservative. A more aggressive setting of timeout = 0.2 causes the dialog to appear after 3.6 seconds.
+
+If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e. non-SSD), it may be useful to experiment with higher timeout values.

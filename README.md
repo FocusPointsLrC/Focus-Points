@@ -18,7 +18,7 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 <sup>6</sup> Currently supported for Canon, Nikon, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
 <sup>7</sup> Not for LR5.<br>
 
-## Current Release: [V3.3.1 updated May 26, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
+## Current Release: [V3.4 updated July xx, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
 
 **[Download the latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)**  or see detailed **[installation instructions](#installation)**.
 
@@ -27,21 +27,36 @@ If you have any questions, comments or suggestions for improving this plugin, pl
 To understand the principles of this plugin, how to use it and how to interpret the results, please refer to the **[User Manual](docs/Focus-Points.md)**. **It is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 
 
-### Changes:
+### New features and changes:
 
-**Transfer of Ownership [#383](https://github.com/FocusPointsLrC/Focus-Points/issues/383)**
+* **User Interface**<br>
 
-Ownership and copyright of the plugin have been transferred from Whizzbang Inc. to the FocusPointsLrC organization on GitHub.
+  **Focus Point Viewer**
+  * Interactively straighten the current image [#385](https://github.com/FocusPointsLrC/Focus-Points/issues/385).  
+    Enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the 'Straightening Images' batch process introduced in V3.3. The same options and restrictions (e.g. supported cameras) apply.   
+   Please refer to the user manual for a description of [Straightening Images](https://FocusPointsLrC.github.io/Focus-Points/docs/Focus-Points.html#24-straighten-images).
+  * Focus Point Viewer performance control [#389](https://github.com/FocusPointsLrC/Focus-Points/issues/389)  
+  Reduces long wait times when opening the plugin window on Windows.
+  * Remove "Loading Data - Calculating Focus Point" dialog [#380](https://github.com/FocusPointsLrC/Focus-Points/issues/380)  
+    The previous dialog will be replaced by a lightweight and configurable progress indicator which is part of  [#389](https://github.com/FocusPointsLrC/Focus-Points/issues/389)
+  * '3XL' plugin window size, which corresponds to 90% of the screen size used for the photo view.
 
-Consequently, the repository and related files are no longer available at https://github.com/musselwhizzle/Focus-Points. 
-They can now be found at https://github.com/FocusPointsLrC/Focus-Points. 
-Links to the old repository on GitHub will automatically redirect to the new one.
+  **Metadata Viewer**
 
-However, redirection of links does not occur for GitHub Pages, which hosts user documentation. The previous landing page, https://musselwhizzle.github.io/Focus-Points/ is no longer accessible via this link. The same applies to the user manual and troubleshooting guide. These documents are now hosted at focuspointslrc.github.io.
+  * Include Group information [#381](https://github.com/FocusPointsLrC/Focus-Points/issues/381)<br>Adds a third column to the Metadata Viewer to reflect the metadata group (e.g. IFD0, ExifIFDm XMP, Maker Notes) to which a tag belongs.
 
-**Since the plugin UI provides controls for opening these documents, it is necessary to update the plugin to maintain this functionality.**
+* **Bugfixes**
+  * Windows: Focus Point display shows white space instead of the photo [#254](https://github.com/FocusPointsLrC/Focus-Points/issues/254)<br>
+   
+* **Camera Support**
+  * Sony A7R VI
+  * Panasonic DC-L10
+  * in addition to the cameras supported by V3.3. [See here for full list](https://FocusPointsLrC.github.io/Focus-Points#supported-cameras)
+
+* **Other**
+  * Focus Info missing for DNG files converted from Canon CR3 [#308](https://github.com/FocusPointsLrC/Focus-Points/issues/308)  
+  This issue will also be resolved in previous versions of the plugin as soon as Lightroom Classic is updated to version 15.4.
 <br>
-
 
 ## Installation
 
@@ -50,18 +65,21 @@ A file named `Focus-Points-[plugin_version].zip` will be downloaded to your comp
 
 
 2. Unzip the downloaded file. Inside the extracted content locate the plugin folder `focuspoints.lrplugin`.<br>
-_MAC users_: According to your macOS preferences the zip file will be automatically unzipped.
+_MAC users_: The zip file will be unzipped automatically according to your macOS preferences.
 
 
-3. Find the folder where you keep your Lightroom plugins.<br> If you don't know where this is, open Lightroom, go to `File → Plug-in Manager` and click `Add`. This will open a "Select Folder" dialog in Lightroom's default folder for plugins. 
+3. Find the folder where you keep your Lightroom plugins.  
+If you don't know where this is, open Lightroom, go to `File → Plug-in Manager` and click `Add`.  
+ This will open the "Select Folder" dialog in Lightroom's default plugin folder. 
 
 
-4. To **update an existing installation**, first remove the folder containing the version of the plugin you want to update. You can delete the folder or rename it, for example, `to focuspoints.lrplugin.303` (for version 3.03). This allows you to easily revert to the previous version if the update causes issues.<br>
+4. To **update an existing installation**, first remove the folder containing the version of the plugin that you want to update. You can either delete the folder or rename it, for example, `to focuspoints.lrplugin.303` (for version 3.03). This makes it easy to revert to the previous version if the update causes any problems.<br>
 <u>Note</u>: It is necessary to remove the plugin folder at OS level because deleting a plugin in Lightroom's Plug-in Manager only removes it from Lightroom's list of known plugins. The plugin folder and its contents on disk remain as they are.<br>
-Important: Copying the downloaded files over those in the existing folder is not recommended!
+**Important: Copying the downloaded files over those in the existing folder is not recommended!**  
+If you removed the folder containing the outdated plugin version while Lightroom was open, click `Reload Plug-in` on the plugin page in the Plug-in Manager!
 
 
-5. Move the downloaded plugin folder `focuspoints.lrplugin` to the folder where you keep your Lightroom plugins.<br> 
+5. To **perform a new installation:** Move the downloaded plugin folder `focuspoints.lrplugin` to the folder where you keep your Lightroom plugins.<br> 
 _MAC users_: if you have to navigate into the content of the `adobe lightroom classic.app`, use the control-click and choose  `show package content`.
 
 
@@ -134,7 +152,7 @@ The Metadata Viewer is useful for viewing information that is neither visible in
 
 ## Straighten Images
 
-Straightening images is a new plugin function in V3.3:
+Straightening images in batch mode is a new plugin function in V3.3:
 
 - `Library → Plug-in Extras → Straighten Images`, or
 - `File → Plug-in Extras → Straighten Images`
@@ -170,6 +188,8 @@ The photo has a roll angle of 2.5°. Applying a crop angle of -2.5° compensates
 Using the 'Straighten Images' tool produces the same result as entering the roll angle compensation manually in Lightroom's 'Crop & Straighten' tool. You can then modify or even revert the compensation as desired.
 
 <img src="docs/images/Straighten%201.jpg" alt="User Interface" style="width: 1000px;"/>
+
+V3.4 introduces a feature to interactively straighten the current image.
 
 Please refer to the [relevant section](docs/Focus-Points.html#24-straighten-images) of the User Manual to learn how to use and customise this feature.  
 
