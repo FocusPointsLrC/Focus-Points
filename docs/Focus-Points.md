@@ -151,7 +151,7 @@ The user interface is divided into three main areas. On the left is the Photo Vi
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
-The Focus Point Viewer window is not dynamically resizable. However, V3.2 introduces a [Size of plugin window](#size-of-plugin-window) setting that allows you to customize the size of the plugin window. You can choose from five options ranging from XXL to S. This setting corresponds to 80% (XXL) downto 40% (S), in increments of 10%, of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
+The Focus Point Viewer window is not dynamically resizable. However, V3.2 introduces a [Size of plugin window](#size-of-plugin-window) setting that allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. This setting corresponds to 90% (3XL) downto 40% (S), in increments of 10%, of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
 The info view and the bottom row of user controls are not included in this percentage. The space allocated to these areas is in addition to the size setting.
 
 Click on the following links for more detailed information:
@@ -433,7 +433,7 @@ This has been improved in V3.2:
 - The maximum length of values displayed is limited to 128 characters.
 - Truncated strings are indicated by an ellipsis symbol '...'.<br>If the truncated part contains  relevant information, it can still be reviewed by opening the metadata as text.
 - The edit fields for the 'Tag' and 'Value' filters are the same size as in point 1.
-- The height of the metadata window is given by the Size of plugin window setting S .. XXL
+- The height of the metadata window is given by the Size of plugin window setting S .. 3XL
 - The width of the metadata window is chosen so that the head line (filter entry fields, hint) fits in but is minimum 70% of the window height.
 
 <img src="images/metadata1.jpg" alt="Metdata 1" style="width: 200px;"/>         <img src="images/metadata2.jpg" alt="Metadata 2" style="width: 200px;"/>         <img src="images/metadata3.jpg" alt="Metadata 3" style="width: 200px;"/>
@@ -565,11 +565,11 @@ This section is new in version 3.2. It contains several settings that can be use
 
 **_Size of plugin window_**. Default setting: `L`<br>
 <a id="size-of-plugin-window"></a>
-This setting allows you to customize the size of the plugin window. You can choose from five options ranging from XXL to S. 
+This setting allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. 
 
 <img src="images/README WindowSize.jpg" alt="Screenshot" style="width: 600px;"/>
 
-In the Focus Point dialog, this setting corresponds to 80% (XXL) to 40% (S), in increments of 10%, of the size of the Lightroom application window used to display the photo. Please note that the text pane to the right of the photo and the bottom row of user controls are not included in this percentage.
+In the Focus Point dialog, this setting corresponds to 90% (3XL) to 40% (S), in increments of 10%, of the size of the Lightroom application window used to display the photo. Please note that the text pane to the right of the photo and the bottom row of user controls are not included in this percentage.
 
 In the Metadata Viewer, this setting determines the height of the dialog box. The width is determined by the header line, which includes the two filter entry fields and the hint text. 
 
@@ -1254,47 +1254,51 @@ The time required for preview generation depends on image size and system perfor
 
 The following chart compares the typical plug-in start-up time for different camera models when using different methods to create the image displayed in [Photo View](#photo-view). Direct View is the display mode used on macOS.
 
-<img src="images/Time to Open Plugin Window.jpg" alt="Time to Open Plugin Window" style="width: 1000px;"/>
+<img src="images/Performance%20Control%201.jpg" alt="Performance Control 1" style="width: 1000px;"/>
 
 If the plugin window takes more than a second to open, the main reason for the delay is usually the time taken for Lightroom to make a usable preview available. However, if the plugin window takes considerably longer than one to two seconds to open, it is usually quicker not to wait for the preview to become available, but to instead generate the image file using Lightroom's Export function.
 
-V3.4 introduces the 'Performance Control' feature, enabling you to customise the process of 
-creating the displayed Photo View image:  
-Once the configured waiting time has elapsed, the image will be created for display using Lightroom's Export function rather than waiting for the preview to become available. Sometimes, it can take longer for Lightroom to generate a preview than it takes to create an image via Export. For example, consider Z8/Z9 in the chart. Switching to Export after a short timeout can significantly reduce the time required for the plugin window to appear in these cases.
+V3.4 introduces the **'Performance Control'** feature, which enables you to customize the process used to create the image displayed in Photo View.
+
+Once the configured waiting time for a preview has elapsed, the image will be created for display using Lightroom's Export function rather than waiting for the preview to become available. Depending on the camera model, it can take much longer for Lightroom to generate a preview than it takes to create an image via Export. For example, consider Z8/Z9 in the chart. Switching to Export Image after a short timeout can significantly reduce the time required for the plugin window to appear in these cases.
 
 The plugin settings allow you to configure when the plugin should stop waiting for a preview and switch to Lightroom Export.
 
-<img width="622" height="290" alt="Image" src="https://github.com/user-attachments/assets/b5c9ae65-bc62-46ba-b6ea-0c9e4f3d0ed8" />
+<img src="images/Performance%20Control%202.jpg" alt="Performance Control 2" style="width: 600px;"/>
 
 The first setting controls whether a fallback from preview acquisition to export is enabled, along with the corresponding waiting time for the preview. If this duration is set to zero, the plugin bypasses the preview stage and proceeds directly to export.
 
-The second setting controls whether a progress indicator is displayed to notify the user that the plugin is waiting for an image to be created. This indicator appears after the configured time period has elapsed and disappears when the plugin window is opened.
+The second setting determines whether a progress indicator is displayed to notify the user that the plugin is waiting for an image to be created. This indicator appears after the configured time period has elapsed and disappears when the plugin window is opened. The progress indicator is useful when the waiting time exceeds 1–2 seconds, as it shows that the plugin has started or is still active.
 
-<img width="310" alt="Image" src="`https://github.com/user-attachments/assets/c16ad621-e152-467e-bfcd-bcd22b0bfd51`" />
-<br><br>
+The optimum values for the preview acquisition timeout and the progress indicator display depend largely on the hardware setup and the type of image files. These, in turn, depend on the camera manufacturer and model. As such, there is no one-fits-all recommendation, and each user must determine the optimal timeout value for their specific environment. The default values timeout = 0.5s and progress indicator delay = 0.5 should be a good starting point.
 
-The optimum values for the preview acquisition timeout and the progress indicator display depend largely on the hardware setup and the image files. These, in turn, depend on the camera manufacturer and model. As such, there is no one-fits-all recommendation, and each user must determine the optimal timeout value for their specific environment. The default values timeout = 2s and progress indicator delay = 1s should be a good starting point.
+To help you find reasonable settings that will ensure the plugin performs well overall, the log file output has been enhanced to provide insight into how long it takes to create and display the plugin window.
 
-To help you find a reasonable setting that will ensure the plugin performs well overall, the log file output has been enhanced to provide insight into the timing required to create and display the plugin window:
 
-<img width="1272" alt="Image" src="https://github.com/user-attachments/assets/6622274d-4a17-43b5-809a-4677718415d3" />
-<br><br>
+**Example**
 
-The above log contains information on opening the same photo three times under different conditions and with different settings.
+Let's look at an example of a photo taken with the Nikon Z9:
 
-1. First section, relevant information highlighted in green
+<img src="images/Performance%20Control%203.jpg" alt="Performance Control 3" style="width: 1000px;"/>
+
+ We open the same photo three times in the plugin window, each time under different conditions and with different performance settings. The resulting log file contains information about: 
+ - how quickly a preview could be obtained; 
+ - whether a waiting timeout was reached;
+ - how long it took the plugin window to open.
+
+<img src="images/Performance%20Control%204.jpg" alt="Performance Control 4" style="width: 1000px;"/>
+
+1. Section highlighted in blue (correlates with the blue bars in the chart)  
    A preview of the image is already available because Lightroom created it when the image was imported. The preview can be obtained instantly — the time taken to open the dialogue is less than one second.
 
-2. Second section, relevant information highlighted in red
-  Straightening the image from the plugin user interface causes a refresh of the plugin window. Straightening, cropping, and certain other Develop adjustments can invalidate Lightroom's existing preview and force Lightroom to create a new one. With the 'Use temporary export' setting disabled, the plugin waits for the preview to become available. This takes 6.6 seconds, meaning the plugin window only opens after 7.39 seconds.
+2. Section highlighted in red (the red bars in the chart)  
+  Straightening the image causes a refresh of the plugin window. Straightening, cropping or transforming an image invalidates Lightroom's existing preview, forcing it to regenerate. With the 'Use temporary export' setting disabled, the plugin waits for the preview to become available. This takes 6.8 seconds. The plugin window does not open until 7.63 seconds have elapsed.
 
-3. Third, relevant information highlighted in yellow
-It's the same image again, with no preview available. This time, the 'Use temporary export' setting has been enabled with a timeout of 1.0 seconds. The plugin stops acquiring the preview after 1.1 seconds and uses the export instead. The plugin window opens after 4.21 seconds.
+3. Section highlighted in orange (the orange bars in the chart).
+It's the same image, and there is no preview available. This time, the 'Use temporary export' setting has been enabled with a timeout of 0.5 seconds. After 0.6 seconds, the plugin stops acquiring the preview and uses Export instead. The plugin window opens after 3.5 seconds, which is less than half the time.
 
 **How can you use this information to determine the optimal settings for your setup?**
 
-To begin with, consider how long it takes to obtain a preview that is already available. Add a small buffer to this number and enter it as the timeout value.
-
-In the above case 3., a timeout of 1.0 seconds has been chosen, which is too conservative. A more aggressive setting of timeout = 0.2 causes the dialog to appear after 3.6 seconds.
+Check for your images, how long it takes typically to **obtain a preview that is already available**. Add a small buffer to this number and enter it as the **timeout value**.
 
 If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e. non-SSD), it may be useful to experiment with higher timeout values.
