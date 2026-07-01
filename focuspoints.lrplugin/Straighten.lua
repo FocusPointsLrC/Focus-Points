@@ -31,15 +31,22 @@ local LrPrefs               = import  'LrPrefs'
 local Crop                  = require 'Crop'
 local ExifUtils             = require 'ExifUtils'
 
--- List of camera makers that in principle support a RollAngle tag with consistent information
--- Some only for recent models e.g. Nikon, others since decades e.g. Canon, Olympus/OM
+-- Straighten.getRollAngleCW() return codes
+Straighten.SUCCESS = 0
+Straighten.WARNING = 1
+Straighten.ERROR   = 2
+
+--[[
+   List of camera makers that in principle support a RollAngle tag with consistent information
+   Some only for recent models e.g. Nikon, others since decades e.g. Canon, Olympus/OM
+--]]
 local supportedMakes = {
   'canon', 'nikon', 'nikon corporation', 'fujifilm', 'olympus', 'om digital solutions',
   'pentax', 'ricoh', 'panasonic'
 }
 
 local function makeSupported(make)
-  -- Check whether 'make' is listed in 'supportedMakes"
+  -- Helper to check whether 'make' is listed in 'supportedMakes"
   for _, m in ipairs(supportedMakes) do
     if (m == make) then
       return true
@@ -50,14 +57,19 @@ end
 
 local prefs   = LrPrefs.prefsForPlugin( nil )
 
--- @TODO Create file headers for documentation !!
 
+--[[----------------------------------------------------------------------------
+  public float
+  calculateStraightenAngle(float rollAngle)
+
+  Calculate the roll angle compensation with respect to the nearest multiple of 90°.
+  This is necessary because Lightroom translates roll angles of ±90° into
+  vertical orientation with '0' rotation.
+------------------------------------------------------------------------------]]
 function Straighten.calculateStraightenAngle(rollAngle)
-    -- Compute correction with respect to the nearest multiple of 90°
-    -- Required because Lightroom handles roll angles of +/-90° as vertical orientation with '0' rotation
     if not rollAngle then return nil end
     -- Normalize to range [-180, 180)
-    local rollAngle = ((rollAngle + 180) % 360) - 180
+    rollAngle = ((rollAngle + 180) % 360) - 180
     -- Find nearest multiple of 90°
     local baseOrientation = math.floor((rollAngle / 90) + 0.5) * 90
     -- Compute residual correction
@@ -68,18 +80,32 @@ function Straighten.calculateStraightenAngle(rollAngle)
     end
   end
 
+--[[----------------------------------------------------------------------------
+  public int rollAngle, int result, string message
+  getRollAngleCW(table photo, table metadata)
 
+  Retrieve the 'RollAngle' tag from the photo's metadata and return its value
+  in clockwise (CW) degrees. Some camera makers record the camera roll angle
+  clockwise (CW), while others record it counterclockwise (CCW).
+
+  Return values:
+  1. normalized roll angle value
+  2. result of operation (Straighten.SUCCESS/WARNING/ERROR)
+  3. message what went wrong if not SUCCESS
+------------------------------------------------------------------------------]]
 function Straighten.getRollAngleCW(photo, metadata)
-  -- Retrieve the 'RollAngle' tag from the photo's metadata and return its value in clockwise (CW) degrees.
-  -- Some camera makers record the camera roll angle clockwise (CW), while others record it counterclockwise (CCW).
-  local SUCCESS = 0
-  local WARNING = 1
-  local ERROR   = 2
+
   local make = photo:getFormattedMetadata("cameraMake")
   local rollAngleValue, rollAngle, rc
 
-  if not makeSupported(string.lower(make)) then
-    return 0, WARNING, string.format("%s not supported", make)
+  -- Is there any usable metadata in the photo?
+  if not make then
+    return 0, Straighten.WARNING, string.format("No metadata available", make)
+  end
+
+  local lowerMake = string.lower(make)
+  if not makeSupported(lowerMake) then
+    return 0, Straighten.WARNING, string.format("%s not supported", make)
   else
     -- Try to retrieve roll angle information from metadata (in memory or on disk)
     if metadata then
@@ -87,7 +113,7 @@ function Straighten.getRollAngleCW(photo, metadata)
     else
       rollAngleValue, rc = ExifUtils.getBinaryValue(photo, "RollAngle")
       if rc ~= 0 then
-        return 0, ERROR, "Unable to read metadata (ExifTool rc=" .. rc .. ")"
+        return 0, Straighten.ERROR, "Unable to read metadata (ExifTool rc=" .. rc .. ")"
       end
     end
 
@@ -95,25 +121,33 @@ function Straighten.getRollAngleCW(photo, metadata)
     if rollAngleValue then
       rollAngle = tonumber(rollAngleValue)
       if rollAngle then
-        make = string.lower(make)
-        if  make == 'fujifilm' or (string.find(make, "nikon", 1, true)) then
+        if  lowerMake == 'fujifilm' or (string.find(lowerMake, "nikon", 1, true)) then
           -- makes that record angle value clockwise
           rollAngle = rollAngle *  1
         else
           -- makes that record angle value counterclockwise
           rollAngle = rollAngle * -1
         end
-        return rollAngle, SUCCESS, string.format("RollAngle %7.2f°. ", rollAngle)
+        return rollAngle, Straighten.SUCCESS, string.format("RollAngle %7.2f°. ", rollAngle)
       else
-        return 0, WARNING, string.format(
+        return 0, Straighten.WARNING, string.format(
           "Invalid RollAngle information found in metadata: %s", rollAngleValue)
       end
     else
-      return 0, WARNING, "RollAngle information not available"
+      return 0, Straighten.WARNING, "RollAngle information not available"
     end
   end
 end
 
+
+--[[----------------------------------------------------------------------------
+  public boolean
+  straightenImage(table photo, float angle, string text)
+
+  Straightens the photo by applying the given angle.
+  This action will be recorded as step 'text' in the History panel.
+  Returns whether the operation was successful or not.
+------------------------------------------------------------------------------]]
 function Straighten.straightenImage(photo, angle, text)
   local crop = Crop.ofPhoto(photo)
   if crop then
@@ -128,8 +162,13 @@ function Straighten.straightenImage(photo, angle, text)
   end
 end
 
+--[[----------------------------------------------------------------------------
+  public boolean
+  hasTransform(table settings)
+
+  Returns whether an Upright or Transform operation has been performed on the photo
+------------------------------------------------------------------------------]]
 function Straighten.hasTransform(settings)
-  -- Returns whether an Upright or Transform operation has been performed on the photo
   return
     (settings.PerspectiveUpright    or 0) ~=   0 or
     (settings.PerspectiveVertical   or 0) ~=   0 or

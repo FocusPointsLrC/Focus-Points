@@ -45,6 +45,7 @@ local Utils           = require 'Utils'
 -- Important plugin definitions and settings -----------------------------------
 
 -- Size options for plugin window
+FocusPointPrefs.pluginWindow3XL    = 0.9
 FocusPointPrefs.pluginWindowXXL    = 0.8
 FocusPointPrefs.pluginWindowXL     = 0.7
 FocusPointPrefs.pluginWindowL      = 0.6
@@ -66,9 +67,11 @@ FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
 -- Settings for photo view base image display
-FocusPointPrefs.previewImage       = 0
-FocusPointPrefs.exportedImage      = 1
-FocusPointPrefs.directView         = 2
+FocusPointPrefs.displayModePreview = 1
+FocusPointPrefs.displayModeExport  = 2
+FocusPointPrefs.displayModeDirect  = 3
+FocusPointPrefs.displayModeFallback= 4
+FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export (fallback)" }
 
 -- Definitions to handle Update mechanism
 local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
@@ -85,7 +88,9 @@ FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspoi
 FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
 FocusPointPrefs.urlTroubleShooting = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
 FocusPointPrefs.urlkbdShortcuts    = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
-FocusPointPrefs.urldisplayMethod   = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#user-interface-settings"
+FocusPointPrefs.urlSecondScreenMode= "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#1-second-screen-mode"
+FocusPointPrefs.urldisplayModes     = "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#2-display-modes"
+
 FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
@@ -121,41 +126,45 @@ local bind = LrView.bind
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
-  if not prefs.screenScaling               then prefs.screenScaling              = 0 end
-  if not prefs.pluginWindowScaling         then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
-  if     prefs.secondScreenMode    == nil  then prefs.secondScreenMode           = false     end
-  if not prefs.previewAspectRatio          then prefs.previewAspectRatio         = 3/2       end
-  if     prefs.truncateLongText    == nil  then prefs.truncateLongText           = true      end
-  if not prefs.truncateLimit               then prefs.truncateLimit              = 32        end
-  if     prefs.hideKofiControl     == nil  then prefs.hideKofiControl            = false     end
-  if not prefs.focusBoxSize                then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
-  if not prefs.focusBoxColor               then prefs.focusBoxColor              = "red"     end
-  if     prefs.straightenControls  == nil  then prefs.straightenControls         = true      end
-  if     prefs.taggingControls     == nil  then prefs.taggingControls            = true      end
-  if     prefs.keyboardLayout      == nil  then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
-  if not prefs.loggingLevel                then prefs.loggingLevel               = "AUTO"    end
-  if     prefs.overwriteCropAngle  == nil  then prefs.overwriteCropAngle         = false     end
-  if     prefs.straightenLimits    == nil  then prefs.straightenLimits           = false     end
-  if not prefs.straightenLimitLow          then prefs.straightenLimitLow         = -0        end
-  if not prefs.straightenLimitHigh         then prefs.straightenLimitHigh        =  45       end
-  if not prefs.straightenSummaryCondition  then prefs.straightenSummaryCondition = "SKIPPED" end
-  if     prefs.straightenApplyBias == nil  then prefs.straightenApplyBias        = false     end
-  if not prefs.straightenBias              then prefs.straightenBias             = 0.0       end
-  if     prefs.checkForUpdates     == nil  then prefs.checkForUpdates            = true      end   -- here we need a nil pointer check!!
-  if     prefs.keyboardInput       == nil  then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
+  if not prefs.screenScaling                  then prefs.screenScaling              = 0 end
+  if not prefs.pluginWindowScaling            then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
+  if     prefs.secondScreenMode        == nil then prefs.secondScreenMode           = false     end
+  if not prefs.previewAspectRatio             then prefs.previewAspectRatio         = 3/2       end
+  if     prefs.truncateLongText        == nil then prefs.truncateLongText           = true      end
+  if not prefs.truncateLimit                  then prefs.truncateLimit              = 32        end
+  if     prefs.hideKofiControl         == nil then prefs.hideKofiControl            = false     end
+  if not prefs.focusBoxSize                   then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
+  if not prefs.focusBoxColor                  then prefs.focusBoxColor              = "red"     end
+  if     prefs.straightenControls      == nil then prefs.straightenControls         = true      end
+  if     prefs.taggingControls         == nil then prefs.taggingControls            = true      end
+  if     prefs.keyboardLayout          == nil then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
+  if not prefs.loggingLevel                   then prefs.loggingLevel               = "AUTO"    end
+  if     prefs.overwriteCropAngle      == nil then prefs.overwriteCropAngle         = false     end
+  if     prefs.straightenLimits        == nil then prefs.straightenLimits           = false     end
+  if not prefs.straightenLimitLow             then prefs.straightenLimitLow         = -0        end
+  if not prefs.straightenLimitHigh            then prefs.straightenLimitHigh        =  45       end
+  if not prefs.straightenSummaryCondition     then prefs.straightenSummaryCondition = "SKIPPED" end
+  if     prefs.straightenApplyBias     == nil then prefs.straightenApplyBias        = false     end
+  if not prefs.straightenBias                 then prefs.straightenBias             = 0.0       end
+  if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
+  if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
+  if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
+  if not prefs.previewTimeout                 then prefs.previewTimeout             = 1.0       end
+  if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
+  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 1.0       end
 
-  -- OS dependent initializations
-  if not prefs.displayMethod then
+    -- OS dependent initializations
+  if not prefs.displayMode then
     if WIN_ENV then
-      prefs.displayMethod = FocusPointPrefs.previewImage
+      prefs.displayMode = FocusPointPrefs.displayModePreview
     else
-      prefs.displayMethod = FocusPointPrefs.directView
+      prefs.displayMode = FocusPointPrefs.displayModeDirect
     end
   end
 
   -- Just to be safe - there's no choice for MAC until Mogrify support is implemented on macOS)
   if MAC_ENV then
-    prefs.displayMethod = FocusPointPrefs.directView
+    prefs.displayMode = FocusPointPrefs.displayModeDirect
   end
 
   -- get the latest plugin version for update checks
@@ -259,7 +268,7 @@ end
   public float
   getPluginWindowSize()
 
-  Returns the sizing factor for supported plugin window sizes S..XXL
+  Returns the sizing factor for supported plugin window sizes S..3XL
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getPluginWindowSize()
   local prefs = LrPrefs.prefsForPlugin( nil )
@@ -281,22 +290,28 @@ function FocusPointPrefs.retrieveVersionOfLatestRelease()
     local prefs = LrPrefs.prefsForPlugin( nil )
     local body, headers
 
+    local function parseVersionInfo(body)
+      -- Helper to arse contents
+      return
+        string.match(body, "v%d+%.%d+%.%d+%.%d+"),
+        string.match(body, "https?://%S+")
+    end
+
     -- By default, if an error occurs, it is assumed that there is no update available
     prefs.latestVersion = nil
+    prefs.latestVersionUrl = nil
 
     -- Read the contents of the 'latest version' file
     body, headers = LrHttp.get(FocusPointPrefs.latestVersionFile)
     if headers and headers.status == 200 then
-      -- file found: parse contents
-      prefs.latestVersion = string.match(body, "v%d+%.%d+%.%d+%.%d+")
+      prefs.latestVersion, prefs.latestVersionUrl = parseVersionInfo(body)
     else
       -- file not found: has the branch been removed?
       if FocusPointPrefs.latestVersionFile ~= FocusPointPrefs.masterVersionFile then
         -- Public version update for pre-release available!
         body, headers = LrHttp.get(FocusPointPrefs.masterVersionFile)
         if headers and headers.status == 200 then
-          -- file found: parse contents
-          prefs.latestVersion = string.match(body, "v%d+%.%d+%.%d+%.%d+")
+          prefs.latestVersion, prefs.latestVersionUrl = parseVersionInfo(body)
         end
       end
     end
@@ -396,13 +411,19 @@ end
   For a public release, returns ./releases/latest
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
-  local pluginVersion = Info.VERSION
-  if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
-    -- pre-release
-    return FocusPointPrefs.urlReleases
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  if prefs.latestVersionUrl then
+    -- link to release from version.txt file
+    return prefs.latestVersionUrl
   else
-    -- public release
-    return FocusPointPrefs.urlLatestRelease
+    local pluginVersion = Info.VERSION
+    if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
+      -- pre-release
+      return FocusPointPrefs.urlReleases
+    else
+      -- public release
+      return FocusPointPrefs.urlLatestRelease
+    end
   end
 end
 
@@ -521,36 +542,94 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
       }
     end
-    local function displayMethodSetting()
+    local function displayModeSetting()
       if not WIN_ENV then return LrView.kIgnoredView end
       return
         f:row {
           bind_to_object = prefs,
           spacing = f:control_spacing(),
           f:popup_menu {
-            title = "displayMethod",
-            value = bind("displayMethod"),
+            title = "displayMode",
+            value = bind("displayMode"),
             width_in_chars = dropDownWidth,
             items = {
-              { title = "Preview Image (Fast)",       value = FocusPointPrefs.previewImage  },
-              { title = "Exported Image (Reliable)",  value = FocusPointPrefs.exportedImage },
-              { title = "Direct View (Live Updates)", value = FocusPointPrefs.directView    },
+              { title = "Preview Image (Fast)",    value = FocusPointPrefs.displayModePreview  },
+              { title = "Export Image (Reliable)", value = FocusPointPrefs.displayModeExport },
+              { title = "Direct View (Live)",      value = FocusPointPrefs.displayModeDirect    },
             },
           },
           f:static_text {
-            title = "Photo View display method. For details about the available options, please refer to the"
+            title = "Display mode. For details on the available modes, please refer to"
           },
           f:static_text {
-            title = "User Manual",
+            title = "Whats's new?",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
             mouse_down = function(_view)
               LrTasks.startAsyncTask(function()
-                LrHttp.openUrlInBrowser(FocusPointPrefs.urldisplayMethod)
+                LrHttp.openUrlInBrowser(FocusPointPrefs.urldisplayModes)
               end)
             end,
           },
         }
+    end
+    local function previewGenerationSettings()
+      if not WIN_ENV then return nil end
+      return f:column{
+        spacing = f:control_spacing(),
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+          f:popup_menu {
+            title = "previewFallback",
+            value = bind("previewFallback"),
+            width_in_chars = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
+          },
+          f:static_text {
+            title = 'Preview Image: Use Export Image if no preview becomes available within'
+          },
+          f:edit_field {
+            value = bind("previewTimeout"),
+            width_in_chars = 3,
+            min = 0,
+            max = 10,
+            precision = 1,
+          },
+          f:static_text {
+            title = 'seconds',
+          },
+        },
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+          f:popup_menu {
+            title = "previewShowProgress",
+            value = bind("previewShowProgress"),
+            width_in_chars = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
+          },
+          f:static_text {
+            title = 'Preview Image: Show progress notification after '
+          },
+          f:edit_field {
+            value = bind("previewProgressDelay"),
+            width_in_chars = 3,
+            min = 0,
+            max = 10,
+            precision = 1,
+          },
+          f:static_text {
+            title = 'seconds',
+          },
+        },
+      }
     end
 
     return {
@@ -568,7 +647,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           },
         },
         f:static_text {
-          title = 'Can run on second screen. Fixed aspect ratio of photo view:'
+          title = 'Second screen mode. Fixed aspect ratio of photo view:'
         },
         f:popup_menu {
           title = "previewAspectRatio",
@@ -580,7 +659,19 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             { title = "16 x 9", value = 1.7778 },
           },
         },
-
+        f:static_text {
+          title = 'See'
+        },
+        f:static_text {
+          title = "What's new?",
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(FocusPointPrefs.urlSecondScreenMode)
+            end)
+          end,
+        },
       },
       f:row {
         bind_to_object = prefs,
@@ -590,6 +681,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           value = bind("pluginWindowScaling"),
           width_in_chars = dropDownWidth,
           items = {
+            { title = "3XL", value = FocusPointPrefs.pluginWindow3XL },
             { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
             { title = "XL",  value = FocusPointPrefs.pluginWindowXL  },
             { title = "L",   value = FocusPointPrefs.pluginWindowL   },
@@ -647,7 +739,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       straightenControlsSetting(), -- empty for LR5
       taggingControlsSetting(),    -- empty for LR5
       keyboardLayoutSetting(),     -- empty for LR5
-      displayMethodSetting(),      -- empty for MAC and later also for WIN < SDK Vx
+      displayModeSetting(),        -- empty for MAC and later also for WIN < SDK Vx
+      previewGenerationSettings(), -- empty for MAC
+
     }
   end
   local function sectionViewingOptions()

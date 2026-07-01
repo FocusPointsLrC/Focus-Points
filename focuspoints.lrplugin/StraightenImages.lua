@@ -62,12 +62,8 @@ local function straightenImages()
     errors    = 0,
   }
 
-  -- Return codes for 'getRollAngle' task
-  local WARNING = 1
-  local ERROR   = 2
-
-
   local function showSummaryDialog(message, severity, logFileName)
+    -- Display a window summarizing the results of the batch run
 
     local f = LrView.osFactory()
 
@@ -118,6 +114,8 @@ local function straightenImages()
 
 
   local function showSummary(stats, logFileName)
+    -- Prepares the data to be displayed as a summary of results of the batch run
+
     -- Determine severity and compose details message
     local message = string.format(
       "%d photos processed\n%d straightened\n%d no action required\n%d skipped",
@@ -148,7 +146,6 @@ local function straightenImages()
       LrDialogs.showBezel("Straightening completed")
     end
   end
-
 
     -- Get selected photos
   local selectedPhotos = catalog:getTargetPhotos()
@@ -185,7 +182,8 @@ local function straightenImages()
 
     -- Proceed to next photo
     local filename = photo:getFormattedMetadata( "fileName" )
-    local fileInfo = filename .. ":  " .. string.rep(" ", 20 - #filename)
+    local pad = math.max(0, 20 - #filename)
+    local fileInfo = filename .. ":  " .. string.rep(" ", pad)
     stats.processed = stats.processed + 1
 
     -- Retrieve existing crop angle of photo
@@ -194,25 +192,25 @@ local function straightenImages()
     local photoTransformed = Straighten.hasTransform(settings)
 
     -- Retrieve RollAngle information from metadata, normalize and apply correction
-    local rollAngle, status, message = Straighten.getRollAngleCW(photo)
+    local cameraRollAngle, status, message = Straighten.getRollAngleCW(photo)
 
     repeat  -- until true to support implementation of 'Pythonic' control flow with break statements
 
-      if status == 1 then   -- WARNING occured
+      if status == Straighten.WARNING then
         Log.logWarn("Straighten", fileInfo .. message)
         stats.warnings = stats.warnings + 1
         break
       end
 
-      if status == 2 then   -- ERROR occured
+      if status == Straighten.ERROR then
         Log.logError("Straighten", fileInfo .. message)
         stats.errors = stats.errors + 1
         break
       end
 
-      -- status == 0           SUCCESS
+      -- Straighten.SUCCESS
       local rollInfo = message
-      local straightenAngle = Straighten.calculateStraightenAngle(rollAngle)
+      local straightenAngle = Straighten.calculateStraightenAngle(cameraRollAngle)
       local straightenInfo = string.format("Straightening correction of %6.2f°", straightenAngle)
 
       if straightenAngle == 0 then
@@ -259,7 +257,7 @@ local function straightenImages()
         end)
       end
 
-      -- All preconditions have been met, so apply the crop finally !!
+      -- All validation checks passed; apply the straightening correction
       if Straighten.straightenImage(photo, straightenAngle) then
         Log.logInfo("Straighten", fileInfo .. rollInfo .. straightenInfo ..
           " applied")
