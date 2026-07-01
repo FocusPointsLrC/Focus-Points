@@ -40,7 +40,7 @@ Focus Points makes this information accessible, allowing you to review every pho
 
 Whether you are analysing why a photograph is perfectly sharp, trying to understand why it isn't, or simply exploring how your camera behaves in different situations, Focus Points provides the information in one place.
 
-
+---
 
 ## Supported Cameras
 
