@@ -43,10 +43,6 @@ Whether you are analysing why a photograph is perfectly sharp, trying to underst
 
 <br>
 
-## Current Release: [V3.4 updated July xx, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
-
-<br>
-
 ## Supported Cameras
 
 Focus Points supports cameras from
