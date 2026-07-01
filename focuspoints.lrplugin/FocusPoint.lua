@@ -245,6 +245,7 @@ local function showFocusPoint()
 
     -- Log applicaton level information (includes scale factor and app window size)
     logAppInfo()
+
     -- only on WIN (issue #199):
     -- if launched in Develop module switch to Library to enforce that a preview of the image is available
     -- must switch to loupe view because only in this view previews will be rendered
@@ -893,7 +894,7 @@ local function showFocusPoint()
       local controlPanel     = buildControlPanel()
 
       userResponse = LrDialogs.presentModalDialog {
-        title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
@@ -909,6 +910,7 @@ local function showFocusPoint()
     -- twice if clicked on really quickly
     -- let the renderer build the view now and show progress dialog
     repeat
+
       -- Get logging ready for next photo
       Log.logInfo("FocusPoint", string.rep("=", 79))
       Log.resetErrorsWarnings()
@@ -988,8 +990,9 @@ local function showFocusPoint()
         -- Write the final log entries for this photo before opening the dialog window
         stopTimer = LrDate.currentTime()
         Log.logInfo("FocusPoint", string.format(
-          "Present dialog and information (time to open: %.2f seconds, method=%s)",
-           stopTimer-startTimer, rendererTable.displayMethod))
+          "Open Dialog ( %.2f seconds, source=%s )",
+          stopTimer-startTimer,
+          FocusPointPrefs.displayModeName[rendererTable.imageSource]))
 
         -- Open the plugin window and dialog
         clicked = false

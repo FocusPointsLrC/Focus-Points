@@ -66,6 +66,13 @@ FocusPointPrefs.kbdInputInvisible  = 0
 FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
+-- Settings for photo view base image display
+FocusPointPrefs.displayModePreview = 1
+FocusPointPrefs.displayModeExport  = 2
+FocusPointPrefs.displayModeDirect  = 3
+FocusPointPrefs.displayModeFallback= 4
+FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export(fallback)" }
+
 -- Definitions to handle Update mechanism
 local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
 local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
@@ -137,9 +144,9 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
   if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
   if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
-  if not prefs.previewTimeout                 then prefs.previewTimeout             = 1.0       end
+  if not prefs.previewTimeout                 then prefs.previewTimeout             = 0.5       end
   if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
-  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 1.0       end
+  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 0.5       end
 
   -- get the latest plugin version for update checks
   FocusPointPrefs.retrieveVersionOfLatestRelease()
@@ -472,21 +479,21 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     local function taggingControlsSetting()
       if LR5 then return LrView.kIgnoredView end
       return f:row {
-          bind_to_object = prefs,
-          spacing = f:control_spacing(),
-          f:popup_menu {
-            title = "taggingControls",
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "taggingControls",
           value = bind("taggingControls"),
           width_in_chars = dropDownWidth,
-            items = {
-              { title = "On",  value = true  },
-              { title = "Off", value = false },
-            }
-          },
-          f:static_text {
-            title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
-          },
-        }
+          items = {
+            { title = "On",  value = true  },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
+        },
+      }
     end
     local function keyboardLayoutSetting()
       if LR5 then return LrView.kIgnoredView end
@@ -521,7 +528,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             },
           },
           f:static_text {
-            title = 'Use temporary Export if no preview becomes available within'
+            title = 'Preview Image: Use Export Image if no preview becomes available within'
           },
           f:edit_field {
             value = bind("previewTimeout"),
@@ -547,7 +554,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             },
           },
           f:static_text {
-            title = 'Show preview progress notification after '
+            title = 'Preview Image: Show progress notification after '
           },
           f:edit_field {
             value = bind("previewProgressDelay"),
@@ -662,9 +669,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           value = bind("focusBoxSize"),
           width_in_chars = dropDownWidth,
           items = {
-            { title = "Small", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeSmall] },
+            { title = "Small",  value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeSmall]  },
             { title = "Medium", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeMedium] },
-            { title = "Large", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeLarge] },
+            { title = "Large",  value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeLarge]  },
           }
         },
         f:static_text {
@@ -959,6 +966,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       sections[#sections + 1] = section
     end
   end
+
   add(sectionScreenScaling())
   add(sectionUserInterface())
   add(sectionViewingOptions())
@@ -969,6 +977,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   add(sectionAcknowledgements())
 
   return sections
+
 end
 
 return FocusPointPrefs

@@ -42,7 +42,7 @@ local Log              = require 'Log'
 local MogrifyUtils     = require 'MogrifyUtils'
 local Utils            = require 'Utils'
 
-DefaultPointRenderer.displayMethod = nil
+DefaultPointRenderer.imageSource = nil
 
 local prefs = LrPrefs.prefsForPlugin( nil )
 
@@ -71,12 +71,12 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
 
   -- Rendering strategy depends on the operating system:
   -- Windows uses a temporary disk image and ImageMagick, while macOS renders overlays directly in memory.
-  if WIN_ENV then
+  if WIN_ENV and not (prefs.displayMode == FocusPointPrefs.displayModeDirect) then
 
     -- Create a temporary image file. The image is obtained either from Lightroom's preview system or
     -- via Export fallback, then ImageMagick draws the focus point overlays onto that file.
     local fileName, errorText
-    fileName, DefaultPointRenderer.displayMethod, errorText =
+    fileName, DefaultPointRenderer.imageSource, errorText =
       MogrifyUtils.createDiskImage(photo, photoDisplayWidth, photoDisplayHeight)
 
     -- Was a temporary image created successfully?
@@ -109,8 +109,8 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
     end
 
   else
-    -- On macOS, we can use the fast, in-memory "Direct" method
-    DefaultPointRenderer.displayMethod = "Direct"
+    -- On macOS, we can use the fast, in-memory "Direct" mode
+    DefaultPointRenderer.imageSource = FocusPointPrefs.displayModeDirect
     -- create base view, i.e. only the image
     local imageView = f:catalog_photo {
       width = photoDisplayWidth,
@@ -120,16 +120,23 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
 
     -- Create a view that combines all focus point etc. markings
     overlayViews = createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
-    if overlayViews then
-      -- overlay photo with markings
-      photoView = f:view {
-        imageView, overlayViews,
-        place = 'overlapping',
-      }
-    else
-      -- just display the image
-      photoView = imageView
+
+    -- Create a table of the child views that make up the photo view
+    local children = { place = "overlapping" }
+
+    -- In MAC, the photo must be the first item in the overlay view order to be used as a background image
+    if MAC_ENV then table.insert(children, imageView) end
+
+    -- Insert the focus point overlays
+    for _, v in ipairs(overlayViews) do
+      table.insert(children, v)
     end
+
+    -- On Windows, the photo must be the last item in the overlay view order to be used as a background image
+    if WIN_ENV then table.insert(children, imageView) end
+
+    -- Create the parent view
+    photoView = f:view(children)
 
   end
 
@@ -472,10 +479,9 @@ end
 ------------------------------------------------------------------------------]]
 function createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
-local viewsTable = {
-  place = "overlapping"
-
-}
+  local viewsTable = {
+    place = "overlapping"
+  }
 
   if fpTable then
 
@@ -513,7 +519,7 @@ local viewsTable = {
       end
     end
   end
-  return LrView.osFactory():view(viewsTable)
+  return viewsTable
 end
 
 --[[----------------------------------------------------------------------------
@@ -647,7 +653,7 @@ function createPointView(x, y, rotation, horizontalMirroring, iconFileTemplate, 
 
   local f = LrView.osFactory()
 
-  local view = f:view {
+  local view = f:row {
     f:picture {
       value = _PLUGIN:resourceId(fileName)
     },

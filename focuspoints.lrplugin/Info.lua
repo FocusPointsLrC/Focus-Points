@@ -35,7 +35,7 @@ return {
     },
     {
       title = "Straighten Images",
-      file = "Straighten.lua",
+      file = "StraightenImages.lua",
       enabledWhen = "photosSelected"
     },
   },

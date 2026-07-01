@@ -36,11 +36,17 @@ local LrPrefs         = import 'LrPrefs'
 local LrTasks         = import 'LrTasks'
 
 -- Required Lua definitions
-local Log             = require 'Log'
-local Utils           = require 'Utils'
+local FocusPointPrefs   = require 'FocusPointPrefs'
+local Log               = require 'Log'
+local Utils             = require 'Utils'
 
 -- Forward references to local functions
 local exportPhoto, exportPreview
+
+-- Local variables -------------------------------------------------------------
+local mogrifyPath = LrPathUtils.child( _PLUGIN.path, "bin" )
+mogrifyPath = LrPathUtils.child( mogrifyPath, "ImageMagick" )
+mogrifyPath = LrPathUtils.child( mogrifyPath, "magick.exe")
 
 local tempFileName
 local resizeParams
@@ -71,8 +77,9 @@ local function getImageFileName(photo)
   local leafName  = LrPathUtils.leafName( orgPath )
   local leafWOExt = LrPathUtils.removeExtension( leafName )
   local tempPath  = LrPathUtils.getStandardFilePath( "temp" )
-  tempFileName = LrPathUtils.child( tempPath, leafWOExt .. "-fpoints.jpg" )
-  return tempFileName
+  local thumbName = LrPathUtils.child( tempPath, leafWOExt .. "-thumb.jpg" )
+  tempFileName    = LrPathUtils.child( tempPath, leafWOExt .. "-fpoints.jpg" )
+  return tempFileName, thumbName
 end
 
 
@@ -111,23 +118,15 @@ end
   mogrifyExecute(table photo, string params, boolean script)
 
   Execute Mogrify with 'params' on 'imageFileName'.
+  'params' are passed in a script to  avoid exceeding the maximum command line length
+  when performing drawing operations involving a large number of points.
   In case Mogrify reports an error (return code ~= 0) an error message is
   issued and the the processing of the current photo is stopped.
 ------------------------------------------------------------------------------]]
-local function mogrifyExecute(photo, params, script)
-  local mogrifyPath
-  mogrifyPath = LrPathUtils.child( _PLUGIN.path, "bin" )
-  mogrifyPath = LrPathUtils.child( mogrifyPath, "ImageMagick" )
-  mogrifyPath = LrPathUtils.child( mogrifyPath, "magick.exe")
+local function mogrifyExecute(photo, params)
 
-  local scriptName
-  local cmdline = '\"' .. mogrifyPath .. '\" '
-  if script then
-    scriptName = createMagickScript(photo, params)
-    cmdline = cmdline .. '-script ' .. '\"' .. scriptName .. '\"'
-  else
-    cmdline = cmdline .. 'mogrify ' .. params
-  end
+  local scriptName = createMagickScript(photo, params)
+  local cmdline    = '\"' .. mogrifyPath .. '\"' .. ' -script ' .. '\"' .. scriptName .. '\"'
 
   Log.logDebug("Mogrify", cmdline )
   local rc = LrTasks.execute( '\"' .. cmdline .. '\"' )
@@ -144,20 +143,20 @@ local function mogrifyExecute(photo, params, script)
      "%s\n\nFATAL error calling 'mogrify.exe' (rc=%s)\nPlease check logfile",
       Utils.getPhotoFileName(photo), rc))
   end
-  if script then
-    local prefs = LrPrefs.prefsForPlugin( nil )
-    if prefs.loggingLevel ~= "DEBUG" then
-      -- keep temporary script file for log level DEBUG
-      if LrFileUtils.exists(scriptName) and not LrFileUtils.delete(scriptName) then
-        Log.logWarn("Mogrify", "Error deleting mogrify script file " .. scriptName)
-      end
+
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  if prefs.loggingLevel ~= "DEBUG" then
+    -- keep temporary script file for log level DEBUG
+    if LrFileUtils.exists(scriptName) and not LrFileUtils.delete(scriptName) then
+      Log.logWarn("Mogrify", "Error deleting mogrify script file " .. scriptName)
     end
   end
+
 end
 
 
 --[[----------------------------------------------------------------------------
-  public string filename, string method, string errorText
+  public string filename, string mode, string errorText
   writeToDisk(table photo, int xSize, int ySize)
 
   Writes an image of 'photo' with size 'xSize' x 'ySize' to disk
@@ -167,7 +166,7 @@ end
   - implement 'exportPhoto' approach to support Second Screen mode
 
   For modal dialog operation, a preview image is retrieved and written to disk.
-  Note that the requestJpegThumbnail() method treats the size as a minimum value and that the image on disk
+  Note that requestJpegThumbnail() treats the size as a minimum value and that the image on disk
   may be larger than this. Any deviations will be corrected in the Mogrify step.
   If the preview does not become available after a certain timeout, the image will be created using Export.
 ------------------------------------------------------------------------------]]
@@ -181,7 +180,17 @@ function exportPreview(photo, xSize, ySize)
   -- Request a preview image from Lightroom and write it to a temporary file.
   -- Same input and output parameters as the calling function
 
-  local previewFileName = getImageFileName(photo)
+  -- Polling interval used while waiting for Lightroom to provide a preview
+  local POLL_INTERVAL = 0.2
+  local RETRY_DELAY   = 1.0
+  local RETRY_TIMEOUT = 15
+
+  -- Minimum size of preview. Smaller images will not be accepted as valid preview.
+  -- This case can occur when switching from Develop to Library, where the plugin
+  -- appears to be stuck between different rendering systems.
+  local MIN_SIZE      = 250
+
+  local previewFileName, thumbName = getImageFileName(photo)
   local prefs     = LrPrefs.prefsForPlugin(nil)
   local fallback  = prefs.previewFallback
   local timeout   = prefs.previewTimeout
@@ -281,14 +290,13 @@ function exportPreview(photo, xSize, ySize)
   local function showProgress()
     -- Helper: display preview generation progress notification
     local startTime = LrDate.currentTime()
-    local timeout = 10
     if prefs.previewShowProgress then
       LrTasks.startAsyncTask(function()
         LrTasks.sleep(prefs.previewProgressDelay)
         local fadeDelay = 1.0
         local iteration = 0
         local frames = { "/", "\\" }  -- nothing fancy, just a classical simple spinner
-        while not previewReady and not timeoutReached(startTime, timeout) do
+        while not previewReady and not timeoutReached(startTime, RETRY_TIMEOUT) do
           iteration = iteration + 1
           local i = (iteration - 1) % #frames + 1
           LrDialogs.showBezel(string.format("Preparing preview... %s", frames[i]), fadeDelay)
@@ -306,10 +314,6 @@ function exportPreview(photo, xSize, ySize)
     Log.logInfo("Mogrify", "Preview timeout is 0. Using Export immediately.")
     return exportPhoto(photo, xSize, ySize)
   end
-
-  -- Polling ínterval used while waiting for Lightroom to provide a preview
-  local POLL_INTERVAL = 0.2
-  local RETRY_DELAY   = 1.0
 
   -- State variables for handling retries
   previewReady = false
@@ -348,12 +352,17 @@ function exportPreview(photo, xSize, ySize)
           Log.logDebug('Mogrify', string.format(
             "Preview content not valid after %.1fs", LrDate.currentTime() - startTime))
           --> retry!
-
+        elseif w < MIN_SIZE or h < MIN_SIZE then
+          -- tiny preview, retry
+          Log.logDebug('Mogrify', string.format(
+            "Preview obtained but much too small (%s x %s) after %.1fs",
+            w, h, LrDate.currentTime() - startTime))
+          --> retry!
         else
           -- Dimensions look right and preview image is not blank -> write to disk!
           previewReady = true
           Log.logInfo('Mogrify', string.format(
-            "Preview obtained after %.1f seconds", LrDate.currentTime() - startTime))
+            "Preview (%s x %s) obtained after %.1f seconds", w, h, LrDate.currentTime() - startTime))
 
           -- Write image to disk
           local ok = false
@@ -363,9 +372,18 @@ function exportPreview(photo, xSize, ySize)
             localFile:close()
           end
 
+          -- In debugging mode, save a copy of the response from requestJpegThumbnail()
+          if prefs.loggingLevel == "DEBUG" then
+            local thumbFile = io.open(thumbName, "wb")
+            if thumbFile then
+              ok, fileError = thumbFile:write(data)
+              thumbFile:close()
+            end
+          end
+
           if ok then
             Log.logInfo('Mogrify', string.format(
-              "Temporary preview written to %s", previewFileName))
+              "Temporary image written to %s", previewFileName))
           else
             -- I/O error. Returning a nil filename will cause the caller to handle this properly
             errorText = string.format(
@@ -393,7 +411,7 @@ function exportPreview(photo, xSize, ySize)
      thumbRequest = nil
 
     if previewReady then
-      return previewFileName, "Preview", errorText
+      return previewFileName, FocusPointPrefs.displayModePreview, errorText
     else
       -- Although the previous request to generate a JPEG thumbnail was completed, no image was returned.
       -- Delay the next request when retrying, since the preview will take a few seconds to become available anyway.
@@ -407,10 +425,17 @@ function exportPreview(photo, xSize, ySize)
         end
         LrTasks.sleep(POLL_INTERVAL)
       end
+      if timeoutReached(startTime, RETRY_TIMEOUT) then
+        errorText = string.format(
+          "Preview could not be obtained within the maximum waiting time of %.1f seconds",
+          RETRY_TIMEOUT)
+        Log.logInfo("Mogrify", errorText)
+        previewReady = true  -- not really, but this is required to make the progress indicator disappear
+        return nil, FocusPointPrefs.displayModePreview, errorText
+      end
     end
   end
 end
-
 
 function exportPhoto(photo, xSize, ySize)
   -- Exports an image of the photo to disk file via Lightroom's Export interfacce
@@ -451,15 +476,21 @@ function exportPhoto(photo, xSize, ySize)
   -- Trigger the progress notification to disappear
   previewReady = true
 
+  local imageSource = FocusPointPrefs.displayModeExport
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  if prefs.displayMode ~= FocusPointPrefs.displayModeExport then
+    imageSource = FocusPointPrefs.displayModeFallback
+  end
+
   -- Check whether Export was successful
   if not LrFileUtils.exists(exportFileName) then
     local errorText = "Error on export: exported file not found at " .. exportFileName
     Log.logError('Mogrify', errorText)
-    return nil, "Export", errorText
+    return nil, imageSource, errorText
   end
 
-  Log.logInfo('Mogrify', "Temporary export written to " .. exportFileName)
-  return exportFileName, "Export"
+  Log.logInfo('Mogrify', "Temporary image exported to " .. exportFileName)
+  return exportFileName, imageSource
 end
 
 --[[----------------------------------------------------------------------------
@@ -571,11 +602,11 @@ end
   ySize: height in pixel of the create temporary photo
 ------------------------------------------------------------------------------]]
 function MogrifyUtils.createDiskImage(photo, xSize, ySize)
-  local fileName, displayMethod, errorText = writeToDisk (photo, xSize, ySize)
+  local fileName, displayMode, errorText = writeToDisk (photo, xSize, ySize)
   if fileName then
     mogrifyResize(photo, xSize, ySize)  -- this only determines the resize params!
   end
-  return fileName, displayMethod, errorText
+  return fileName, displayMode, errorText
 end
 
 --[[----------------------------------------------------------------------------
@@ -587,8 +618,9 @@ end
 ------------------------------------------------------------------------------]]
 function MogrifyUtils.drawFocusPoints(photo, focuspointsTable)
   local params = buildDrawParams(focuspointsTable)
+  local jpegQuality = "-quality 85"  -- 85 produces file sizes close to the requestJpegThumbnail() result
   if params ~= nil then
-    params = resizeParams .. params
+    params = resizeParams .. params .. jpegQuality
     Log.logInfo("Mogrify", "Resizing image, drawing focus points and visualization frames")
     mogrifyExecute(photo, params, true)
   else

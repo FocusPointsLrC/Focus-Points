@@ -265,10 +265,11 @@ end
   public boolean
   floatsEqual(float a, b, epsilon)
 
-  Returns true if a and b are equal within a tolerance of epsilon
+  This checks whether two floating-point numbers are equal within a given tolerance.
+  If a tolerance is not specified, the default is the second decimal place.
 ------------------------------------------------------------------------------]]
 function Utils.floatsEqual(a, b, epsilon)
-  epsilon = epsilon or 1e-4
+  epsilon = epsilon or 0.005
   return math.abs(a - b) < epsilon
 end
 
