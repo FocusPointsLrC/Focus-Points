@@ -40,7 +40,7 @@ Focus Points makes this information accessible, allowing you to review every pho
 
 Whether you are analysing why a photograph is perfectly sharp, trying to understand why it isn't, or simply exploring how your camera behaves in different situations, Focus Points provides the information in one place.
 
----
+<br>
 
 ## Supported Cameras
 
@@ -50,12 +50,11 @@ Focus Points supports cameras from
 
 Support depends on the information recorded by each camera model. For a detailed compatibility overview see << link to user manual >>.
 
-
+<br>
 
 ## Documentation
 
 The documentation is organised by purpose.
-
 
 | Document                                                                                  | Purpose |
 |-------------------------------------------------------------------------------------------|--------------------|
@@ -64,13 +63,13 @@ The documentation is organised by purpose.
 | 📝&nbsp;[**Release&nbsp;Notes**](https://github.com/FocusPointsLrC/Focus-Points/releases) | Latest versions with new features, bug fixes and compatibility changes  
 | 💬&nbsp;[**Discussions**](https://github.com/FocusPointsLrC/Focus-Points/discussions)     | Questions, ideas and feedback from the community. 
 
-
+<br>
 
 ## Features
 
 ### Focus Point Viewer
 
-<img src="docs/images/ReadMe 2.jpg" alt="Focus Point Viewer" style="width:900px;"/>
+<img src="docs/images/ReadMe 2.jpg" alt="Focus Point Viewer" style="width:1000px;"/>
 
 The Focus Point Viewer displays the selected photograph together with autofocus information recorded by the camera.
 
@@ -116,7 +115,7 @@ Version 3.4 also introduces interactive straightening directly from the Focus Po
 
 Availability depends on camera support for roll-angle metadata. See the compatibility section below for supported camera models.
 
----
+<br>
 
 ## Contributing
 
@@ -128,7 +127,7 @@ Camera support has grown over many years thanks to photographs and metadata prov
 
 Every contribution helps improve support for future releases.
 
----
+<br>
 
 ## Acknowledgements
 
@@ -142,7 +141,7 @@ Special thanks also go to **John R. Ellis** for providing the algorithm used to 
 
 Additional contributors can be found on the project's GitHub Contributors page.
 
----
+<br>
 
 ## License
 
