@@ -1,7 +1,8 @@
-# Introduction
+## Current Release: [V3.4 updated July xx, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
 
 <img src="docs/images/ReadMe 1.jpg" alt="Focus Points for Lightroom Classic" style="width:1000px;"/>
 
+## Introduction
 ### See where your camera focused.
 
 Focus Points is a plugin for Adobe Lightroom Classic that displays the autofocus point used when a photograph was taken.
@@ -39,6 +40,10 @@ Most of this information is either hidden or unavailable in Lightroom Classic.
 Focus Points makes this information accessible, allowing you to review every photograph together with the data your camera actually recorded.
 
 Whether you are analysing why a photograph is perfectly sharp, trying to understand why it isn't, or simply exploring how your camera behaves in different situations, Focus Points provides the information in one place.
+
+<br>
+
+## Current Release: [V3.4 updated July xx, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/latest)
 
 <br>
 
