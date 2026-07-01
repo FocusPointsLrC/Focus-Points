@@ -11,8 +11,7 @@ But the focus point is only part of the story.
 Modern cameras record much more than the final image. They also record autofocus information, subject detection, camera settings, lens information and many other details that provide valuable context when reviewing a photograph. Lightroom Classic makes only part of this information available.
 
 **Focus Points brings this information together in a single view, allowing you to review each photograph with the information your camera actually recorded.**
-
----
+<br><br>
 
 ### Use Focus Points to...
 
@@ -22,8 +21,8 @@ Modern cameras record much more than the final image. They also record autofocus
 - Search image metadata.
 - Straighten images using recorded roll-angle information.
 - Rate, flag and label photographs while reviewing them.
+<br><br>
 
----
 
 ### Why Focus Points?
 
@@ -41,7 +40,7 @@ Focus Points makes this information accessible, allowing you to review every pho
 
 Whether you are analysing why a photograph is perfectly sharp, trying to understand why it isn't, or simply exploring how your camera behaves in different situations, Focus Points provides the information in one place.
 
----
+
 
 ## Supported Cameras
 
@@ -51,42 +50,21 @@ Focus Points supports cameras from
 
 Support depends on the information recorded by each camera model. For a detailed compatibility overview please see << link to user manual >>.
 
----
+
 
 ## Documentation
 
 The documentation is organised by purpose.
 
-📘 **User Manual**
 
-Learn how Focus Points works, how to interpret the information displayed by the plugin and how to get the best results with your camera.
-
-🔧 **Troubleshooting Guide**
-
-Solutions to common installation, configuration and camera-specific issues.
-
-📝 **Release Notes**
-
-New features, improvements and known limitations for each release.
-
-💬 **GitHub Discussions**
-
-Questions, ideas and feedback from the community.
+| Document                     | Purpose |
+|------------------------------|--------------------|
+| 📘&nbsp;**User&nbsp;Manual** | Complete feature documentation and camera-specific information.<br>Learn how Focus Points works, how to interpret the information displayed by the plugin and how to get the best results with your camera.<br>**If you are new to Focus Points, it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera.**
+| 🔧&nbsp;**Troubleshooting&nbsp;Guide** | Solutions to common installation, configuration and operational issues and camera-specific issues.
+| 📝&nbsp;**Release&nbsp;Notes** | New features, bug fixes and compatibility changes  
+| 💬&nbsp;**GitHub&nbsp;Discussions** | Questions, ideas and feedback from the community. 
 
 
-
-The project documentation is organised into separate documents so each can focus on a single purpose.
-
-| Document | Description |
-|----------|-------------|
-| **README** | Project overview and installation |
-| **User Manual** | Complete feature documentation and camera-specific information |
-| **Troubleshooting Guide** | Solutions to installation, compatibility and operational issues |
-| **Release Notes** | New features, bug fixes and compatibility changes |
-
-If you are new to Focus Points, reading the first chapters of the User Manual is strongly recommended.
-
----
 
 ## Features
 
@@ -166,7 +144,7 @@ Additional contributors can be found on the project's GitHub Contributors page.
 
 ---
 
-# License
+## License
 
 Original work
 
