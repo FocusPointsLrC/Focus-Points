@@ -119,9 +119,7 @@ Availability depends on camera support for roll-angle metadata. See the compatib
 
 ## Contributing
 
-Bug reports, feature requests and camera samples are always welcome.
-
-If you discover a camera that is not yet supported or notice incorrect autofocus information, please open a GitHub Issue or start a GitHub Discussion.
+Bug reports and feature requests are always welcome. If you discover a camera that is not yet supported or notice incorrect autofocus information, please open a GitHub Issue or start a GitHub Discussion.
 
 Camera support has grown over many years thanks to photographs and metadata provided by users around the world.
 
@@ -135,26 +133,21 @@ Focus Points began as the open-source project created by **Whizzbang Inc.**
 
 Since then it has evolved through contributions from many members of the Lightroom community.
 
-Special thanks go to **Phil Harvey**, creator of **ExifTool**. Without ExifTool, much of the camera-specific metadata displayed by Focus Points would not be accessible.
+Special thanks go to **Phil Harvey**, creator of **[ExifTool](https://exiftool.org/)**. Without ExifTool, much of the camera-specific metadata displayed by Focus Points would not be accessible.
 
-Special thanks also go to **John R. Ellis** for providing the algorithm used to preserve aspect ratio while rotating photographs—functionality available in Lightroom itself but not exposed through the Lightroom SDK.
+Special thanks also go to **[John R. Ellis]((https://johnrellis.com/))** for providing the algorithm used to preserve aspect ratio while rotating photographs—functionality available in Lightroom itself but not exposed through the Lightroom SDK. John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit, without which this plugin wouldn't exist.
 
-Additional contributors can be found on the project's GitHub Contributors page.
+
+A full list of contributors to this project can be found on the [project's GitHub Contributors page](https://github.com/FocusPointsLrC/Focus-Points/graphs/contributors).
+
 
 <br>
 
-## License
+## Licenses
 
-Original work
+Original work © Whizzbang Inc  
+Ongoing maintenance and modifications © 2026 Karsten Gieselmann
 
-© Whizzbang Inc.
-
-Ongoing maintenance and modifications
-
-© 2026 Karsten Gieselmann
-
-Licensed under the Apache License, Version 2.0.
-
-This plugin also contains components licensed under GPLv2.
-
-See the accompanying LICENSE files for details.
+Licensed under the Apache License, Version 2.0 (the "License");  
+This plugin contains code from AutoHotkey (GPLv2).  
+See the accompanying LICENSE files for details
