@@ -135,7 +135,7 @@ Since then it has evolved through contributions from many members of the Lightro
 
 Special thanks go to **Phil Harvey**, creator of **[ExifTool](https://exiftool.org/)**. Without ExifTool, much of the camera-specific metadata displayed by Focus Points would not be accessible.
 
-Special thanks also go to **[John R. Ellis]((https://johnrellis.com/))** for providing the algorithm used to preserve aspect ratio while rotating photographs—functionality available in Lightroom itself but not exposed through the Lightroom SDK. John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit, without which this plugin wouldn't exist.
+Special thanks also go to **[John R. Ellis](https://johnrellis.com/)** for providing the algorithm used to preserve aspect ratio while rotating photographs—functionality available in Lightroom itself but not exposed through the Lightroom SDK. John is a renowned SDK expert and the creator of [numerous amazing Lightroom plugins](https://johnrellis.com/lightroom/allplugins.htm), including the Debugging Toolkit, without which this plugin wouldn't exist.
 
 
 A full list of contributors to this project can be found on the [project's GitHub Contributors page](https://github.com/FocusPointsLrC/Focus-Points/graphs/contributors).
