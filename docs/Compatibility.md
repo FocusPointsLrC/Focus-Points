@@ -91,6 +91,6 @@ Straighten Images is not available for LR5, since version 5.x of the Lightroom S
 
 The following features are not supported in **LR5** because the relevant Lightroom SDK did not yet contain the necessary interfaces for their implementation: 
 
+- Filmstrip navigation
 - Tagging (flagging, rating and coloring) of photos within the plugin UI
 - Straightening images by applying compensation for camera roll angle
-- Filmstrip navigation
