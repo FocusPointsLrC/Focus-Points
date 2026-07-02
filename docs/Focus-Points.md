@@ -26,7 +26,14 @@
 * [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
 * [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
-### [Compatibility](Compatility.md)
+### [Compatibility](Compatibility.md)
+
+* [Cameras that support display of autofocus points](Compatibility.md#cameras-that-support-display-of-autofocus-points)
+* [Cameras that support straightening images](Compatibility.md#cameras-that-support-straightening-images)
+* [Features not supported in earlier versions of Lightroom](Compatibility.md#features-not-supported-in-earlier-versions-of-lightroom-)
+
+<br>
+
 ___
 
 
