@@ -58,7 +58,7 @@
 
 ## Cameras that support straightening images
 
-The straightening function relies on the presence of the 'RollAngle' tag in the metadata. Therefore, its application is currently limited to:
+The Straightening function relies on the presence of the `RollAngle` tag in the metadata. Therefore, its application is currently limited to:
 
 - Canon 
   - R5 (FW 1.5), R5m2
@@ -72,6 +72,25 @@ The straightening function relies on the presence of the 'RollAngle' tag in the 
 - Ricoh (GR III and later models)<sup>2</sup>
 
 <sup>1</sup> Fuji represents roll angle information within the range of -1° to +1° as `RollAngle=0`. <br>
-<sup>2</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other brands.
+<sup>2</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other camera manufacturers.
+
+- The value's numeric precision is 0.5°, so you will see roll angle values of 0, 0.5, 1.0, 1.5, and so on.
+- The recorded roll angle value does not always seem to correspond reasonably to the actual tilt angle. Consequently, images aligned based on the RollAngle tag do not always appear straight.
+- With older Pentax models in particular, a Roll Angle of -45/+45° is sometimes recorded, despite this value bearing no relation to the captured image.
+
+Nevertheless, the plugin will support the straightening of photos taken with Pentax and Ricoh cameras.
+Whether this feature is useful for straightening images is up to the individual user to decide.
 
 Unfortunately, it seems that Sony does not record roll angle information in photo metadata. Even a deep analysis of a series of custom-made A7RV test images did not reveal any evidence of its presence.
+
+Straighten Images is not available for LR5, since version 5.x of the Lightroom SDK does not yet supported the  required functionality.
+
+<br>
+
+## Features not supported in earlier versions of Lightroom    
+
+The following features are not supported in **LR5** because the relevant Lightroom SDK did not yet contain the necessary interfaces for their implementation: 
+
+- Tagging (flagging, rating and coloring) of photos within the plugin UI
+- Straightening images by applying compensation for camera roll angle
+- Filmstrip navigation
