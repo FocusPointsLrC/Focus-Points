@@ -51,12 +51,12 @@ The 'trick' is to install both versions of the plugin in separate folders, for i
 
 You add both plugins to Lightroom's Plugin Manager from the two different folders. Since both plugins use the same Lightroom plugin identifier, Lightroom allows only one of them to be enabled at a time.
 
-Inspect the 'Version' information and enable the version with which you want to work. If the other version has been enabled, it will be disabled automatically. To switch back, follow the same procedure.
+Inspect the 'Version' information and enable the version with which you want to work. If another version has been enabled, this will be disabled automatically. To switch back, follow the same procedure.
 
-This method allows you to have as many versions of the plugin as you want available in Lightroom.
+This method allows you to have as many versions of the plugin as you want available in Lightroom:
 
 <img src="docs/images/Plugin Coexistence.jpg" alt="Screenshot" style="width: 700px;"/>
 
 <br>
 
-Please join the discussion by clicking the button below and sharing your questions, comments and feedback on this pre-release.
+**Please join the discussion by clicking the button below and sharing your questions, comments and feedback on this pre-release.**
