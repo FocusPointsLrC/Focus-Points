@@ -26,8 +26,6 @@ Whether you're trying to understand why a photograph is perfectly sharp, why it 
 - Search image metadata.
 - Straighten images using recorded roll-angle information.
 - Rate, flag and label photographs while reviewing them.
-<br><br>
-
   
 <br>
 
