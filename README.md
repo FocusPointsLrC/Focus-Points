@@ -85,12 +85,12 @@ Depending on camera support, the viewer can display
 
 The exact information available depends on the camera model and the metadata recorded for the image.
 
-For a complete explanation of the different markers and their meaning, see the User Manual.
+For a complete explanation of the different markers and their meaning, see the [User Manual](docs/Focus-Points.md#photo-view).
 
 
 ### Metadata Viewer
 
-The integrated Metadata Viewer displays camera metadata that is not normally available in Lightroom Classic.
+The integrated [Metadata Viewer](docs/Focus-Points.md#23-metadata-viewer) displays camera metadata that is not normally available in Lightroom Classic.
 
 Unlike Lightroom's Metadata panel, the Metadata Viewer reads the information directly from the original image file and provides access to camera-specific metadata, including manufacturer-specific information where available.
 
@@ -108,11 +108,11 @@ The Metadata Viewer is particularly useful when analysing camera behaviour, comp
 
 Many modern cameras record the camera's roll angle when a photograph is taken.
 
-Focus Points can use this information to automatically straighten one or more selected photographs by applying the corresponding crop angle in Lightroom Classic.
+Focus Points can use this information to [automatically straighten one or more selected photographs](docs/Focus-Points.md#24-straighten-images) by applying the corresponding crop angle in Lightroom Classic.
 
 This is particularly useful when reviewing action, wildlife or sports photography where manually straightening a large number of images would be time-consuming.
 
-Version 3.4 also introduces interactive straightening directly from the Focus Point Viewer, allowing you to preview the result immediately and undo the adjustment if required.
+Version 3.4 also introduces [interactive straightening](docs/Focus-Points.md#straightening-control) directly from the Focus Point Viewer, allowing you to preview the result immediately and undo the adjustment if required.
 
 Availability depends on camera support for roll-angle metadata. See the compatibility section below for supported camera models.
 
