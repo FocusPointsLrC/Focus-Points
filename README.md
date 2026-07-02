@@ -55,7 +55,7 @@ Support depends on the information recorded by each camera model. Please refer t
 
 ## Documentation
 
-The documentation is organised by purpose.
+The documentation is organized by purpose.
 
 | Document                                                                                  | Purpose |
 |-------------------------------------------------------------------------------------------|--------------------|
@@ -144,7 +144,7 @@ A full list of contributors to this project can be found on the [project's GitHu
 
 <br>
 
-## Licenses
+## License
 
 Original work © Whizzbang Inc  
 Ongoing maintenance and modifications © 2026 Karsten Gieselmann
