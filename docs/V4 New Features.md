@@ -97,9 +97,9 @@ V4 introduces Direct View to Windows users. Direct View has been available on ma
 These characteristics make Direct View particularly useful when using the plugin in Second Screen mode.
 
 Direct View is now available on Windows, but there is currently one known limitation.   
-Investigation indicates that transparent PNG overlays (the corner icons) are not composited correctly in overlapping SDK views, causing visible rectangular artefacts around overlay graphics. A bug report has been filed with Adobe. 
+Investigation indicates that transparent PNG overlays (the corner icons) are not composited correctly in overlapping SDK views, causing visible rectangular artefacts around overlay graphics. A bug report has been filed with Adobe:<br>
+  https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087<br>
+  If this feature is important to you, **please consider voting**. Community votes help increase its visibility.<br>
 
-If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
-[https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087](https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087)
 
 <img src="images/Direct%20View%20Windows.jpg" alt="Direct View on Windows" style="width: 1000px;"/>
