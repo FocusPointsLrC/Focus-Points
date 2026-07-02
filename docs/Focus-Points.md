@@ -34,9 +34,6 @@
 
 <br>
 
-___
-
-
 # 1. Scope and Limitations
 
 A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS: 
