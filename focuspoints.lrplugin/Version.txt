@@ -1,2 +1,2 @@
-﻿v3.3.0.9030
+﻿v3.4.0.9030
 https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.4_pre3
