@@ -114,7 +114,7 @@ This is particularly useful when reviewing action, wildlife or sports photograph
 
 Version 3.4 also introduces [interactive straightening](docs/Focus-Points.md#straightening-control) directly from the Focus Point Viewer, allowing you to preview the result immediately and undo the adjustment if required.
 
-Availability depends on camera support for roll-angle metadata. See the compatibility section below for supported camera models.
+Availability depends on camera support for roll-angle metadata. See the [compatibility section](docs/Compatibility.md#cameras-that-support-straightening-images) for supported camera models.
 
 <br>
 
