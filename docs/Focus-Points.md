@@ -26,6 +26,7 @@
 * [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
 * [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
+### [Compatibility](Compatility.md)
 ___
 
 
@@ -40,7 +41,8 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Straightening images by applying compensation for camera roll angle<sup>3,6,7</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple. See full [list of supported cameras](../README.md#supported-cameras).<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple.<br>
+&nbsp;&nbsp;&nbsp;Check the [list of supported cameras](Compatibility.md#cameras-that-support-display-of-autofocus-points) to see if your camera is supported.<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
 <sup>5</sup> Currently supported for Fuji, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
@@ -48,7 +50,7 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 <sup>7</sup> Not for LR5.<br>
 
 
-To understand the principles of this plugin, how to use it and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
+To understand how to use this plugin and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 <br>
 <br>
 
@@ -445,30 +447,7 @@ This function reads the camera roll angle from the metadata of the selected phot
 
 Straightening individual images manually is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature can come in handy for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the captured scenes lack clear reference information to help you (or the Transform tool) straighten the images.
 
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to
-
-- Canon 
-  - R5 (FW 1.5), R5m2
-  - R6m2 (FW 1.4), R6m3
-  - R7 (FW 1.3), R8 (FW 1.2), R10??
-- Nikon (D5, D500 and later models)
-- Fuji (XT-5 and later models)<sup>1</sup>
-- Olympus/OM (EM-1/5/10 III and later models)
-- Panasonic (Lumix G6 and later models)
-- Pentax (K-7 and later models)<sup>2</sup>
-- Ricoh (GR III and later models)<sup>2</sup>
-
-<sup>1</sup> Fuji represents roll angle information within the range of -1° to +1° as `RollAngle=0`. <br>
-<sup>2</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other brands.
-
-- The value's numeric precision is 0.5°, so you will see roll angle values of 0, 0.5, 1.0, 1.5, and so on.
-- The recorded roll angle value does not always seem to correspond reasonably to the actual tilt angle. Consequently, images aligned based on the RollAngle tag do not always appear straight.
-- With older Pentax models in particular, a Roll Angle of -45/+45° is sometimes recorded, despite this value bearing no relation to the captured image.
-
-Nevertheless, the plugin will support the straightening of photos taken with Pentax and Ricoh cameras.
-Whether this feature is useful for straightening images is up to the individual user to decide.
-
-Unfortunately, it seems that Sony does not record roll angle information in photo metadata. Even a deep analysis of a series of custom-made A7RV test images did not reveal any evidence of its presence.
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras, that record this information](Compatibility.md#cameras-that-support-straightening-images).
 
 Straighten Images is not available for LR5, since version 5.x of the Lightroom SDK does not yet supported the  required functionality.
 
