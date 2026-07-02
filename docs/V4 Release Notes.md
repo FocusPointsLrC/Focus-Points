@@ -34,7 +34,7 @@ If this feature is important to you, **please consider voting**. Community votes
   <br><br>
   * **Direct View display mode has known display issues on Windows with LrC 15.4 or earlier**.  
     'Direct View' has been the default display mode on macOS. It is fast because it doesn't require JPG images to be written to disk and enhanced by drawing visualization rectangles onto them. Direct View also features live updates of the current photo. Any edits to the photo are immediately reflected in the plugin's display, which is useful in Second Screen mode.<br><br> 
-    On Windows, the corner icons that visualize focus points, face or subject detection by overlaying the photo do not reveal the underlying image. Instead, transparent pixels are rendered using the background color of the Lightroom dialog box, resulting in visible rectangular artefacts around the overlay image.  A bug report has been filed with Adobe.<br>
+    On Windows, the corner icons that visualize focus points, face or subject detection by overlaying the photo do not reveal the underlying image. Instead, transparent pixels are rendered using the background color of the Lightroom dialog box, resulting in visible rectangular artefacts around the overlay image.  A bug report has been filed with Adobe:<br>
   https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087<br>
   If this feature is important to you, **please consider voting**. Community votes help increase its visibility.<br><br>
 
