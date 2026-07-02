@@ -1,4 +1,4 @@
-# User Manual
+# User Manual (V3.4)
 
 ## Content
 
@@ -138,20 +138,13 @@ _Library → Plug-in Extras → Focus Point_
 Develop module:<br>
 _File → Plug-in Extras → Focus Point_
 
-In V3.2, you no longer need to select the corresponding photos before starting the plugin to display the focus point for multiple photos. The plugin now supports next and previous function when run on a single image (the current one in Lightroom filmstrip). `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. Unlike with a set of selected photos, there is no wrap-around when the beginning or end of the film strip is reached.
-
-To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin.
-
-<u>Note</u>: _Filmstrip_ navigation uses the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, this feature is not available on LR5.7.
-
-
 ### User Interface
 
 The user interface is divided into three main areas. On the left is the Photo View, which shows visualized focus points and detected elements. On the right is the Info View, a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating and flagging images are located at the bottom of the window.
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
-The Focus Point Viewer window is not dynamically resizable. However, V3.2 introduces a [Size of plugin window](#size-of-plugin-window) setting that allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. This setting corresponds to 90% (3XL) downto 40% (S), in increments of 10%, of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
+The Focus Point Viewer window cannot be resized dynamically. However, you can customize the size of the window using the [Size of plugin window](#size-of-plugin-window) setting. There are six options to choose from, ranging from 3XL to S. This setting corresponds to 90% (3XL) downto 40% (S), in increments of 10% of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
 The info view and the bottom row of user controls are not included in this percentage. The space allocated to these areas is in addition to the size setting.
 
 Click on the following links for more detailed information:
@@ -263,12 +256,14 @@ The tag `CameraSettingsVersion` has not been found which means that this file do
 
 ### Navigation Controls
 
-In V3.2, you no longer need to select the corresponding photos before starting the plugin to display the focus point for multiple photos. The plugin now supports next and previous function when run on a single image (the current one in Lightroom filmstrip). `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. Unlike with a set of selected photos, there is no wrap-around when the beginning or end of the film strip is reached.
+Use the `Next image` and `Previous image` buttons to scroll through the photos.
 
-To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin.
+In Lightroom, if only one photo is selected in the filmstrip, `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. There is no wrap-around when the beginning or end of the film strip is reached.
+
+To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin. In this case, `Next image` will advance to the next photo in the selection, and `Previous image` will advance to the previous photo in the selection. A wrap-around occurs when the beginning or end of the film strip is reached.
+
 
 <u>Note</u>: _Filmstrip_ navigation uses the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, this feature is not available on LR5.7.
-
 
 ### Flagging Controls
 
@@ -297,7 +292,7 @@ The keyboard layout in use can be configured in the plugin preferences, under th
 
 ### Straightening Control
 
-V3.4 enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the ['Straightening Images'](#24-straighten-images) batch process introduced in V3.3. The same options and restrictions apply.
+V3.4 enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the ['Straightening Images'](#24-straighten-images) batch process. The same options and restrictions apply.
 
 **How the Straighten Control Works**
 
@@ -336,10 +331,7 @@ For images that cannot be straightened because Roll Angle information is unavail
 
 ### Keyboard Shortcuts
 
-To simplify the operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, so the plugin can be controlled entirely by the keyboard, without the need to touch the mouse.
-
-Some shortcuts in V3.1 have been changed to avoid collision with Lightroom tagging shortcuts. Previously, `P` was used for 'previous', `X` for 'exit', and `U` for 'user manual'. Instead of 'Exit', the plugin will now close using the `Close` button (shortcut `C`).
-
+To simplify operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, meaning you can operate the plugin entirely with the keyboard and never need to touch the mouse.
 
 | Action                                      | Keyboard shortcuts |
 |---------------------------------------------|--------------------|
@@ -382,17 +374,15 @@ Due to limitations in the LR SDK, the plugin can only work with text input and c
 
 **Arrow keys, Function keys, Esc, Return, etc. do not change text input, so the choice of hotkeys is limited to text (i.e. printable ASCII characters).**
 
-This approach works well as long as the focus remains on the input field.
+This approach is effective as long as the keyboard focus remains on the input field.
 
 In Windows, only pressing the Tab key or clicking on the photo will remove the focus from the input field. As a result, further keyboard input will not be recognized. Mouse operation does not remove the focus.
 
-On macOS, clicking on any control (button, link text or tagging icon) takes focus away from the input field. With the large number of new controls in V3.2, it is not possible to perform operations using keyboard shortcuts and the mouse simultaneously for the same image.
+On macOS, clicking on any control (such as a button, link or tagging icon) removes the focus from the input field. Given the large number of different controls, it is difficult to perform operations using keyboard shortcuts and the mouse simultaneously on the same image.
 
-n V3.1, the text input field for keyboard shortcuts was invisible. The user could not understand why keyboard shortcuts stopped working when focus was removed from the input field by mouse operation. As the LR SDK offers no option to focus on a specific control, the input field must be refocused by the userto continue working with keyboard shortcuts.
+By default, the input field is visible to indicate when it has lost focus. To continue working with keyboard shortcuts, you need to click the field again.
 
-To make this procedure more transparent and intuitive, the text input field is now visible by default.
-
-You can configure the size of the text input field, including the labelling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
+You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
 
 <br>
 
@@ -446,7 +436,7 @@ The pitch angle is 4.1°, which means that it's height was approximately 50m * s
 
 ## 2.4 Straighten Images
 
-Straighten Images is a new plugin function in V3.3:
+To straighten a selection of photos, run
 
 * Library → Plug-in Extras → Straighten Images, or
 * File → Plug-in Extras → Straighten Images
@@ -587,7 +577,7 @@ This setting can be used to customize the appearance of the input field:
 <img src="images/README%20TextInputSetting.jpg" alt="Screenshot" style="width: 600px;"/>
 
 - Invisible. This is self-explaining
-- Small. A narrow input field without labelling
+- Small. A narrow input field without labeling
 - Regular. An input field that can display a minimum of 10 characters, along with a label containing a link to the 'Keyboard Shortcuts' section of the user manual.
 
 **_Truncate or wrap long strings_**. Default setting: `On`, `32` characters<br>
@@ -931,7 +921,7 @@ A typical example of a situation where no focus point is displayed.
 Focus Information shows that the `AFSearch` tag has a value of "Not Ready", which means that the camera was unable to lock focus when the shutter was pressed. A typical use case is when shooting with release priority or using the back button focus.<br><br>
 
 <img src="images/Olympus 4.jpg" alt="Olympus 4" style="width: 1000px;"/>
-Since V3.1 the plugin supports the whole E-System. While the benefit of supporting the focus point display for the old DSLR models is questionable<sup>3</sup> due to their very limited number of AF points (e.g. the E-1 has only 3 AF points), the implementation effort was small since the pre-2008 E-System models follow a very similar logic as the mirrorless models. Instead of using `AFPointSelected`, the focus area stored in `AFAreas` can be used to visualize the focus point/area.
+The plugin is compatible with the entire E-System. While the benefit of supporting the focus point display for the old DSLR models is questionable<sup>3</sup> due to their very limited number of AF points (e.g. the E-1 has only 3 AF points), the implementation effort was small since the pre-2008 E-System models follow a very similar logic as the mirrorless models. Instead of using `AFPointSelected`, the focus area stored in `AFAreas` can be used to visualize the focus point/area.
 
 <sup>3</sup> Using autofocus with a camera that has few focus points usually results in a two-step process: 1. focus on the desired point, then 2. hold the shutter button halfway down and pan the camera to achieve the desired composition. While this can produce great results, it's impossible to reconstruct the actual focus point. However, the focus point indicator can be useful for action shots, as "focus and pan" is not the best way to capture such scenes.
 
@@ -949,7 +939,7 @@ Supported features:
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 <sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).<br>
 
-With the release of plugin version V3.1, OM System has its own chapter in this user documentation. This is mainly because previously unknown metadata tags have been identified and decoded: `AFSelection`, `AFFocusArea` and `SubjectDetectionArea`.
+OM System has its own chapter in this user documentation. This is mainly because previously unknown metadata tags have been identified and decoded: `AFSelection`, `AFFocusArea` and `SubjectDetectionArea`.
 
 With this information, it is possible to visualize not only the AF area selected by the user and the point of focus, but also the frames used to detect the subject. These frames are the same frames that you can see in the viewfinder or on the camera display when shooting with Subject Detection enabled.
 
@@ -1072,7 +1062,7 @@ Supported features:
 
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 
-With the release of V3.1, Pentax is not only on par with other camera manufacturers and models in terms of supported features, it is even ahead of the "Big Three", Canon, Nikon and Sony.
+Pentax is not only on par with other camera manufacturers and models in terms of supported features, it is even ahead of the "Big Three", Canon, Nikon and Sony.
 
 While working on Pentax support, a lot of effort was put into finding and decoding relevant metadata tags for newer models (like the K-3 III) and fixing tags that were already supported by ExifTool but not properly decoded for models like the K-Sx, K-70 and KP.
 
