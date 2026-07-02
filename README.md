@@ -24,7 +24,7 @@ Modern cameras record much more than the final image. They also record autofocus
 - Rate, flag and label photographs while reviewing them.
 <br><br>
 
-
+  
 ### Why Focus Points?
 
 Every photograph tells two stories.
@@ -125,6 +125,12 @@ Bug reports and feature requests are always welcome. If you discover a camera th
 Camera support has grown over many years thanks to photographs and metadata provided by users around the world.
 
 Every contribution helps improve support for future releases.
+
+<br>
+
+## Enjoying Focus Points?
+
+If Focus Points has become a useful part of your Lightroom workflow and you'd like to support its continued development, bug fixes, and future improvements, you can buy me a coffee on <img src="focuspoints.lrplugin/assets/icons/kofi.png" style="width:16px;"/> [Ko-fi](https://ko-fi.com/focuspoints). Your support is always appreciated, but never expected. 
 
 <br>
 
