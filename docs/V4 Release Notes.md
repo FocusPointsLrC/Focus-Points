@@ -55,7 +55,7 @@ Inspect the 'Version' information and enable the version with which you want to 
 
 This method allows you to have as many versions of the plugin as you want available in Lightroom:
 
-<img src="docs/images/Plugin Coexistence.jpg" alt="Screenshot" style="width: 700px;"/>
+<img src="images/Plugin Coexistence.jpg" alt="Screenshot" style="width: 700px;"/>
 
 <br>
 
