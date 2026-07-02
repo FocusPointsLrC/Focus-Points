@@ -101,7 +101,7 @@ Features include
 - metadata group display
 - direct access to EXIF, XMP and camera-specific metadata
 
-The Metadata Viewer is particularly useful when analysing camera behaviour, comparing photographs or exploring newly supported camera models.
+The Metadata Viewer is particularly useful when analysing camera behavior, comparing photographs or exploring newly supported camera models.
 
 
 ### Straighten Images
