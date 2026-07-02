@@ -2,17 +2,21 @@
 
 <img src="docs/images/ReadMe 1.jpg" alt="Focus Points for Lightroom Classic" style="width:1000px;"/>
 
-## Introduction
-### See where your camera focused.
+## Why Focus Points?
 
-Focus Points is a plugin for Adobe Lightroom Classic that displays the autofocus point used when a photograph was taken.
+Every photograph tells two stories.
 
-But the focus point is only part of the story.
+The first is the image itself.
 
-Modern cameras record much more than the final image. They also record autofocus information, subject detection, camera settings, lens information and many other details that provide valuable context when reviewing a photograph. Lightroom Classic makes only part of this information available.
+The second is the information your camera recorded while capturing it.
+
+Modern cameras record far more than the final photograph. Along with the image they record autofocus information, subject detection, focus distance, lens settings, camera orientation and many other details that help explain how the photograph was captured.
+
+Lightroom Classic imports only part of this information and displays even less.
 
 **Focus Points brings this information together in a single view, allowing you to review each photograph with the information your camera actually recorded.**
-<br><br>
+
+Whether you're trying to understand why a photograph is perfectly sharp, why it isn't, or simply how your camera behaved in a particular situation, Focus Points helps you see what the camera saw when you pressed the shutter.
 
 ### Use Focus Points to...
 
@@ -25,22 +29,6 @@ Modern cameras record much more than the final image. They also record autofocus
 <br><br>
 
   
-### Why Focus Points?
-
-Every photograph tells two stories.
-
-The first is the image itself.
-
-The second is the information your camera recorded while capturing it.
-
-Modern cameras continuously analyse the scene before and during exposure. Depending on the camera model they record information such as the autofocus point, selected focus area, detected faces or subjects, camera orientation, focus distance, lens configuration and many other details.
-
-Most of this information is either hidden or unavailable in Lightroom Classic.
-
-Focus Points makes this information accessible, allowing you to review every photograph together with the data your camera actually recorded.
-
-Whether you are analysing why a photograph is perfectly sharp, trying to understand why it isn't, or simply exploring how your camera behaves in different situations, Focus Points provides the information in one place.
-
 <br>
 
 ## Supported Cameras
