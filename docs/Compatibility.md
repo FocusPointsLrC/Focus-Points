@@ -54,6 +54,7 @@
   * iPhone (starting from at least iPhone 5)
   * Face/pet detection frames (visualizing "Person & Pets" information from Apple's Photos App)
 
+<br>
 
 ## Cameras that support straightening images
 
