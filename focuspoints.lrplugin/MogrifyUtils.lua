@@ -74,7 +74,11 @@ local colorMap = {
 ------------------------------------------------------------------------------]]
 local function getImageFileName(photo)
 
-  local orgPath   = photo:getRawMetadata("path")
+  local ok, orgPath = LrTasks.pcall(photo.getRawMetadata, photo, "path")
+  if not ok or not orgPath then
+    return nil
+  end
+
   local leafName  = LrPathUtils.leafName( orgPath )
   local leafWOExt = LrPathUtils.removeExtension( leafName )
   local tempPath  = LrPathUtils.getStandardFilePath( "temp" )
@@ -90,7 +94,7 @@ end
 
   Create an ImageMagick script file containing all drawing commands. This avoids
   command-line length limitations when many focus points need to be rendered.
-  Returns the name of the temp file.
+  Returns the name of the temp script file or nil in case of errors
 ------------------------------------------------------------------------------]]
 local function createMagickScript(photo, params)
   local scriptName = Utils.getTempFileName()
@@ -108,8 +112,7 @@ local function createMagickScript(photo, params)
   if not success then
     local errorText = 'FATAL error creating script file ' .. scriptName
     Log.logError('Mogrify', errorText)
-    LrErrors.throwUserError(
-      string.format("%s\n\n%s", Utils.getPhotoFileName(photo), errorText))
+    return nil
   end
   return scriptName
 end
@@ -123,26 +126,21 @@ end
   when performing drawing operations involving a large number of points.
   In case Mogrify reports an error (return code ~= 0) an error message is
   issued and the the processing of the current photo is stopped.
+  Returns true on success and false on failure.
 ------------------------------------------------------------------------------]]
 local function mogrifyExecute(photo, params)
 
   local scriptName = createMagickScript(photo, params)
+  if not scriptName then return false end
+
   local cmdline    = '\"' .. mogrifyPath .. '\"' .. ' -script ' .. '\"' .. scriptName .. '\"'
 
   Log.logDebug("Mogrify", cmdline )
   local rc = LrTasks.execute( '\"' .. cmdline .. '\"' )
 
-  -- Avoid Windows process queue saturation
-  if WIN_ENV then
-      LrTasks.sleep(0.02)
-      LrTasks.yield()
-  end
-
   if rc ~= 0 then
     Log.logError("Mogrify", 'Error calling: ' .. cmdline .. ", return code " .. rc)
-    LrErrors.throwUserError(string.format(
-     "%s\n\nFATAL error calling 'mogrify.exe' (rc=%s)\nPlease check logfile",
-      Utils.getPhotoFileName(photo), rc))
+    return false
   end
 
   local prefs = LrPrefs.prefsForPlugin( nil )
@@ -153,6 +151,7 @@ local function mogrifyExecute(photo, params)
     end
   end
 
+  return true
 end
 
 --[[----------------------------------------------------------------------------
@@ -200,13 +199,20 @@ function exportPreview(photo, xSize, ySize)
   -- appears to be stuck between different rendering systems.
   local MIN_SIZE      = 250
 
-  local previewFileName, thumbName = getImageFileName(photo)
   local prefs     = LrPrefs.prefsForPlugin(nil)
   local fallback  = prefs.previewFallback
   local timeout   = prefs.previewTimeout
   local thumbRequest
   local callbackReceived
   local errorText
+
+  local previewFileName, thumbName = getImageFileName(photo)
+  if not previewFileName then
+    -- getImageFileName can return w/o result if the current file has been deleted in Second Screen mode
+    errorText = "Internal error: Preview cannot be obtained for a deleted photo."
+    Log.logWarn("Mogrify", errorText)
+    return nil, FocusPointPrefs.displayModePreview, errorText
+  end
 
   local function getJpegDimensions(data)
     -- Helper function to retrieve the dimensions of the image returned by requestJpegThumbnail()
@@ -452,7 +458,15 @@ function exportPhoto(photo, xSize, ySize)
   -- Same input and output parameters as the calling function
 
   local tempPath  = LrPathUtils.getStandardFilePath( "temp" )
+
   local exportFileName  = getImageFileName(photo)
+  if not exportFileName then
+    -- getImageFileName can return w/o result if the current file has been deleted in Second Screen mode
+    local errorText = "Internal error: Image of deleted photo cannot be exported."
+    Log.logWarn("Mogrify", errorText)
+    return nil, FocusPointPrefs.displayModeExport, errorText
+  end
+
   local exportSettings = {
     LR_collisionHandling            = 'overwrite',
     LR_export_destinationType       = 'specificFolder',
@@ -632,7 +646,9 @@ function MogrifyUtils.drawFocusPoints(photo, focuspointsTable)
   if params ~= nil then
     params = resizeParams .. params .. jpegQuality
     Log.logInfo("Mogrify", "Resizing image, drawing focus points and visualization frames")
-    mogrifyExecute(photo, params, true)
+    if not mogrifyExecute(photo, params, true) then
+      Log.logError("Mogrify", "Errors occured. No markings applied")
+    end
   else
     Log.logInfo("Mogrify", "Nothing to draw - no focus points or visualization frames found")
   end

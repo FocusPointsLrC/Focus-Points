@@ -145,24 +145,19 @@ function ExifUtils.getBinaryValue(photo, key)
 
     -- Call ExifTool to output key's value in binary format
     rc = LrTasks.execute(cmd)
-
-    -- Avoid Windows process queue saturation
-    if WIN_ENV then
-        LrTasks.sleep(0.02)
-        LrTasks.yield()
-    end
-
-    if (rc == 0) then
+    if rc == 0 then
       -- Read redirected stdout from temp file to save output
       result = LrFileUtils.readFile(output)
       Log.logDebug("ExifUtils", "Binary mode (-b) value for " .. key .. " -> " .. result)
     else
       Log.logDebug("ExifUtils", "ExifTool command failed (rc=" .. rc ..") : " .. cmd)
     end
+
     -- Clean up: remove the temp file
     if LrFileUtils.exists(output) and not LrFileUtils.delete(output) then
       Log.logWarn("Utils", "Unable to delete ExifTool output file " .. output)
     end
+
     -- do not return "", "n/a" or "(none)" as a result
     if result and (result == "" or string.upper(result) == ExifUtils.metaValueNone or
                                    string.upper(result) == ExifUtils.metaValueNA)  then
@@ -243,24 +238,17 @@ end
 
   Use the ExifTool command to read the metadata from the image file and write the
   output to a text file.
-  Returns the output as string.
+  Returns the output as string or nil in case of error
 ------------------------------------------------------------------------------]]
 function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
   local cmd, outputFileName = getExifCmd(targetPhoto, includeGroupNames)
   local rc = LrTasks.execute(cmd)
 
-  -- Avoid Windows process queue saturation
-  if WIN_ENV then
-      LrTasks.sleep(0.02)
-      LrTasks.yield()
-  end
-
   if rc ~= 0 then
     -- something went wrong
     local errorText = "FATAL error: unable to read photo metadata (ExifTool rc=" .. rc .. ")"
     Log.logError("ExifUtils", errorText)
-    LrErrors.throwUserError(
-      string.format("%s\n\n%s", Utils.getPhotoFileName(targetPhoto), errorText))
+    return nil
   else
     local fileInfo = LrFileUtils.readFile(outputFileName)
     return fileInfo

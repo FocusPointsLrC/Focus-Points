@@ -934,6 +934,7 @@ local function showFocusPoint()
     end
 
     local function setFileName(photo)
+      if not photo then return end
       local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
       local fileName = Utils.getPhotoFileName(photo)
       local tooltip
@@ -1051,19 +1052,48 @@ local function showFocusPoint()
         dismissFloatingDialog()
       end
 
-      local previousCropSignature = getCropSignature(targetPhoto)
-      local previousSettingsSignature = getSettingsSignature()
-      local previousFileName = targetPhoto:getFormattedMetadata("fileName")
-
       LrTasks.startAsyncTask(function()
-        while myIteration == dialogIteration and not exitDialog do
-          if getCropSignature(targetPhoto) ~= previousCropSignature
-          or getSettingsSignature() ~= previousSettingsSignature
-          or targetPhoto:getFormattedMetadata("fileName") ~= previousFileName
+
+        local previousCropSignature     = getCropSignature(targetPhoto)
+        local previousSettingsSignature = getSettingsSignature()
+
+        while myIteration == dialogIteration do
+
+          -- Give Lightroom a chance to process pending events
+          LrTasks.yield()
+
+          -- Did another callback already decide to close the dialog?
+          if exitDialog then
+            break
+          end
+
+          -- Retrieve the current target photo *after* yielding.
+          local currentPhoto = catalog:getTargetPhoto()
+
+          if currentPhoto == nil
+          or currentPhoto ~= targetPhoto                            -- Selection changed?
+          or getSettingsSignature() ~= previousSettingsSignature    -- Plugin settings changed?
           then
             requestRefresh()
             break
           end
+
+          -- Crop changed?
+          local ok, cropSignature = LrTasks.pcall(getCropSignature, currentPhoto)
+          if ok then
+            if cropSignature ~= previousCropSignature then
+              Log.logInfo("FocusPoint", "Crop changed")
+              requestRefresh()
+              break
+            end
+          else
+            -- The current photo disappeared (typically because it was deleted).
+            -- Wait for selectionChangeObserver() to receive Lightroom's updated selection.
+            Log.logInfo("FocusPoint", "Photo vanished during polling (probably deleted by user)")
+            break
+          end
+
+          -- Poll every 0.5 seconds
           LrTasks.sleep(0.5)
         end
       end)
@@ -1074,9 +1104,22 @@ local function showFocusPoint()
         return "refresh"
       end
 
+      LrFunctionContext.callWithContext("ActivationHack", function(c)
+        local scope = LrDialogs.showModalProgressDialog{
+          title = "Work around LR SDK window activation issue",
+          functionContext = c,
+        }
+        for i = 1,50 do
+          LrTasks.sleep(0)
+          LrTasks.yield()
+        end
+        scope:done()
+      end)
+
       LrDialogs.presentFloatingDialog(_PLUGIN, {
         title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = dialogContents(),
+        block_task = true,
         resizable = true,
         save_frame = "FocusPointsFloatingDialogFrame",
         -- onShow gives us the close/toFront handles for this dialog instance.
@@ -1084,6 +1127,7 @@ local function showFocusPoint()
         -- selection changes or a navigation/keyboard shortcut is used,
         -- otherwise a new window would be stacked on top of the old one
         -- on every iteration of the outer loop.
+
         onShow = function(callForward)
           if myIteration ~= dialogIteration then return end
           floatingDialogClose = callForward and callForward.close
@@ -1143,6 +1187,8 @@ local function showFocusPoint()
       -- Save link to current photo, eg. as supplementary information in user messages
       GlobalDefs.currentPhoto = targetPhoto
 
+      local ok
+
       -- Update file name display
       setFileName(targetPhoto)
 
@@ -1163,18 +1209,23 @@ local function showFocusPoint()
 
       if (targetPhoto:checkPhotoAvailability()) then
         local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
-        rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
 
+        rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
         if rendererTable then
           metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
-          photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-          infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
-          if not (photoView and infoView) then
-            errorMsg = "Internal error: Unable to create main window"
+          if metadata then
+            photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
+            infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
+            if not (photoView and infoView) then
+              errorMsg = "Internal error: Unable to create main window"
+            end
+            -- Update the roll and crop angle display
+            if not userResponse or userResponse ~= "refresh" then
+              initializeStraightenControl(targetPhoto)
+            end
+          else
+            errorMsg = "Unable to read the photo's metadata using ExifTool"
           end
-          -- Update initial roll angle display
-          if not userResponse or userResponse ~= "refresh" then initializeStraightenControl(targetPhoto) end
-          initializeStraightenControl(targetPhoto)
         else
           -- just to have this case covered - normally this condition should not occur
           errorMsg = "Internal error: Unmapped points renderer"
@@ -1243,7 +1294,8 @@ local function showFocusPoint()
               break
             end
           end
-        else -- userResponse == "refresh" -> refresh display for this photo
+        else
+          -- userResponse == "refresh" -> refresh display for this photo
         end
 
         -- Clean up

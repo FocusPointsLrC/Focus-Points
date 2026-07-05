@@ -186,13 +186,6 @@ local function getWinScalingFactor()
 
   -- Query registry value by calling REG.EXE
   local rc = LrTasks.execute(cmd)
-
-  -- Avoid Windows process queue saturation
-  if WIN_ENV then
-      LrTasks.sleep(0.02)
-      LrTasks.yield()
-  end
-
   Log.logDebug("Utils", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
   Log.logDebug("Utils", "REG command: " .. cmd .. ", rc=" .. rc)
 
