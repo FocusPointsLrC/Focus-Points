@@ -177,37 +177,38 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 ### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
 
-**Effect:** 
+**Effect:** This prevents a smooth 'Follow Lightroom' behavior on macOS. Whenever the Focus Point Viewer opens or reopens to displays the selected image, it will receive the keyboard input. This will interrupt Lightroom workflows that are using the keyboard. The user needs to click Lightroom to be able to continue operating Lightroom using the keyboard.   
 
-**Reason:** 
+**Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. On Windows there is a tricky workaround, but this has the risk that is might stop working with any Lightroom update. 
 
-**Current status:** 
+**Current status:** Bug report to be filed with Adobe. 
 
-**How you can help:**
+**How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 ---
 
 ### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-**Effect:** 
+**Effect:** In Second Screen Interactive mode, the Focus Point Viewer is the active window but keyboard input is not received until the users presses Tab or clicks a UI control.   
 
-**Reason:** 
+**Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
-**Current status:** 
+**Current status:** Bug report to be filed with Adobe. 
 
-**How you can help:**
+**How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 --- 
 
 ### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**   OS dependency ??? 
 
-**Effect:** 
+**Effect:** In Second Screen mode, the Focus Point Viewer is always on top of all visible windows on the screen. It is not possibe to bring other windows back to top. This limits usablity at least in those cases, where the Focus Point Viewer overlaps with applications that the user wants to use in parallel. 
 
-**Reason:** 
+**Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:
+https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457
 
-**Current status:** 
+**Current status:** New bug report to be filed with Adobe.   
 
-**How you can help:**
+**How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 --- 
 
