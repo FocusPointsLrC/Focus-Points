@@ -49,7 +49,7 @@ When checking the focus points for multiple photos, you are not restricted to us
 In this mode, Focus Points Viewer remains the active window unless you click anywhere else <sup>2, 3, 4</sup>.
 
 
-<img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/>
+<img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/><br>
 
 #### Configuration ####
 
@@ -90,7 +90,7 @@ The following table summarizes the characteristics of the available display mode
 &nbsp;*&nbsp; Uses corner markers for focus points.<br> 
 &nbsp;** Uses full rectangle overlays.<br> 
 
-**Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.<br><br>
+**Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.<br>
 
 #### Changing the active display mode on the fly
 
@@ -104,8 +104,7 @@ Press:
 
 After selecting a different display mode, the window will automatically refresh (close and reopen).
 
-<img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/>
-<br><br>
+<img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/><br>
 
 #### How display modes affect the Focus Point Viewer performance
 
