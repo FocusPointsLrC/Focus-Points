@@ -133,6 +133,8 @@ Startup time depends on the selected display mode, camera model, and whether Lig
 | Full rectangle overlays with good performance | **Preview Image** |
 | Maximum reliability, regardless of preview availability | **Export Image** |
 
+<br>
+
 ## 3. Direct View on Windows
 
 V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been available on macOS since earlier versions. Unlike the Preview Image and Export Image modes, Direct View displays Lightroom's own rendered image directly, without creating a temporary JPEG on disk. This has two major advantages:
@@ -144,12 +146,15 @@ Direct View is therefore the recommended display mode whenever live updates and 
 
 **Direct View is the recommended choice while editing photos because it provides the fastest startup and updates immediately as Lightroom adjustments are made.**
 
+<br>
+
 ## 4. Preview Image and Export Image on macOS
 
 This is not included in PRE 1, but is planned for inclusion in a future pre-release version.
 
 **These display modes are recommended when you prefer full rectangle overlays or require the most reliable rendering regardless of Lightroom's preview state.**
 
+<br>
 
 ## 5. Known Limitations
 
@@ -167,13 +172,22 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 
 **How you can help:** If this feature is important to you, please vote for the Adobe bug report. Community votes help increase its visibility.
 
+<br>
 
 ### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
 
+<br>
+
 ### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
+
+<br>
 
 ### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**   OS dependency ??? 
 
+<br>
+
 ### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
+
+<br>
 
 ### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
