@@ -6,49 +6,61 @@ Version 4 is the largest update since the project was revived. It introduces the
 - #### [Second Screen Mode](#1-second-screen-mode)
 - #### [Display Modes](#2-display-modes)
 - #### [Direct View on Windows](#3-direct-view)
+- #### [Limitations](#4-limitations)
 <br>
+
+### General Remark
+
+The current implementation has certain functional limitations due to restrictions in the behavior of the underlying Lightroom SDK functions. Any limitations are indicated by footnotes in the feature descriptions. 
+
+**See section [Limitations](#4-limitations) for a summary explaining the problem, its effect, how to proceed and how you can help!**
+
+
 
 ### 1. Second Screen Mode
 
 Second Screen mode lets you continue working in Lightroom while the Focus Points window remains open. Selecting another photo automatically updates the displayed focus points without reopening the plugin.
 
-Previous versions opened the plugin as a modal dialog attached to Lightroom. While the plugin was open, Lightroom could not be used. Second Screen mode removes this limitation by opening Focus Points in an independent window that automatically follows the current Lightroom selection.
+Previous versions opened the plugin as a modal dialog attached to Lightroom. While the plugin was open, Lightroom could not be used. Second Screen mode removes this limitation by opening Focus Points in an independent window detached from Lightroom that automatically follows the current Lightroom selection.
 
-This feature is particularly useful in a multi-screen setup. For example, Lightroom could be used on one screen while Focus Points is displayed on another. The displayed focus points would automatically update as you change the Lightroom selection. 
+The detached window supports two different workflows (behaviours):
+- Follow Lightroom
+- Interactive
+
+
+
+#### Follow Lightroom
+
+This feature is particularly useful in a **multi-screen setup**.
+
+For example, Lightroom could be used on one screen while Focus Points is displayed on another <sup>1</sup>. The displayed focus points would automatically update as you change the Lightroom selection.  
+In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/>
+<br><br>
 
-Second Screen mode is also useful for single-monitor setups. When checking the focus points for multiple photos, you are not restricted to using the Previous and Next keys. Instead, you can scroll through your Lightroom filmstrip or grid and select the photos you want. You can also alter the plugin settings without having to close and restart the plugin explicitly: 
+#### Interactive
+
+Second Screen mode can also be useful for a **single-monitor setup**.
+
+When checking the focus points for multiple photos, you are not restricted to using the Previous and Next keys to select the photos. Instead, you can scroll through your Lightroom filmstrip or grid and select the photos you want. You can also alter the plugin settings without having to close and restart the plugin explicitly.  
+In this mode, Focus Points Viewer remains the active window unless you click anywhere else <sup>2, 3, 4</sup>.
+
 
 <img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/>
+<br><br>
 
-Although the plugin largely retains its look and feel in Second Screen mode, there are a few important differences worth noting:
+#### Configuration ####
 
-- Interaction between the plugin and Lightroom can impact use of keyboard shortcuts  
-In Second Screen mode, the plugin runs in an independent window. Whenever the displayed photo changes, Windows gives keyboard focus to the plugin window. To continue using Lightroom keyboard shortcuts, simply click once inside Lightroom.
-
-- The plugin window has a fixed width  
-The window keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Images are centered within the reserved display area while the information panel stays aligned on the right.
-
-- Display mode  
-When using the plugin in Preview Image mode, it will immediately use Export Image in the Develop module. This is necessary because Lightroom's preview generation is not sufficiently reliable in the Develop module for the plugin's requirements. 
-
-**Configuration**
-
-Second Screen mode can be enabled from the Plugin Manager. You can also choose the initial window size and the fixed aspect ratio reserved for the photo display.
+You can enable Second Screen mode from the Plugin Manager. You can also customize the behavior (Interactive or Follow) and the fixed aspect ratio reserved for photo display:
 
 <img src="images/SecondScreen Options.jpg" alt="Second Screen Options" style="width: 600px;"/>
+
+In Second Screen mode, the window keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Images are centered within the reserved display area while the information panel stays aligned on the right.
 
 Note: The Second Screen window remembers its last position and size. When changing the display size (S / M / L / XL / XXL), the dialog content may temporarily occupy less space than the current window size. This can result in additional empty margins on the right or bottom of the window. These can be removed by simply resizing the window manually once. The adjusted size will again be remembered automatically.
 
 When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.
-
-**Limitation on macOS**
-
-Second Screen mode can be chosen regardless of the operating system. On macOS however, the plugin currently remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.  A bug report has been filed with Adobe.
-
-If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
-[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 
 ### 2. Display Modes
@@ -68,19 +80,33 @@ The following display modes are supported in V4:
 
 The following table summarizes the characteristics of the available display modes:
 
-| Mode | Platform | Advantages | Limitations |
-|----------------|----------|------------|-------------|
-| **Direct&nbsp;View<sup>1</sup>** | macOS, Windows<sup>3</sup> |  Fastest startup, live updates while editing | In Library, the image may appear after a short rendering delay while Lightroom renders it |
-| **Preview&nbsp;Image<sup>2</sup>** | Windows, macOS<sup>4</sup> |  Usually fast when a Lightroom preview already exists | Performance depends on Lightroom's preview cache |
-| **Export&nbsp;Image<sup>2</sup>** | Windows, macOS<sup>4</sup> | Always produces a reliable image | Typically slower when a Lightroom preview already exists, but often faster when Lightroom first needs to build a preview. |
+| Mode                        | Platform | Advantages | Limitations |
+|-----------------------------|----------|------------|-------------|
+| **Direct&nbsp;View*** | macOS, Windows<sup>5</sup> |  Fastest startup, live updates while editing | In Library, the image may appear after a short rendering delay while Lightroom renders it |
+| **Preview&nbsp;Image****    | Windows, macOS<sup>6</sup> |  Usually fast when a Lightroom preview already exists | Performance depends on Lightroom's preview cache |
+| **Export&nbsp;Image****     | Windows, macOS<sup>6</sup> | Always produces a reliable image | Typically slower when a Lightroom preview already exists, but often faster when Lightroom first needs to build a preview. |
 
-<sup>1</sup> Uses corner markers for focus points.<br> 
-<sup>2</sup> Uses full rectangle overlays.<br> 
-<sup>3</sup> Currently experimental on Windows due to a Lightroom SDK issue affecting transparent overlays. [#393](https://github.com/FocusPointsLrC/Focus-Points/issues/393)<br>
-<sup>4</sup> To be implemented on macOS [394](https://github.com/FocusPointsLrC/Focus-Points/issues/394)
+&nbsp;*&nbsp; Uses corner markers for focus points.<br> 
+&nbsp;** Uses full rectangle overlays.<br> 
 
-**Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.
+**Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.<br><br>
 
+#### Changing the active display mode on the fly
+
+Although Direct View offers the fastest start-up times, the use of corner markers to indicate focus points, detected faces and subjects can be confusing, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improved visual clarity.
+
+To enable you to easily get out the best of both worlds you can select the display mode right from the user interface. Either by clicking with the mouse, or by using a keyboard shortcut. 
+Press:
+- D for Direct View
+- V for PreView Image
+- E for Export Image
+
+After selecting a different display mode, the window will automatically refresh (close and reopen).
+
+<img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/>
+<br><br>
+
+#### How display modes affect the Focus Point Viewer performance
 
 The following chart compares the typical startup time of each display mode on different camera models:
 
@@ -89,17 +115,38 @@ The following chart compares the typical startup time of each display mode on di
 
 ### 3. Direct View on Windows
 
-V4 introduces Direct View to Windows users. Direct View has been available on macOS since earlier versions. Unlike the Preview Image and Export Image modes, Direct View displays Lightroom's own rendered image directly, without creating a temporary JPEG on disk. This has two major advantages:
+V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been available on macOS since earlier versions. Unlike the Preview Image and Export Image modes, Direct View displays Lightroom's own rendered image directly, without creating a temporary JPEG on disk. This has two major advantages:
 
 - significantly faster window opening
 - immediate updates while editing the photo
 
 These characteristics make Direct View particularly useful when using the plugin in Second Screen mode.
 
+
+### 4. Limitations
+
+<sup>1</sup>
+
+<sup>2</sup>
+
+<sup>3</sup>
+
+<sup>4</sup>
+
+<sup>5</sup>
+
+<sup>6</sup>
+
+
+Second Screen mode can be chosen regardless of the operating system. On macOS however, the plugin currently remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.  A bug report has been filed with Adobe.
+
+If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
+[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
+
+
 Direct View is now available on Windows, but there is currently one known limitation.   
 Investigation indicates that transparent PNG overlays (the corner icons) are not composited correctly in overlapping SDK views, causing visible rectangular artefacts around overlay graphics. A bug report has been filed with Adobe:<br>
   https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087<br>
   If this feature is important to you, **please consider voting**. Community votes help increase its visibility.<br>
-
 
 <img src="images/Direct%20View%20Windows.jpg" alt="Direct View on Windows" style="width: 1000px;"/>
