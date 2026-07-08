@@ -232,9 +232,6 @@ https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overla
 
 <br>
 
-
-As Adobe addresses these SDK issues, the corresponding limitations will disappear automatically in future versions of Focus Point Viewer.
-
 --- 
 
 ### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
@@ -242,3 +239,10 @@ As Adobe addresses these SDK issues, the corresponding limitations will disappea
 **Effect:** macOS users are limited to using Direct View. While this display mode has many advantages, its use of corner markers may lack visual clarity to indicate focus points, detected faces and subjects, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improve visual clarity. 
 
 **Current status:** Prepare work on integration of ImageMagick for macOS.
+
+<br>
+
+--- 
+
+As Adobe addresses the SDK issues, the corresponding limitations will disappear automatically in future versions of Focus Point Viewer.
+
