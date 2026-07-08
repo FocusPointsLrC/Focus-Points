@@ -40,7 +40,6 @@ For example, Lightroom could be used on one screen while Focus Points is display
 In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/>
-
 <br>
 
 #### Interactive
