@@ -71,6 +71,7 @@ Note: The Second Screen window remembers its last position and size. When changi
 
 **When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.**
 
+<br>
 
 ## 2. Display Modes
 
@@ -160,7 +161,7 @@ This is not included in PRE 1, but is planned for inclusion in a future pre-rele
 
 The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
 
-
+---
 ### <sup>1</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
 
 **Effect:** On macOS, the Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
@@ -172,7 +173,7 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 
 **How you can help:** If this feature is important to you, please vote for the Adobe bug report. Community votes help increase its visibility.
 
-<br>
+---
 
 ### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
 
