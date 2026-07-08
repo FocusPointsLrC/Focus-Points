@@ -1,5 +1,7 @@
 # V4 – What's New?
 
+Version 4 is the largest update since the project was revived. It fundamentally changes how Focus Point Viewer integrates with Lightroom. You can now keep the viewer open while continuing to work in Lightroom, choose between multiple rendering methods depending on your workflow, and benefit from significantly faster image display.
+
 Version 4 is the largest update since the project was revived. It introduces the new Second Screen mode, adds multiple display modes, brings the high-performance Direct View renderer to Windows and the Preview and Export Image renderers to macOS for improved markings. 
 
 These changes make the plugin considerably faster and much more convenient to use while working in Lightroom.
@@ -9,14 +11,14 @@ These changes make the plugin considerably faster and much more convenient to us
 - #### [Display Modes](#2-display-modes)
 - #### [Direct View on Windows](#3-direct-view-on-windows)
 - #### [Preview Image and Export Image on macOS](#4-preview-image-and-export-image-on-macos)
-- #### [Limitations](#5-limitations)
+- #### [Known Limitations](#5-known-limitations)
 <br>
 
-### General Remark
+### Known Limitations
 
-The current implementation has certain functional limitations due to restrictions in the behavior of the underlying Lightroom SDK functions. Any limitations are indicated by footnotes in the feature descriptions. 
+Some features described in this document depend on Lightroom SDK functionality that currently behaves differently on Windows and macOS or has known SDK limitations.
 
-**See section [Limitations](#5-limitations) for a summary explaining the problem, its effect, how to proceed and how you can help!**
+These are indicated by superscript references throughout this document. A complete explanation—including the cause, the impact, possible workarounds, and links to Adobe bug reports—is provided in the [Known Limitations](#5-known-limitations) section.
 
 <br>
 
@@ -24,11 +26,11 @@ The current implementation has certain functional limitations due to restriction
 
 Second Screen mode lets you continue working in Lightroom while the Focus Points window remains open. Selecting another photo automatically updates the displayed focus points without reopening the plugin.
 
-Previous versions opened the plugin as a modal dialog attached to Lightroom. While the plugin was open, Lightroom could not be used. Second Screen mode removes this limitation by opening Focus Points in an independent window detached from Lightroom that automatically follows the current Lightroom selection.
+Previous versions opened the plugin as a modal dialog attached to Lightroom. While the plugin was open, Lightroom could not be used. Second Screen mode removes this limitation by opening Focus Points in its own independent window that follows the current Lightroom selection.
 
-The detached window supports two different workflows (behaviours):
-- Follow Lightroom
-- Interactive
+The independent window supports two different workflows (behaviours):
+- **Follow Lightroom** keeps Lightroom as the primary application while Focus Point Viewer automatically follows the current selection.
+- **Interactive** makes Focus Point Viewer the primary application so that keyboard shortcuts immediately operate on the displayed image.
 
 
 
@@ -39,6 +41,8 @@ This feature is particularly useful in a **multi-screen setup**.
 For example, Lightroom could be used on one screen while Focus Points is displayed on another <sup>1</sup>. The displayed focus points would automatically update as you change the Lightroom selection.  
 In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
+**This mode is ideal for reviewing large numbers of photos while continuing to work in Lightroom.**
+
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/><br>
 
 ### 1.2 Interactive
@@ -47,6 +51,10 @@ Second Screen mode can also be useful for a **single-monitor setup**.
 
 When checking the focus points for multiple photos, you are not restricted to using the Previous and Next keys to select the photos. Instead, you can scroll through your Lightroom filmstrip or grid and select the photos you want. You can also alter the plugin settings without having to close and restart the plugin explicitly.  
 In this mode, Focus Points Viewer remains the active window unless you click anywhere else <sup>2, 3, 4</sup>.
+
+
+
+**This mode is best suited for keyboard-driven workflows where Focus Point Viewer remains the active window.**
 
 
 <img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/><br>
@@ -61,15 +69,14 @@ In Second Screen mode, the window keeps a fixed layout so it does not resize whe
 
 Note: The Second Screen window remembers its last position and size. When changing the display size (S / M / L / XL / XXL), the dialog content may temporarily occupy less space than the current window size. This can result in additional empty margins on the right or bottom of the window. These can be removed by simply resizing the window manually once. The adjusted size will again be remembered automatically.
 
-When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.
+**When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.**
 
 
 ## 2. Display Modes
 
 *How images are displayed*
 
-In short, the display mode determines how the photo is displayed and how focus point overlays are added.
-
+Display mode determines how Focus Point Viewer obtains and displays the image. Each mode offers different advantages in terms of speed, image quality, live updates, and overlay appearance.
 The following display modes are supported in V4:
 
 **Direct View**. Displays the photo directly through Lightroom's internal Develop rendering engine, overlaying it with icons that visualize the corners of the marking rectangles. Direct View automatically reflects Lightroom edits in real time. It acts as a mirror to what Lightroom displays in the Develop module.
@@ -92,26 +99,39 @@ The following table summarizes the characteristics of the available display mode
 
 **Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.<br>
 
+  **There is no single "best" display mode. Depending on your workflow, you may prefer maximum speed, live updates while editing, or the clearer appearance of full rectangle overlays.**
+
 ### 2.1 Changing the active display mode on the fly
 
-Although Direct View offers the fastest start-up times, the use of corner markers to indicate focus points, detected faces and subjects can be confusing, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improved visual clarity.
+Although Direct View offers the fastest startup times, the use of corner markers to indicate focus points, detected faces and subjects can be confusing, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improve visual clarity.
 
-To enable you to easily get out the best of both worlds you can select the display mode right from the user interface. Either by clicking with the mouse, or by using a keyboard shortcut. 
+To enable you to easily get the best of both worlds you can select the display mode right from the user interface. Either by clicking with the mouse, or by using a keyboard shortcut. 
 Press:
-- D for Direct View
-- V for PreView Image
-- E for Export Image
+- D - Direct View
+- V - PreView Image
+- E - Export Image
 
 After selecting a different display mode, the window will automatically refresh (close and reopen).
+
+**Switching display modes lets you quickly choose the rendering method that best matches your current task without leaving Focus Point Viewer.**
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/><br>
 
 ### 2.2 How display modes affect the Focus Point Viewer performance
 
-The following chart compares the typical startup time of each display mode on different camera models:
+Startup time depends on the selected display mode, camera model, and whether Lightroom already has a preview available. The following measurements illustrate the typical behavior.
 
 <img src="images/Time%20to%20Open%20Plugin%20Window.jpg" alt="User Interface" style="width: 1000px;"/>
 
+**Actual startup times depend on camera model, image size, Lightroom preview availability, and the selected display mode, but the relative differences between the modes remain similar.**
+
+### 2.3 Choosing the right display mode
+
+| Your priority | Recommended display mode |
+|---------------|--------------------------|
+| Fastest startup and live updates while editing | **Direct View** |
+| Full rectangle overlays with good performance | **Preview Image** |
+| Maximum reliability, regardless of preview availability | **Export Image** |
 
 ## 3. Direct View on Windows
 
@@ -120,40 +140,40 @@ V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been av
 - significantly faster window opening
 - immediate updates while editing the photo
 
-These characteristics make Direct View particularly useful when using the plugin in Second Screen mode.
+Direct View is therefore the recommended display mode whenever live updates and fast response are more important than displaying complete focus rectangles.
 
+**Direct View is the recommended choice while editing photos because it provides the fastest startup and updates immediately as Lightroom adjustments are made.**
 
 ## 4. Preview Image and Export Image on macOS
 
 This is not included in PRE 1, but is planned for inclusion in a future pre-release version.
+
+**These display modes are recommended when you prefer full rectangle overlays or require the most reliable rendering regardless of Lightroom's preview state.**
 
 
 ## 5. Known Limitations
 
 The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
 
-In the following, Focus Point Viewer is abbreviated as 'FPV'.
 
+### <sup>1</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
 
-### <sup>1</sup> FPV does not remember its position on a secondary monitor on macOS
+**Effect:** On macOS, the Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
 
-**Effect:** On macOS, the FPV remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
+**Reason:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
 
-**Cause:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
-
-**How to solve:** A bug report has been filed with Adobe.  
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
 [https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
-If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
+**How you can help:** If this feature is important to you, please vote for the Adobe bug report. Community votes help increase its visibility.
 
 
-### **<sup>2</sup> FPV always becomes the active window when opened on macOS**  
+### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
 
 ### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-### **<sup>4</sup> FPV windows is always on top in Second Screen mode**   OS dependency ??? 
+### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**   OS dependency ??? 
 
 ### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
 
 ### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
-
