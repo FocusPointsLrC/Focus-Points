@@ -1,19 +1,22 @@
 ## V4 – What's New?
 
-Version 4 is the largest update since the project was revived. It introduces the new Second Screen mode, adds multiple display modes, and brings the high-performance Direct View renderer to Windows. These changes make the plugin considerably faster and much more convenient to use while working in Lightroom.
+Version 4 is the largest update since the project was revived. It introduces the new Second Screen mode, adds multiple display modes, brings the high-performance Direct View renderer to Windows and the Preview and Export Image renderers to macOS for improved markings. 
+
+These changes make the plugin considerably faster and much more convenient to use while working in Lightroom.
 
 ### Content
 - #### [Second Screen Mode](#1-second-screen-mode)
 - #### [Display Modes](#2-display-modes)
-- #### [Direct View on Windows](#3-direct-view)
-- #### [Limitations](#4-limitations)
+- #### [Direct View on Windows](#3-direct-view-on-windows)
+- #### [Preview Image and Export Image on macOS](#4-preview-image-and-export-image-on-macos)
+- #### [Limitations](#5-limitations)
 <br>
 
 ### General Remark
 
 The current implementation has certain functional limitations due to restrictions in the behavior of the underlying Lightroom SDK functions. Any limitations are indicated by footnotes in the feature descriptions. 
 
-**See section [Limitations](#4-limitations) for a summary explaining the problem, its effect, how to proceed and how you can help!**
+**See section [Limitations](#5-limitations) for a summary explaining the problem, its effect, how to proceed and how you can help!**
 
 
 
@@ -123,30 +126,37 @@ V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been av
 These characteristics make Direct View particularly useful when using the plugin in Second Screen mode.
 
 
-### 4. Limitations
+### 4. Preview Image and Export Image on macOS
 
-<sup>1</sup>
-
-<sup>2</sup>
-
-<sup>3</sup>
-
-<sup>4</sup>
-
-<sup>5</sup>
-
-<sup>6</sup>
+This is not included in PRE 1, but is planned for inclusion in a future pre-release version.
 
 
-Second Screen mode can be chosen regardless of the operating system. On macOS however, the plugin currently remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.  A bug report has been filed with Adobe.
+### 5. Known Limitations
 
-If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
+The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
+
+In the following, Focus Point Viewer is abbreviated as 'FPV'.
+
+
+**<sup>1</sup> FPV does not remember its position on a secondary monitor on macOS**
+
+**Effect:** On macOS, the FPV remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
+
+**Cause:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
+
+**How to solve:** A bug report has been filed with Adobe.  
 [https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
+If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
 
-Direct View is now available on Windows, but there is currently one known limitation.   
-Investigation indicates that transparent PNG overlays (the corner icons) are not composited correctly in overlapping SDK views, causing visible rectangular artefacts around overlay graphics. A bug report has been filed with Adobe:<br>
-  https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087<br>
-  If this feature is important to you, **please consider voting**. Community votes help increase its visibility.<br>
 
-<img src="images/Direct%20View%20Windows.jpg" alt="Direct View on Windows" style="width: 1000px;"/>
+**<sup>2</sup> FPV always becomes the active window when opened on macOS**  
+
+**<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
+
+**<sup>4</sup> FPV windows is always on top in Second Screen mode**   OS dependency ??? 
+
+**<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
+
+**<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
+
