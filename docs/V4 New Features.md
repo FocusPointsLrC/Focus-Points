@@ -1,4 +1,4 @@
-## V4 – What's New?
+# V4 – What's New?
 
 Version 4 is the largest update since the project was revived. It introduces the new Second Screen mode, adds multiple display modes, brings the high-performance Direct View renderer to Windows and the Preview and Export Image renderers to macOS for improved markings. 
 
@@ -20,7 +20,7 @@ The current implementation has certain functional limitations due to restriction
 
 <br>
 
-### 1. Second Screen Mode
+## 1. Second Screen Mode
 
 Second Screen mode lets you continue working in Lightroom while the Focus Points window remains open. Selecting another photo automatically updates the displayed focus points without reopening the plugin.
 
@@ -32,7 +32,7 @@ The detached window supports two different workflows (behaviours):
 
 
 
-#### Follow Lightroom
+### 1.1 Follow Lightroom
 
 This feature is particularly useful in a **multi-screen setup**.
 
@@ -41,7 +41,7 @@ In this mode, Lightroom remains the active window unless you activate Focus Poin
 
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/><br>
 
-#### Interactive
+### 1.2 Interactive
 
 Second Screen mode can also be useful for a **single-monitor setup**.
 
@@ -51,7 +51,7 @@ In this mode, Focus Points Viewer remains the active window unless you click any
 
 <img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/><br>
 
-#### Configuration ####
+### 1.3 Configuration
 
 You can enable Second Screen mode from the Plugin Manager. You can also customize the behavior (Interactive or Follow) and the fixed aspect ratio reserved for photo display:
 
@@ -64,7 +64,7 @@ Note: The Second Screen window remembers its last position and size. When changi
 When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.
 
 
-### 2. Display Modes
+## 2. Display Modes
 
 *How images are displayed*
 
@@ -113,7 +113,7 @@ The following chart compares the typical startup time of each display mode on di
 <img src="images/Time%20to%20Open%20Plugin%20Window.jpg" alt="User Interface" style="width: 1000px;"/>
 
 
-### 3. Direct View on Windows
+## 3. Direct View on Windows
 
 V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been available on macOS since earlier versions. Unlike the Preview Image and Export Image modes, Direct View displays Lightroom's own rendered image directly, without creating a temporary JPEG on disk. This has two major advantages:
 
@@ -123,7 +123,7 @@ V4 introduces Direct View to Windows users <sup>5</sup>. Direct View has been av
 These characteristics make Direct View particularly useful when using the plugin in Second Screen mode.
 
 
-### 4. Preview Image and Export Image on macOS
+## 4. Preview Image and Export Image on macOS
 
 This is not included in PRE 1, but is planned for inclusion in a future pre-release version.
 
