@@ -161,6 +161,8 @@ This is not included in PRE 1, but is planned for inclusion in a future pre-rele
 
 The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
 
+<br>
+
 ---
 ### <sup>1</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
 
@@ -172,6 +174,8 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255
 
 **How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+
+<br>
 
 ---
 
@@ -185,6 +189,8 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 **How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
+<br>
+
 ---
 
 ### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
@@ -196,6 +202,9 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 **Current status:** Bug report to be filed with Adobe. 
 
 **How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+
+<br>
+
 
 --- 
 
@@ -210,6 +219,8 @@ https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-bac
 
 **How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
+<br>
+
 --- 
 
 ### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
@@ -222,6 +233,8 @@ https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-bac
 https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087
 
 **How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+
+<br>
 
 --- 
 
