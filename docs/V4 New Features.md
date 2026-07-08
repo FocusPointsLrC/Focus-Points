@@ -41,6 +41,8 @@ In this mode, Lightroom remains the active window unless you activate Focus Poin
 
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/>
 
+<br>
+
 #### Interactive
 
 Second Screen mode can also be useful for a **single-monitor setup**.
