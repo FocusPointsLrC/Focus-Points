@@ -169,26 +169,67 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 **Reason:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
+https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255
 
-**How you can help:** If this feature is important to you, please vote for the Adobe bug report. Community votes help increase its visibility.
+**How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 ---
 
 ### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
 
-<br>
+**Effect:** 
+
+**Reason:** 
+
+**Current status:** 
+
+**How you can help:**
+
+---
 
 ### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-<br>
+**Effect:** 
+
+**Reason:** 
+
+**Current status:** 
+
+**How you can help:**
+
+--- 
 
 ### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**   OS dependency ??? 
 
-<br>
+**Effect:** 
+
+**Reason:** 
+
+**Current status:** 
+
+**How you can help:**
+
+--- 
 
 ### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
 
-<br>
+**Effect:** Direct View on Windows produces corner markings for focus points, faces and subject areas with rectangular artifacts around the overlay image. See the screenshot in [section 2.1](#21-changing-the-active-display-mode-on-the-fly).  
+
+**Reason:** Inconsistent behavior of the underlying SDK function when usinge transparent PNG overlays in overlapping layouts on Windows vs macOS.
+
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
+https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087
+
+**How you can help:** If this feature is important to you, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+
+--- 
 
 ### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
+
+**Effect:** 
+
+**Reason:** 
+
+**Current status:** 
+
+**How you can help:**
