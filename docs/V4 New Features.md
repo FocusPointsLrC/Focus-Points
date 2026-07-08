@@ -18,7 +18,7 @@ The current implementation has certain functional limitations due to restriction
 
 **See section [Limitations](#5-limitations) for a summary explaining the problem, its effect, how to proceed and how you can help!**
 
-
+<br>
 
 ### 1. Second Screen Mode
 
@@ -40,7 +40,6 @@ For example, Lightroom could be used on one screen while Focus Points is display
 In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
 <img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/>
-<br><br>
 
 #### Interactive
 
@@ -51,7 +50,6 @@ In this mode, Focus Points Viewer remains the active window unless you click any
 
 
 <img src="images/SecondScreen%202.jpg" alt="Second Screen 2" style="width: 1000px;"/>
-<br><br>
 
 #### Configuration ####
 
