@@ -131,14 +131,14 @@ These characteristics make Direct View particularly useful when using the plugin
 This is not included in PRE 1, but is planned for inclusion in a future pre-release version.
 
 
-### 5. Known Limitations
+## 5. Known Limitations
 
 The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
 
 In the following, Focus Point Viewer is abbreviated as 'FPV'.
 
 
-**<sup>1</sup> FPV does not remember its position on a secondary monitor on macOS**
+### <sup>1</sup> FPV does not remember its position on a secondary monitor on macOS
 
 **Effect:** On macOS, the FPV remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
 
@@ -150,13 +150,13 @@ In the following, Focus Point Viewer is abbreviated as 'FPV'.
 If this feature is important to you, **please consider voting** for the Adobe bug report below. Community votes help increase its visibility.
 
 
-**<sup>2</sup> FPV always becomes the active window when opened on macOS**  
+### **<sup>2</sup> FPV always becomes the active window when opened on macOS**  
 
-**<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
+### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-**<sup>4</sup> FPV windows is always on top in Second Screen mode**   OS dependency ??? 
+### **<sup>4</sup> FPV windows is always on top in Second Screen mode**   OS dependency ??? 
 
-**<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
+### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
 
-**<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
+### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
 
