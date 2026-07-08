@@ -208,7 +208,7 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 --- 
 
-### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**   OS dependency ??? 
+### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**
 
 **Effect:** In Second Screen mode, the Focus Point Viewer is always on top of all visible windows on the screen. It is not possibe to bring other windows back to top. This limits usablity at least in those cases, where the Focus Point Viewer overlaps with applications that the user wants to use in parallel. 
 
@@ -240,10 +240,6 @@ https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overla
 
 ### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
 
-**Effect:** 
+**Effect:** macOS users are limited to using Direct View. While this display mode has many advantages, its use of corner markers may lack visual clarity to indicate focus points, detected faces and subjects, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improve. 
 
-**Reason:** 
-
-**Current status:** 
-
-**How you can help:**
+**Current status:** Prepare work on integration of ImageMagick for macOS.
