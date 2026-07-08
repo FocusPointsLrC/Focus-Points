@@ -39,8 +39,7 @@ This feature is particularly useful in a **multi-screen setup**.
 For example, Lightroom could be used on one screen while Focus Points is displayed on another <sup>1</sup>. The displayed focus points would automatically update as you change the Lightroom selection.  
 In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
-<img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/>
-<br>
+<img src="images/SecondScreen%201.jpg" alt="Second Screen 1" style="width: 1000px;"/><br>
 
 #### Interactive
 
