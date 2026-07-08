@@ -92,7 +92,7 @@ The following table summarizes the characteristics of the available display mode
 
 **Tip:** Each display mode has its own strengths. Direct View provides the fastest, most responsive display while editing. Preview Image and Export Image provide full rectangle overlays. The long-term goal is to make all three modes available on both macOS and Windows, allowing you to switch between them at any time and use the mode that best suits your current task.<br>
 
-#### Changing the active display mode on the fly
+### 2.1 Changing the active display mode on the fly
 
 Although Direct View offers the fastest start-up times, the use of corner markers to indicate focus points, detected faces and subjects can be confusing, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improved visual clarity.
 
@@ -106,7 +106,7 @@ After selecting a different display mode, the window will automatically refresh 
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/><br>
 
-#### How display modes affect the Focus Point Viewer performance
+### 2.2 How display modes affect the Focus Point Viewer performance
 
 The following chart compares the typical startup time of each display mode on different camera models:
 
