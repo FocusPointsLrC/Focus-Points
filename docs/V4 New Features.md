@@ -181,7 +181,8 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 **Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. On Windows there is a tricky workaround, but this has the risk that is might stop working with any future Lightroom update. 
 
-**Current status:** Bug report to be filed with Adobe. 
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed. 
+https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366
 
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
@@ -195,7 +196,8 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
-**Current status:** Bug report to be filed with Adobe. 
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed.
+https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363
 
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
