@@ -73,6 +73,10 @@ FocusPointPrefs.displayModeDirect  = 3
 FocusPointPrefs.displayModeFallback= 4
 FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export (fallback)" }
 
+-- Second Screen sub-modes
+FocusPointPrefs.secondScreenBehaviorFollow      = "FOLLOW"
+FocusPointPrefs.secondScreenBehaviorInteractive = "INTERACTIVE"
+
 -- Definitions to handle Update mechanism
 local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
 local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
@@ -94,6 +98,9 @@ FocusPointPrefs.urldisplayModes     = "https://focuspointslrc.github.io/Focus-Po
 FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
+FocusPointPrefs.kbdShortcutsDirectMode      = "dD"
+FocusPointPrefs.kbdShortcutsPreviewImage    = "vV"
+FocusPointPrefs.kbdShortcutsExportImage     = "eE"
 FocusPointPrefs.kbdShortcutsPrev            = "-<"
 FocusPointPrefs.kbdShortcutsNext            = " +"
 FocusPointPrefs.kbdShortcutsPick            = "p"
@@ -153,12 +160,23 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
   if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 1.0       end
 
-    -- OS dependent initializations
+  -- OS dependent initialization: displayMode
+  -- required as long as not all modes can be supported on both WIN and MAC
   if not prefs.displayMode then
     if WIN_ENV then
       prefs.displayMode = FocusPointPrefs.displayModePreview
     else
       prefs.displayMode = FocusPointPrefs.displayModeDirect
+    end
+  end
+
+  -- OS dependent initialization: secondScreenBehavior
+  -- required as long as not all sub-modes can be supported on both WIN and MAC
+  if not prefs.secondScreenBehavior then
+    if WIN_ENV then
+      prefs.secondScreenBehavior = prefs.secondScreenBehaviorFollow
+    else
+      prefs.secondScreenBehavior = prefs.secondScreenBehaviorInteractive
     end
   end
 
@@ -627,45 +645,85 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
 
     return {
       title = "User Interface",
-      f:row {
-        bind_to_object = prefs,
-        spacing = f:control_spacing(),
-        f:popup_menu {
-          title = "secondScreenMode",
-          value = bind("secondScreenMode"),
-          width_in_chars = dropDownWidth,
-          items = {
-            { title = "On", value = true },
-            { title = "Off", value = false },
+
+      f:column {
+        --------------------------------------------------------------------------
+        -- Second Screen
+        --------------------------------------------------------------------------
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+
+          f:popup_menu {
+            title = "secondScreenMode",
+            value = bind("secondScreenMode"),
+            width_in_chars = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
           },
-        },
-        f:static_text {
-          title = 'Second screen mode. Fixed aspect ratio of photo view:'
-        },
-        f:popup_menu {
-          title = "previewAspectRatio",
-          value = bind("previewAspectRatio"),
-          items = {
-            { title = "1 x 1",  value = 1.0    },
-            { title = "4 x 3",  value = 1.3333 },
-            { title = "3 x 2",  value = 1.5    },
-            { title = "16 x 9", value = 1.7778 },
+
+          f:static_text {
+            title = "Second Screen. Fixed aspect ratio of photo view:"
           },
-        },
-        f:static_text {
-          title = 'See'
-        },
-        f:static_text {
-          title = "What's new?",
-          text_color = LrColor(0, 0.25, 1),
-          immediate = true,
-          mouse_down = function(_view)
-            LrTasks.startAsyncTask(function()
-              LrHttp.openUrlInBrowser(FocusPointPrefs.urlSecondScreenMode)
-            end)
-          end,
+
+          f:popup_menu {
+            title = "previewAspectRatio",
+            value = bind("previewAspectRatio"),
+            items = {
+              { title = "1 x 1", value = 1.0 },
+              { title = "4 x 3", value = 1.3333 },
+              { title = "3 x 2", value = 1.5 },
+              { title = "16 x 9", value = 1.7778 },
+            },
+          },
+
+          f:static_text {
+            title = "See"
+          },
+
+          f:static_text {
+            title = "What's new?",
+            text_color = LrColor(0, 0.25, 1),
+            immediate = true,
+            mouse_down = function(_view)
+              LrTasks.startAsyncTask(function()
+                LrHttp.openUrlInBrowser(FocusPointPrefs.urlSecondScreenMode)
+              end)
+            end,
+          },
         },
       },
+
+      --------------------------------------------------------------------------
+      -- Second Screen sub-mode
+      --------------------------------------------------------------------------
+      f:row {
+        bind_to_object = prefs,
+
+        enabled = bind("secondScreenMode"),
+
+        -- Align with the "S" in "Second Screen"
+        f:spacer { width = 76 },
+
+        f:radio_button {
+          title = "Interactive",
+          value = bind("secondScreenBehavior"),
+          checked_value = "INTERACTIVE",
+        },
+
+        f:spacer { width = 8 },
+
+        f:radio_button {
+          title = "Follow Lightroom",
+          value = bind("secondScreenBehavior"),
+          checked_value = "FOLLOW",
+          enabled = WIN_ENV
+        },
+      },
+
+
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -734,7 +792,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       keyboardLayoutSetting(),     -- empty for LR5
       displayModeSetting(),        -- empty for MAC and later also for WIN < SDK Vx
       previewGenerationSettings(), -- empty for MAC
-
     }
   end
   local function sectionViewingOptions()

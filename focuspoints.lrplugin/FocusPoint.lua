@@ -30,6 +30,7 @@ local LrApplicationView    -- import only for SDK 7.4 and later
 local LrBinding             = import  'LrBinding'
 local LrColor               = import  'LrColor'
 local LrDate                = import  'LrDate'
+local LrDevelopController   = import  'LrDevelopController'
 local LrDialogs             = import  'LrDialogs'
 local LrFunctionContext     = import  'LrFunctionContext'
 local LrHttp                = import  'LrHttp'
@@ -259,10 +260,14 @@ local function showFocusPoint()
           targetPhoto = catalog:getTargetPhoto()
         end
       end
-      if #selectedPhotos > 1 then
-        nextPhotoOfSelection()
-      elseif not LR5 then
+      if floatingDialog then
         nextPhotoOfFilmStrip()
+      else
+        if #selectedPhotos > 1 then
+          nextPhotoOfSelection()
+        elseif not LR5 then
+          nextPhotoOfFilmStrip()
+        end
       end
     end
 
@@ -284,10 +289,14 @@ local function showFocusPoint()
           targetPhoto = catalog:getTargetPhoto()
         end
       end
-      if #selectedPhotos > 1 then
-        previousPhotoOfSelection()
-      elseif not LR5 then
+      if floatingDialog then
         previousPhotoOfFilmStrip()
+      else
+        if #selectedPhotos > 1 then
+          previousPhotoOfSelection()
+        elseif not LR5 then
+          previousPhotoOfFilmStrip()
+        end
       end
     end
 
@@ -352,6 +361,17 @@ local function showFocusPoint()
           closeDialog(view, "refresh")
         end
       end)
+    end
+
+    -- Switch between display modes
+    local lastDisplayMode = prefs.displayMode
+
+    local function displayModeAction(view)
+      if prefs.displayMode == lastDisplayMode then
+        return
+      end
+      lastDisplayMode = prefs.displayMode
+      closeDialog(view, "refresh")
     end
 
     local function kbdShortcutInputField()
@@ -493,7 +513,22 @@ local function showFocusPoint()
               straightenAndRefresh(view)
               return true
             end
-          -- Open user manual
+          -- Display mode Direct
+          elseif string.find(FocusPointPrefs.kbdShortcutsDirectMode, char, 1, true) then
+            prefs.displayMode = FocusPointPrefs.displayModeDirect
+            displayModeAction(view)
+          -- Display mode Preview
+          elseif string.find(FocusPointPrefs.kbdShortcutsPreviewImage, char, 1, true)
+          and WIN_ENV then  -- @TODO: remove platform condition once ImageMagick is working on Mac as well
+--        and MAC_ENV then  -- to test test MAC behaviour on WIN
+            prefs.displayMode = FocusPointPrefs.displayModePreview
+            displayModeAction(view)
+          -- Display mode Export
+          elseif string.find(FocusPointPrefs.kbdShortcutsExportImage, char, 1, true)
+          and WIN_ENV then -- @TODO: remove platform condition once ImageMagick is working on Mac as well
+--        and MAC_ENV then  -- to test test MAC behaviour on WIN
+            prefs.displayMode = FocusPointPrefs.displayModeExport
+            displayModeAction(view)
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
             return true  -- done
@@ -553,6 +588,58 @@ local function showFocusPoint()
           },
         }
       end
+    end
+
+    local function displayModeSelector()
+      local f = LrView.osFactory()
+      local bind = LrView.bind
+
+      return f:row {
+        -- display the input field and text label as explanation
+        spacing = 0,
+        f:static_text {
+          title = "Display mode:",
+          font  = "<system/small>",
+        },
+
+        f:spacer { width = 8 },
+
+        f:radio_button {
+          title = "Direct",
+          tooltip = "Direct View (D)",
+          font  = "<system/small>",
+          bind_to_object = prefs,
+          value = bind("displayMode"),
+          checked_value = FocusPointPrefs.displayModeDirect,
+--        action = displayModeAction,
+        },
+
+        f:spacer { width = 8 },
+
+        f:radio_button {
+          title = "Preview",
+          font  = "<system/small>",
+          bind_to_object = prefs,
+          value = bind("displayMode"),
+          checked_value = FocusPointPrefs.displayModePreview,
+          enabled = WIN_ENV,   -- @TODO: remove platform condition once ImageMagick is working on Mac as well
+--        enabled = MAC_ENV,   -- to test test MAC behaviour on WIN
+--        action = displayModeAction
+        },
+
+        f:spacer { width = 8 },
+
+        f:radio_button {
+          title = "Export",
+          font  = "<system/small>",
+          bind_to_object = prefs,
+          value = bind("displayMode"),
+          checked_value = FocusPointPrefs.displayModeExport,
+          enabled = WIN_ENV,   -- @TODO: remove platform condition once ImageMagick is working on Mac as well
+--        enabled = MAC_ENV,   -- to test test MAC behaviour on WIN
+--        action = displayModeAction
+        },
+      }
     end
 
     local function navigationControls()
@@ -955,7 +1042,8 @@ local function showFocusPoint()
 
       userResponse = LrDialogs.presentModalDialog {
         title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
-        contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
+        contents = FocusPointDialog.createDialog(
+                     targetPhoto, photoView, infoView, kbdShortcutInput, displayModeSelector()),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
         actionVerb = "Close",
@@ -1010,7 +1098,7 @@ local function showFocusPoint()
               -- left margin
               f:spacer { width = leftMargin },
               FocusPointDialog.createDialog(
-                targetPhoto, photoView, infoView, kbdShortcutInput),
+                targetPhoto, photoView, infoView, kbdShortcutInput, displayModeSelector()),
               -- right margin
               f:spacer { width = rightMargin },
             },
@@ -1078,20 +1166,23 @@ local function showFocusPoint()
             break
           end
 
-          -- Crop changed?
-          local ok, cropSignature = LrTasks.pcall(getCropSignature, currentPhoto)
-          if ok then
-            if cropSignature ~= previousCropSignature then
-              Log.logInfo("FocusPoint", "Crop changed")
-              requestRefresh()
+          -- Has the crop changed?
+          local tool = LrDevelopController.getSelectedTool()
+          if tool ~= "crop" then
+            local ok, cropSignature = LrTasks.pcall(getCropSignature, currentPhoto)
+            if ok then
+              if cropSignature ~= previousCropSignature then
+                Log.logInfo("FocusPoint", "Crop changed")
+                requestRefresh()
+                break
+              end
+            else
+              -- The current photo disappeared (typically because it was deleted).
+              -- Wait for selectionChangeObserver() to receive Lightroom's updated selection.
+              Log.logInfo("FocusPoint", "Photo vanished during polling (probably deleted by user)")
               break
             end
-          else
-            -- The current photo disappeared (typically because it was deleted).
-            -- Wait for selectionChangeObserver() to receive Lightroom's updated selection.
-            Log.logInfo("FocusPoint", "Photo vanished during polling (probably deleted by user)")
-            break
-          end
+         end
 
           -- Poll every 0.5 seconds
           LrTasks.sleep(0.5)
@@ -1104,17 +1195,20 @@ local function showFocusPoint()
         return "refresh"
       end
 
-      LrFunctionContext.callWithContext("ActivationHack", function(c)
-        local scope = LrDialogs.showModalProgressDialog{
-          title = "Work around LR SDK window activation issue",
-          functionContext = c,
-        }
-        for i = 1,50 do
-          LrTasks.sleep(0)
-          LrTasks.yield()
-        end
-        scope:done()
-      end)
+      if prefs.secondScreenBehavior == FocusPointPrefs.secondScreenBehaviorFollow then
+        LrFunctionContext.callWithContext("ActivationHack", function(c)
+          local scope = LrDialogs.showModalProgressDialog{
+            title = "Work around LR SDK window activation issue",
+            functionContext = c,
+          }
+          for i = 1,50 do
+            LrTasks.sleep(0)
+            LrTasks.yield()
+          end
+          scope:done()
+        end)
+      end
+
 
       LrDialogs.presentFloatingDialog(_PLUGIN, {
         title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
@@ -1172,9 +1266,30 @@ local function showFocusPoint()
 
     -- Find the index 'current' of the target photo in set of selectedPhotos
     current = getPositionInSelection(targetPhoto, selectedPhotos)
-    -- throw up this dialog as soon as possible as it blocks input which keeps the plugin from potentially launching
-    -- twice if clicked on really quickly
-    -- let the renderer build the view now and show progress dialog
+
+    -- @TODO
+    local function buildCancelled()
+      return floatingDialog
+         and catalog:getTargetPhoto() ~= targetPhoto
+    end
+
+    -- To check if the initially selected photo is still the currently selected photo
+    local function selectionStillValid()
+      return catalog:getTargetPhoto() == targetPhoto
+    end
+
+    -- @TODO
+    local function restartIfSelectionChanged(cleanup)
+      if floatingDialog and catalog:getTargetPhoto() ~= targetPhoto then
+        if cleanup then
+          cleanup()
+        end
+        userResponse = "refresh"
+        return true
+      end
+      return false
+    end
+
     repeat
 
       -- Get logging ready for next photo
@@ -1194,7 +1309,9 @@ local function showFocusPoint()
 
       -- Make the current photo the only selected one:
       -- otherwise potential flagging operations will apply to all selected photos
-      catalog:setSelectedPhotos(targetPhoto, {})
+      if not floatingDialog then  -- @TODO
+        catalog:setSelectedPhotos(targetPhoto, {})
+      end
 
       -- Save reference to selected photo and its crop to detect whether were any missed updates during processing
       buildCropSignature = getCropSignature(targetPhoto)
@@ -1207,32 +1324,48 @@ local function showFocusPoint()
       infoView  = nil
       errorMsg  = nil
 
-      if (targetPhoto:checkPhotoAvailability()) then
-        local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
+      repeat
+        if (targetPhoto:checkPhotoAvailability()) then
+          local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
 
-        rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
-        if rendererTable then
-          metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
-          if metadata then
-            photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-            infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
-            if not (photoView and infoView) then
-              errorMsg = "Internal error: Unable to create main window"
+          rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
+          if rendererTable then
+
+            metadata = ExifUtils.readMetadataAsTable(targetPhoto)
+            if buildCancelled() then
+              userResponse = "refresh"
+              break
             end
-            -- Update the roll and crop angle display
-            if not userResponse or userResponse ~= "refresh" then
-              initializeStraightenControl(targetPhoto)
+
+            if metadata then
+
+              photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
+              if buildCancelled() then
+                rendererTable.cleanup()
+                userResponse = "refresh"
+                break
+              end
+
+              infoView = rendererTable.createInfoView(targetPhoto, props, metadata)
+
+              if not (photoView and infoView) then
+                errorMsg = "Internal error: Unable to create main window"
+              end
+              -- Update the roll and crop angle display
+-- @TODO WHY? if not userResponse or userResponse ~= "refresh" then
+                initializeStraightenControl(targetPhoto)
+--            end
+            else
+              errorMsg = "Unable to read the photo's metadata using ExifTool"
             end
           else
-            errorMsg = "Unable to read the photo's metadata using ExifTool"
+            -- just to have this case covered - normally this condition should not occur
+            errorMsg = "Internal error: Unmapped points renderer"
           end
         else
-          -- just to have this case covered - normally this condition should not occur
-          errorMsg = "Internal error: Unmapped points renderer"
+          errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
         end
-      else
-        errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
-      end
+      until true
 
       -- photoView should never be nil in the absence of a fatal error
       local skipMainWindow
@@ -1312,7 +1445,7 @@ local function showFocusPoint()
       end
     until exitPlugin
 
-    -- Restore the original selection pf photos when the plugin was started
+    -- Restore the original selection of photos when the plugin was started
     if #selectedPhotos > 1 and not LR5 then
       catalog:setSelectedPhotos(targetPhoto, selectedPhotos)
     end

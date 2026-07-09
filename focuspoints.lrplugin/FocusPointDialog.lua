@@ -90,8 +90,8 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
 
   if prefs.secondScreenMode then
     -- Store preview panel dimensions for later view creation
-    previewHeight = photoHeight
-    previewWidth  = photoHeight * prefs.previewAspectRatio
+    previewHeight = contentHeight
+    previewWidth  = contentHeight * prefs.previewAspectRatio
 
     -- Adjust dimensions of photo if it does not fit preview panel
     if photoWidth > previewWidth then
@@ -109,7 +109,7 @@ end
 
   Creates the view container for the entire dialog.
   ----------------------------------------------------------------------------]]
-function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput)
+function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput, displayModeSelector)
   local prefs = LrPrefs.prefsForPlugin( nil )
   local f = LrView.osFactory()
 
@@ -138,13 +138,46 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
 
   return f:view {
     f:row {
-      f:spacer {}, kbdShortcutInput,
-    },
-    f:row {
-      previewPanel(),
-      f:column { fill_vertical = 1, infoView },
+      f:column {
+        f:row {
+          f:spacer {},
+          f:column { kbdShortcutInput },
+          f:spacer { fill_horizontal = 1 },
+          f:column { displayModeSelector },
+          f:spacer { width = 8}
+        },
+        previewPanel(),
+      },
+      f:column {
+        fill_vertical = 1,
+        infoView
+      },
     },
   }
+
+--[[
+
+  return f:view {
+    f:row {
+      f:column {
+        f:spacer {},
+        kbdShortcutInput,
+        f:row {
+            f:column{ kbdShortcutInput },
+            f:spacer{ fill_horizontal = 1 },
+            f:column{ displayModeSelector },
+        },
+        previewPanel(),
+      },
+      f:column {
+        fill_vertical = 1,
+        infoView,
+      },
+    },
+  }
+--]]
+
+
 end
 
 return FocusPointDialog
