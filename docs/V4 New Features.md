@@ -160,7 +160,7 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 
 Some of these limitations can seriously affect the operation of the second screen, particularly on Windows. To address this issue, the plugin is supplemented by a companion AutoHotkey script that works around the existing Lightroom SDK window activation issues. See  [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows).  
 
-A similar fix for limitation 2 has not yet been considered, because
+A similar fix for limitation 2 on macOS has not yet been considered, because
 - it's technically more demanding
 - it only fixes one of the two issues with Follow mode, as long as 1) is not resolved. 
 
@@ -192,7 +192,7 @@ https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-r
 
 On Windows there is a tricky workaround, but this has the risk that is might stop working with any future Lightroom update. 
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed. 
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed.   
 https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
@@ -209,7 +209,7 @@ https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed.
+**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
 https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
@@ -225,7 +225,7 @@ https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-withou
 
 **Effect:** In Second Screen mode, the Focus Point Viewer is always on top of all visible windows on the screen. It is not possible to bring other windows back to top. This limits usability at least in those cases, where the Focus Point Viewer overlaps with applications that the user wants to use in parallel. 
 
-**Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:
+**Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:  
 https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457
 
 **Current status:** New bug report to be filed with Adobe (by user aboswrt)
@@ -267,6 +267,7 @@ https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overla
 
 As Adobe addresses these SDK issues, the corresponding limitations will no longer apply in future versions of Focus Point Viewer.
 
+<br>
 
 ## 6. AutoHotkey Companion Script for Windows
 
