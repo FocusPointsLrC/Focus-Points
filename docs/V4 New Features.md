@@ -10,13 +10,14 @@ These changes make the plugin considerably faster and much more convenient to us
 - #### [Direct View on Windows](#3-direct-view-on-windows)
 - #### [Preview Image and Export Image on macOS](#4-preview-image-and-export-image-on-macos)
 - #### [Known Limitations](#5-known-limitations)
+- #### [AutoHotkey Companion Script for Windows](#6-autoHotkey-companion-script-for-windows)
 <br>
 
-### Known Limitations
+### About the limitation references
 
-Some features described in this document depend on Lightroom SDK functionality that currently behaves differently on Windows and macOS or has known SDK limitations.
+Some features described in this document rely on Lightroom SDK functionality that behaves differently on Windows and macOS or is currently affected by SDK limitations.
 
-These are indicated by superscript references throughout this document. A complete explanation—including the cause, the impact, possible workarounds, and links to Adobe bug reports—is provided in the [Known Limitations](#5-known-limitations) section.
+These limitations are indicated by superscript references throughout this document. A complete explanation—including the cause, the impact, possible workarounds, and links to Adobe bug reports—is provided in the [Known Limitations](#5-known-limitations) section.
 
 <br>
 
@@ -107,7 +108,7 @@ Although Direct View offers the fastest startup times, the use of corner markers
 To enable you to easily get the best of both worlds you can select the display mode right from the user interface. Either by clicking with the mouse, or by using a keyboard shortcut. 
 Press one of the following keys:
 - D - Direct View
-- V - PreView Image
+- V - Preview Image
 - E - Export Image
 
 After selecting a different display mode, the window will automatically refresh (close and reopen).
@@ -157,10 +158,16 @@ This is not included in PRE 1, but is planned for inclusion in a future pre-rele
 
 The following limitations (except 6) are caused by current Lightroom Classic SDK behavior and affect Focus Point Viewer. They are outside the plugin's control and will be removed from this list as Adobe addresses the underlying SDK issues.
 
+Some of these limitations can seriously affect the operation of the second screen, particularly on Windows. To address this issue, the plugin is supplemented by a companion AutoHotkey script that works around the existing Lightroom SDK window activation issues. See  [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows).  
+
+A similar fix for limitation 2 has not yet been considered, because
+- it's technically more demanding
+- it only fixes one of the two issues with Follow mode, as long as 1) is not resolved. 
+
 <br>
 
 ---
-### <sup>1</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
+### <sup>1)</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
 
 **Effect:** On macOS, the Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
 
@@ -169,36 +176,44 @@ The following limitations (except 6) are caused by current Lightroom Classic SDK
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
 https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255
 
+**Workaround:** Use the Focus Point Viewer alongside Lightroom on the primary screen.
+
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 <br>
 
 ---
 
-### **<sup>2</sup> Focus Point Viewer always becomes the active window when opened on macOS**  
+### **<sup>2)</sup> Focus Point Viewer always becomes the active window when opened**  
 
-**Effect:** This prevents a smooth 'Follow Lightroom' behavior on macOS. Whenever Focus Point Viewer opens or refreshes after selecting another photo, it becomes the active window and receives keyboard input. This interrupts keyboard-driven Lightroom workflows until Lightroom is clicked again.  
+**Effect:** This prevents a smooth 'Follow Lightroom' behavior. Whenever Focus Point Viewer opens or refreshes after selecting another photo, it becomes the active window and receives keyboard input. This interrupts keyboard-driven Lightroom workflows until Lightroom is clicked again.  
 
-**Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. On Windows there is a tricky workaround, but this has the risk that is might stop working with any future Lightroom update. 
+**Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. 
+
+On Windows there is a tricky workaround, but this has the risk that is might stop working with any future Lightroom update. 
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed. 
 https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366
 
+**Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
+
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 <br>
 
 ---
 
-### **<sup>3</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
+### **<sup>3)</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-**Effect:** In Second Screen Interactive mode, the Focus Point Viewer is the active window but keyboard input is not received until the users presses Tab or clicks a UI control.   
+**Effect:** In Second Screen Interactive mode, the Focus Point Viewer is the active window but keyboard input is not received until the user presses Tab, Left Arrow, Down Arrow or clicks a UI control.   
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.
 https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363
 
+**Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
+
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 <br>
@@ -206,14 +221,16 @@ https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-withou
 
 --- 
 
-### **<sup>4</sup> Focus Point Viewer windows is always on top in Second Screen mode**
+### **<sup>4)</sup> Focus Point Viewer windows is always on top in Second Screen mode**
 
 **Effect:** In Second Screen mode, the Focus Point Viewer is always on top of all visible windows on the screen. It is not possible to bring other windows back to top. This limits usability at least in those cases, where the Focus Point Viewer overlaps with applications that the user wants to use in parallel. 
 
 **Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:
 https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457
 
-**Current status:** New bug report to be filed with Adobe.   
+**Current status:** New bug report to be filed with Adobe (by user aboswrt)
+
+**Workaround:** None.
 
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
@@ -221,7 +238,7 @@ https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-bac
 
 --- 
 
-### **<sup>5</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
+### **<sup>5)</sup> Direct View corner icons do not seamlessly blend with the photo when used on Windows**
 
 **Effect:** Direct View on Windows produces corner markings for focus points, faces and subject areas with rectangular artifacts around the overlay image. See the screenshot in [section 2.1](#21-changing-the-active-display-mode-on-the-fly).  
 
@@ -230,13 +247,15 @@ https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-bac
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
 https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087
 
+**Workaround:** Use Preview Image or Export Image instead.
+
 **How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
 
 <br>
 
 --- 
 
-### **<sup>6</sup> Preview Image and Export Image are not yet available on macOS**
+### **<sup>6)</sup> Preview Image and Export Image are not yet available on macOS**
 
 **Effect:** macOS users are limited to using Direct View. While this display mode has many advantages, its use of corner markers may lack visual clarity to indicate focus points, detected faces and subjects, particularly if there are multiple marked areas in the photo. Preview Image and Export Image use full rectangle overlays which can improve visual clarity. 
 
@@ -246,5 +265,40 @@ https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overla
 
 --- 
 
-As Adobe addresses the SDK issues, the corresponding limitations will disappear automatically in future versions of Focus Point Viewer.
+As Adobe addresses these SDK issues, the corresponding limitations will no longer apply in future versions of Focus Point Viewer.
+
+
+## 6. AutoHotkey Companion Script for Windows
+
+**Windows users:** Focus Point Viewer now includes an optional AutoHotkey companion script that automatically works around two current Lightroom SDK limitations affecting Second Screen mode.
+
+Limitations 2) and 3) prevent a smooth user experience in Follow and Interactive modes. As this would significantly reduce the plugin's effectiveness when used in these modes, considerable effort has been invested in finding workarounds.  
+
+These workarounds have been implemented in an AutoHotkey script called `FixSecondScreen`, which is included in the plugin installation package. The script is provided in both source code and compiled executable formats.  
+
+### Installation
+
+The `FixSecondScreen.exe` file can be found in the `ahk` folder of the `focuspoints.lrplugin` folder.  
+To activate the fix, run the executable and drag it to your Windows Startup folder, so that it is automatically available each time you start Windows. A green icon in the system tray indicates that the script is active.
+
+### How it works  
+
+To overcome the limitations imposed by the current implementation of the Lightroom SDK, the script mimics the actions a user would take to resolve the issue. The script consists of two independent watchers: one for Follow mode and one for Interactive mode.
+
+
+#### **<sup>2)</sup> Focus Point Viewer always becomes the active window when opened**  
+While Follow mode is open, the watcher keeps Lightroom as the active application so that keyboard navigation continues to work. The watcher virtually clicks into Lightroom as soon as a window with the title 'Focus Points Follow ...' becomes the active window. 
+
+Consequently, minimizing Lightroom while the Follow window is visible immediately restores Lightroom. Minimize or close the Follow window first if you want to minimize Lightroom.
+
+Also, it is not possible to operate the plugin using keyboard shortcuts with the fix enabled.
+
+
+#### **<sup>3)</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.**
+
+While Interactive mode is open, the watcher ensures that the Focus Points dialog receives keyboard input. As soon as a window with the title 'Focus Points Interactive ...' is detected, the watcher activates this window and virtually presses the Down Arrow key, causing the keyboard shortcut entry field to receive keyboard input.   
+
+<br>
+
+Note: The content of `FixSecondScreen` could also have been included in the `FocusPointsHotkey` script, but it has been deliberately separated to allow users to run either script independently or both together.
 
