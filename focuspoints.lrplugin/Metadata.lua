@@ -87,7 +87,6 @@ local function showMetadata()
         -- Split the text output into two columns, one for the labels and one for the values.
         column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
 
-
         -- Present metadata in dialog
         local result = MetadataDialog.showDialog(
           targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
@@ -197,6 +196,7 @@ function createParts(metadata)
 
   -- Parse ExifTool output line by line
   for line in metadata:gmatch("[^\r\n]+") do
+
     local group, label, value = line:match("^%[([^%]]+)%]%s*(.-)%s*:%s*(.*)$")
     if group then
       parts[num] = createPart(group, label, value)

@@ -91,7 +91,6 @@ local function showFocusPoint()
 
     local function getCropSignature(photo)
       local settings = photo:getDevelopSettings()
-
       return table.concat({
         settings.CropLeft   or "",
         settings.CropRight  or "",
@@ -121,6 +120,11 @@ local function showFocusPoint()
     end
 
     local floatingDialog = (prefs.secondScreenMode == true)
+
+    local appName = GlobalDefs.appName
+    if floatingDialog then
+      appName = appName .. " " .. prefs.secondScreenBehavior
+    end
 
     --[[----------------------------------------------------------------------------
       Helper used by all callbacks (keyboard shortcuts, navigation buttons,
@@ -1041,7 +1045,7 @@ local function showFocusPoint()
       local controlPanel     = buildControlPanel()
 
       userResponse = LrDialogs.presentModalDialog {
-        title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        title = appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = FocusPointDialog.createDialog(
                      targetPhoto, photoView, infoView, kbdShortcutInput, displayModeSelector()),
         accessoryView = controlPanel,
@@ -1155,12 +1159,7 @@ local function showFocusPoint()
             break
           end
 
-          -- Retrieve the current target photo *after* yielding.
-          local currentPhoto = catalog:getTargetPhoto()
-
-          if currentPhoto == nil
-          or currentPhoto ~= targetPhoto                            -- Selection changed?
-          or getSettingsSignature() ~= previousSettingsSignature    -- Plugin settings changed?
+          if getSettingsSignature() ~= previousSettingsSignature    -- Plugin settings changed?
           then
             requestRefresh()
             break
@@ -1169,18 +1168,22 @@ local function showFocusPoint()
           -- Has the crop changed?
           local tool = LrDevelopController.getSelectedTool()
           if tool ~= "crop" then
-            local ok, cropSignature = LrTasks.pcall(getCropSignature, currentPhoto)
-            if ok then
-              if cropSignature ~= previousCropSignature then
-                Log.logInfo("FocusPoint", "Crop changed")
-                requestRefresh()
+            -- Don't check every change made in the crop tool; only check the end result.
+            local currentPhoto = catalog:getTargetPhoto()
+            if currentPhoto then
+              local ok, cropSignature = LrTasks.pcall(getCropSignature, currentPhoto)
+              if ok then
+                if cropSignature ~= previousCropSignature then
+                  Log.logInfo("FocusPoint", "Crop changed")
+                  requestRefresh()
+                  break
+                end
+              else
+                -- The current photo disappeared (typically because it was deleted).
+                -- Wait for selectionChangeObserver() to receive Lightroom's updated selection.
+                Log.logInfo("FocusPoint", "Photo vanished during polling (probably deleted by user)")
                 break
               end
-            else
-              -- The current photo disappeared (typically because it was deleted).
-              -- Wait for selectionChangeObserver() to receive Lightroom's updated selection.
-              Log.logInfo("FocusPoint", "Photo vanished during polling (probably deleted by user)")
-              break
             end
          end
 
@@ -1191,27 +1194,13 @@ local function showFocusPoint()
 
       local currentPhoto = catalog:getTargetPhoto()
 
-      if currentPhoto ~= targetPhoto or getCropSignature(targetPhoto) ~= buildCropSignature and not MAC_ENV then
+      if currentPhoto ~= targetPhoto
+      or getCropSignature(targetPhoto) ~= buildCropSignature and not MAC_ENV then
         return "refresh"
       end
 
-      if prefs.secondScreenBehavior == FocusPointPrefs.secondScreenBehaviorFollow then
-        LrFunctionContext.callWithContext("ActivationHack", function(c)
-          local scope = LrDialogs.showModalProgressDialog{
-            title = "Work around LR SDK window activation issue",
-            functionContext = c,
-          }
-          for i = 1,50 do
-            LrTasks.sleep(0)
-            LrTasks.yield()
-          end
-          scope:done()
-        end)
-      end
-
-
       LrDialogs.presentFloatingDialog(_PLUGIN, {
-        title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        title = appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = dialogContents(),
         block_task = true,
         resizable = true,
@@ -1267,10 +1256,11 @@ local function showFocusPoint()
     -- Find the index 'current' of the target photo in set of selectedPhotos
     current = getPositionInSelection(targetPhoto, selectedPhotos)
 
-    -- @TODO
-    local function buildCancelled()
+    local function activePhotoChanged()
+      -- Returns whether the selected photo in Lightroom has been changed
+      local activePhoto = catalog:getTargetPhoto()
       return floatingDialog
-         and catalog:getTargetPhoto() ~= targetPhoto
+         and activePhoto and activePhoto ~= targetPhoto
     end
 
     -- To check if the initially selected photo is still the currently selected photo
@@ -1278,20 +1268,7 @@ local function showFocusPoint()
       return catalog:getTargetPhoto() == targetPhoto
     end
 
-    -- @TODO
-    local function restartIfSelectionChanged(cleanup)
-      if floatingDialog and catalog:getTargetPhoto() ~= targetPhoto then
-        if cleanup then
-          cleanup()
-        end
-        userResponse = "refresh"
-        return true
-      end
-      return false
-    end
-
     repeat
-
       -- Get logging ready for next photo
       Log.logInfo("FocusPoint", string.rep("=", 79))
       Log.resetErrorsWarnings()
@@ -1309,7 +1286,7 @@ local function showFocusPoint()
 
       -- Make the current photo the only selected one:
       -- otherwise potential flagging operations will apply to all selected photos
-      if not floatingDialog then  -- @TODO
+      if not floatingDialog then
         catalog:setSelectedPhotos(targetPhoto, {})
       end
 
@@ -1332,7 +1309,7 @@ local function showFocusPoint()
           if rendererTable then
 
             metadata = ExifUtils.readMetadataAsTable(targetPhoto)
-            if buildCancelled() then
+            if activePhotoChanged() then
               userResponse = "refresh"
               break
             end
@@ -1340,7 +1317,7 @@ local function showFocusPoint()
             if metadata then
 
               photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-              if buildCancelled() then
+              if activePhotoChanged() then
                 rendererTable.cleanup()
                 userResponse = "refresh"
                 break
@@ -1352,9 +1329,7 @@ local function showFocusPoint()
                 errorMsg = "Internal error: Unable to create main window"
               end
               -- Update the roll and crop angle display
--- @TODO WHY? if not userResponse or userResponse ~= "refresh" then
-                initializeStraightenControl(targetPhoto)
---            end
+              initializeStraightenControl(targetPhoto)
             else
               errorMsg = "Unable to read the photo's metadata using ExifTool"
             end

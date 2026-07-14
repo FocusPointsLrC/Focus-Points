@@ -74,8 +74,8 @@ FocusPointPrefs.displayModeFallback= 4
 FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export (fallback)" }
 
 -- Second Screen sub-modes
-FocusPointPrefs.secondScreenBehaviorFollow      = "FOLLOW"
-FocusPointPrefs.secondScreenBehaviorInteractive = "INTERACTIVE"
+FocusPointPrefs.secondScreenBehaviorFollow      = "Follow"
+FocusPointPrefs.secondScreenBehaviorInteractive = "Interactive"
 
 -- Definitions to handle Update mechanism
 local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
@@ -710,7 +710,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:radio_button {
           title = "Interactive",
           value = bind("secondScreenBehavior"),
-          checked_value = "INTERACTIVE",
+          checked_value = "Interactive",
         },
 
         f:spacer { width = 8 },
@@ -718,7 +718,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:radio_button {
           title = "Follow Lightroom",
           value = bind("secondScreenBehavior"),
-          checked_value = "FOLLOW",
+          checked_value = "Follow",
           enabled = WIN_ENV
         },
       },
