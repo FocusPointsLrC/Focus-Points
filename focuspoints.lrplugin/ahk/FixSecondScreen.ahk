@@ -16,8 +16,12 @@
 ; reliable keyboard focus restoration during normal use.
 ;
 
-; ------------------------------------------------------------------------------
-; Focus Points Interactive mode workaround
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+
+; ==============================================================================
+; Focus Points Interactive — Initialize keyboard focus for plugin window
+; ==============================================================================
 ;
 ; Lightroom creates the floating dialog without giving keyboard focus to any
 ; control. Sending one Right Arrow initializes the keyboard focus so that
@@ -65,42 +69,63 @@ WatchInteractiveWindow()
     Send "{Down}"
 }
 
-; ------------------------------------------------------------------------------
-; Follow mode workaround
+; ==============================================================================
+;  Focus Points Follow — keep keyboard focus on Lightroom
+; ==============================================================================
 ;
-; Lightroom transfers keyboard focus to each newly opened Follow window, stealing keyboard
-; focus from the Lightroom main window. As soon as the Follow window becomes
-; active, keyboard focus is returned to Lightroom so that the arrow keys
-; continue to navigate photos.
-;
-; The Follow window remains fully usable with the mouse. Keyboard input remains
-; with Lightroom.
+; Detects the exact moment the "Focus Points Follow" floating dialog is
+; created/shown (including on refresh = close+reopen)and immediately hands
+; keyboard focus back to Lightroom Classic (ahk_class AgWinMainFrame).
+
+; This only fires on window CREATION (EVENT_OBJECT_SHOW). Once the dialog exists,
+; clicking into it and interacting works completely normally — the script
+; won't touch it again until it is closed and recreated.
 ; ------------------------------------------------------------------------------
 
-global g_HandledFollowHwnd := 0
 
-FOLLOW_ACTIVATION_DELAY_MS := 15
+TargetTitle  := "Focus Points Follow"   ; substring match
+LightroomWin := "ahk_class AgWinMainFrame"
 
-SetTimer WatchFollowWindow, FOLLOW_POLL_INTERVAL_MS
+OBJID_WINDOW          := 0
+EVENT_OBJECT_SHOW     := 0x8002
+WINEVENT_OUTOFCONTEXT := 0x0000
 
-WatchFollowWindow()
-{
-    global g_HandledFollowHwnd
-    global FOLLOW_ACTIVATION_DELAY_MS
+; Keep references global so they aren't garbage-collected
+global g_HookCB := CallbackCreate(OnWinEvent, "F", 7)
+global g_Hook := DllCall("SetWinEventHook"
+    , "UInt", EVENT_OBJECT_SHOW
+    , "UInt", EVENT_OBJECT_SHOW
+    , "Ptr", 0
+    , "Ptr", g_HookCB
+    , "UInt", 0
+    , "UInt", 0
+    , "UInt", WINEVENT_OUTOFCONTEXT
+    , "Ptr")
 
-    hwnd := WinActive("Focus Points Follow")
+OnExit((*) => DllCall("UnhookWinEvent", "Ptr", g_Hook))
 
-    if (hwnd && hwnd != g_HandledFollowHwnd)
-    {
-        g_HandledFollowHwnd := hwnd
+; --- Callback: fires for every EVENT_OBJECT_SHOW system-wide ---
+OnWinEvent(hHook, event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime) {
+    ; idObject must be OBJID_WINDOW (0) — filters out child controls
+    ; (buttons, text fields, etc.) inside the dialog also becoming visible
+    if (idObject != OBJID_WINDOW) || !hwnd
+        return
 
-        Sleep FOLLOW_ACTIVATION_DELAY_MS
+    title := ""
+    try title := WinGetTitle("ahk_id " hwnd)
+    if InStr(title, TargetTitle)
+        ReturnFocusToLightroom()
+}
 
-        if WinActive("ahk_id " hwnd)
-            ; Return keyboard focus to Lightroom's main window.
-            WinActivate("ahk_class AgWinMainFrame")
+; --- Race the SDK's own activation and reassert Lightroom ---
+ReturnFocusToLightroom() {
+    ; The LrC SDK creates the floating dialog as the active window.
+    ; We reassert Lightroom several times over ~150ms to make sure
+    ; our activation wins even if the SDK re-asserts itself once
+    ; the window finishes painting.
+    Loop 6 {
+        Sleep 25
+        if WinExist(LightroomWin)
+            WinActivate(LightroomWin)
     }
-
-    if (!hwnd)
-        g_HandledFollowHwnd := 0
 }
