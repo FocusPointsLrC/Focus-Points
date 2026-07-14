@@ -221,9 +221,9 @@ https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-withou
 
 --- 
 
-### **<sup>4)</sup> Focus Point Viewer windows is always on top in Second Screen mode**
+### **<sup>4)</sup> Focus Point Viewer windows is always on top in Second Screen mode on Windows**
 
-**Effect:** In Second Screen mode, the Focus Point Viewer is always on top of all visible windows on the screen. It is not possible to bring other windows back to top. This limits usability at least in those cases, where the Focus Point Viewer overlaps with applications that the user wants to use in parallel. 
+**Effect:** In Second Screen mode on Windows, the Focus Point Viewer is always displayed at the top of all visible windows on the screen. It is not possible to bring other windows to the top. This limits usability, particularly when the Focus Point Viewer overlaps with applications that the user wants to run simultaneously. 
 
 **Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:  
 https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457
