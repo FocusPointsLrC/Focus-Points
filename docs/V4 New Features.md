@@ -10,7 +10,7 @@ These changes make the plugin considerably faster and much more convenient to us
 - #### [Direct View on Windows](#3-direct-view-on-windows)
 - #### [Preview Image and Export Image on macOS](#4-preview-image-and-export-image-on-macos)
 - #### [Known Limitations](#5-known-limitations)
-- #### [AutoHotkey Companion Script for Windows](#6-autoHotkey-companion-script-for-windows)
+- #### [AutoHotkey Companion Script for Windows](#6-autohotkey-companion-script-for-windows)
 <br>
 
 ### About the limitation references
