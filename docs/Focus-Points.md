@@ -102,18 +102,24 @@ This section will explain how to install, configure, and use the plugin.
 
 1. Download the plugin Focus-Points-[Version].zip
 
-2. If you’re upgrading from a previous version of Focus Points, 
+
+2. If you’re **upgrading from a previous version** of Focus Points, 
    - exit Lightroom
    - delete the existing focuspoints.lrplugin folder 
    - replace it with the new one extracted from the downloaded .zip
    - restart Lightroom and you’re done.
 
-3. If this is a new installation,
+
+3. If this is a **new installation**,
    - extract the folder focuspoints.lrplugin from the downloaded .zip
    - move it to a location of your choice.
 
+
 4. In Lightroom, do File > Plug-in Manager.
+
+
 5. Click Add, browse and select the focuspoints.lrplugin folder, and click Select Folder (Windows) or Add Plug-in (Mac OS).
+
 
 ### 2.1.3 Detailed Instructions
 1. Download the [latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest) of the plugin package.<br>
