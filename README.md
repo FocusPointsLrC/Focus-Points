@@ -1,4 +1,8 @@
+<!--
 ## Current Release: [V3.4 updated July xx, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.4_pre3)
+-->
+
+## Coming soon: Version 3.4!
 
 <img src="docs/images/ReadMe 1.jpg" alt="Focus Points for Lightroom Classic" style="width:1000px;"/>
 
