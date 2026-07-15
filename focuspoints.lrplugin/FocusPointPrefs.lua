@@ -86,14 +86,14 @@ FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Po
 
 FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
 FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v35/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v4/focuspoints.lrplugin/Version.txt"
 
 -- URL definitions for accessing documents from the UI
 FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
 FocusPointPrefs.urlTroubleShooting = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
 FocusPointPrefs.urlkbdShortcuts    = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
 FocusPointPrefs.urlSecondScreenMode= "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#1-second-screen-mode"
-FocusPointPrefs.urldisplayModes     = "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#2-display-modes"
+FocusPointPrefs.urldisplayModes    = "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#2-display-modes"
 
 FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
 
