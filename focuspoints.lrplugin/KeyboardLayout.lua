@@ -29,7 +29,6 @@ local KeyboardLayout = {}
 local LrDialogs = import 'LrDialogs'
 
 -- Required Lua definitions
-local _strict   = require 'strict'
 local Utf8      = require 'Utf8'
 
 --[[------------------------------------------------------------------------------------------------

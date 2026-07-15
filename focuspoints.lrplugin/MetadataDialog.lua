@@ -1,6 +1,6 @@
 --[[
-  Original work © Whizzbang Inc
-  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
+  Original work Â© Whizzbang Inc
+  Ongoing maintenance and modifications Â© 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ local LrBinding         = import  'LrBinding'
 -- Required Lua definitions
 local FocusPointPrefs   = require 'FocusPointPrefs'
 local GlobalDefs        = require 'GlobalDefs'
-local _strict           = require 'strict'
 local Log               = require 'Log'
 
 --[[----------------------------------------------------------------------------
@@ -47,7 +46,8 @@ local Log               = require 'Log'
   - tag (flag, rate or color) the current image
   Returns the value of the button used to dismiss the dialog.
 ------------------------------------------------------------------------------]]
-function MetadataDialog.showDialog(photo, column1, column2, column1Length, column2Length, numLines)
+function MetadataDialog.showDialog(
+  photo, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
 
   local result
 
@@ -59,7 +59,7 @@ function MetadataDialog.showDialog(photo, column1, column2, column1Length, colum
     local properties = LrBinding.makePropertyTable( context )
     local delimiter = "\r"  -- carriage return; used to separate individual entries in column1 and column2 strings
 
-    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..XXL
+    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..3XL
     local contentHeight = GlobalDefs.appHeight * windowSize
     local contentWidth  = contentHeight * 0.7                    -- minimum width of dialog window
 
@@ -74,14 +74,19 @@ function MetadataDialog.showDialog(photo, column1, column2, column1Length, colum
     local filters, metadataView
     local hintText = "Hint: use ^ $ . * + for pattern matching"
 
-    -- Split column1/column2 strings into arrays of tags/values to ease filtering
-    local tagLabels = {};
+    -- Split column strings into arrays of tags/values to ease filtering
+    local tagGroups = {};
     for match in (column1..delimiter):gmatch("(.-)"..delimiter) do
+      table.insert(tagGroups, match);
+    end
+
+    local tagLabels = {};
+    for match in (column2..delimiter):gmatch("(.-)"..delimiter) do
       table.insert(tagLabels, match);
     end
 
     local tagValues = {};
-    for match in (column2..delimiter):gmatch("(.-)"..delimiter) do
+    for match in (column3..delimiter):gmatch("(.-)"..delimiter) do
       table.insert(tagValues, match);
     end
 
@@ -91,128 +96,169 @@ function MetadataDialog.showDialog(photo, column1, column2, column1Length, colum
     ----------------------------------------------------------------------------
     -- Definition of header line with filters
     ----------------------------------------------------------------------------
-    do
-      local tagFilterLabel = f:static_text {
-        title = "Show tags containing:",
-        alignment = 'right',
-      }
+    local groupFilterLabel = f:static_text {
+      title = "Groups:",
+      alignment = 'right',
+    }
 
-      local tagFilterEntry = f:edit_field {
-        immediate = true,
-        value = LrView.bind( 'tagFilter' ),
-        -- for proper window dimensions on MAC and WIN need to set different properties
---      width_in_chars  = column1Length * bool_to_number[MAC_ENV == true],
---      This logic obviously does not apply (any more?), since it leads to fields that are too wide on the MAC.
-        width_in_digits = column1Length, -- * bool_to_number[WIN_ENV == true],
-      }
+    local groupFilterEntry = f:edit_field {
+      immediate = true,
+      value = LrView.bind( 'groupFilter' ),
+      width_in_digits = column1Length,
+    }
 
-      local function tagFilterEntryField()
-      -- This function will be called upon user input / whenever "tagFilter" is changed.
-        local filteredLabels = ''
-        local filteredValues = ''
-        local pattern = string.upper(properties.tagFilter)
+    local function groupFilterEntryField()
+    -- This function will be called upon user input / whenever "tagFilter" is changed.
+      local filteredGroups = ''
+      local filteredLabels = ''
+      local filteredValues = ''
+      local pattern = string.upper(properties.groupFilter)
 
-        -- Check each individual tag label if it contains tagFilter string
-        -- if so, keep them along with the respective values
-        for i=1, numTags do
-          if string.find(string.upper(tagLabels[i]), pattern) then
-            filteredLabels = filteredLabels .. tagLabels[i] .. delimiter
-            filteredValues = filteredValues .. tagValues[i] .. delimiter
-          end
+      -- Check each individual tag label if it contains tagFilter string
+      -- if so, keep them along with the respective values
+      for i=1, numTags do
+        if string.find(string.upper(tagGroups[i]), pattern) then
+          filteredGroups = filteredGroups .. tagGroups[i] .. delimiter
+          filteredLabels = filteredLabels .. tagLabels[i] .. delimiter
+          filteredValues = filteredValues .. tagValues[i] .. delimiter
         end
-        -- Update view with the filtered entries
-        properties.column1 = filteredLabels
-        properties.column2 = filteredValues
       end
-
-      -- Wire observer
-      properties:addObserver( "tagFilter", tagFilterEntryField)
-
-
-      local valueFilterLabel = f:static_text {
-        title = "Show values containing:",
-        alignment = 'right',
-      }
-
-      local valueFilterEntry = f:edit_field {
-        immediate = true,
-        value = LrView.bind( 'valueFilter' ),
-        -- for proper window dimensions on MAC and WIN need to set different properties
---      width_in_chars  = column1Length * bool_to_number[MAC_ENV == true],
---      This logic obviously does not apply (any more?), since it leads to fields that are too wide on the MAC.
-        width_in_digits = column1Length, -- * bool_to_number[WIN_ENV == true],
-      }
-
-      local function valueFilterEntryField()
-      -- This function will be called upon user input / whenever "valueFilter" is changed.
-        local filteredLabels = ''
-        local filteredValues = ''
-        local pattern = string.upper(properties.valueFilter)
-
-        -- Check each individual tag label if it contains valueFilter string
-        -- if so, keep them along with the respective values
-        for i=1, numTags do
-          if string.find(string.upper(tagValues[i]), pattern) then
-            filteredLabels = filteredLabels .. tagLabels[i] .. delimiter
-            filteredValues = filteredValues .. tagValues[i] .. delimiter
-          end
-        end
-        -- Update view with the filtered entries
-        properties.column1 = filteredLabels
-        properties.column2 = filteredValues
-      end
-
-      -- Wire observer
-      properties:addObserver( "valueFilter", valueFilterEntryField)
-
-      local filterHint = f:static_text {
-        title = hintText,
-        alignment = "right",
-      }
-
-      filters = f:row{
-        f:column {
-          tagFilterLabel, tagFilterEntry,
-          margin_left = 0,
-        },
-        f:column {
-          valueFilterLabel, valueFilterEntry,
-          margin_left = 0,
-        },
-        f:spacer{fill_horizontal = 1},
-        f:column {
-          f:static_text { title = "" },
-          filterHint,
-        },
-      }
+      -- Update view with the filtered entries
+      properties.column1 = filteredGroups
+      properties.column2 = filteredLabels
+      properties.column3 = filteredValues
     end
 
+    -- Wire observer
+    properties:addObserver( "groupFilter", groupFilterEntryField)
+
+
+    local tagFilterLabel = f:static_text {
+      title = "Show tags containing:",
+      alignment = 'right',
+    }
+
+    local tagFilterEntry = f:edit_field {
+      immediate = true,
+      value = LrView.bind( 'tagFilter' ),
+      width_in_digits = column2Length,
+    }
+
+    local function tagFilterEntryField()
+    -- This function will be called upon user input / whenever "tagFilter" is changed.
+      local filteredGroups = ''
+      local filteredLabels = ''
+      local filteredValues = ''
+      local pattern = string.upper(properties.tagFilter)
+
+      -- Check each individual tag label if it contains tagFilter string
+      -- if so, keep them along with the respective values
+      for i=1, numTags do
+        if string.find(string.upper(tagLabels[i]), pattern) then
+          filteredGroups = filteredGroups .. tagGroups[i] .. delimiter
+          filteredLabels = filteredLabels .. tagLabels[i] .. delimiter
+          filteredValues = filteredValues .. tagValues[i] .. delimiter
+        end
+      end
+      -- Update view with the filtered entries
+      properties.column1 = filteredGroups
+      properties.column2 = filteredLabels
+      properties.column3 = filteredValues
+    end
+
+    -- Wire observer
+    properties:addObserver( "tagFilter", tagFilterEntryField)
+
+
+    local valueFilterLabel = f:static_text {
+      title = "Show values containing:",
+      alignment = 'right',
+    }
+
+    local valueFilterEntry = f:edit_field {
+      immediate = true,
+      value = LrView.bind( 'valueFilter' ),
+      width_in_digits = column2Length,
+    }
+
+    local function valueFilterEntryField()
+    -- This function will be called upon user input / whenever "valueFilter" is changed.
+      local filteredGroups = ''
+      local filteredLabels = ''
+      local filteredValues = ''
+      local pattern = string.upper(properties.valueFilter)
+
+      -- Check each individual tag label if it contains valueFilter string
+      -- if so, keep them along with the respective values
+      for i=1, numTags do
+        if string.find(string.upper(tagValues[i]), pattern) then
+          filteredGroups = filteredGroups .. tagGroups[i] .. delimiter
+          filteredLabels = filteredLabels .. tagLabels[i] .. delimiter
+          filteredValues = filteredValues .. tagValues[i] .. delimiter
+        end
+      end
+      -- Update view with the filtered entries
+      properties.column1 = filteredGroups
+      properties.column2 = filteredLabels
+      properties.column3 = filteredValues
+    end
+
+    -- Wire observer
+    properties:addObserver( "valueFilter", valueFilterEntryField)
+
+
+    local filterHint = f:static_text {
+      title = hintText,
+      alignment = "right",
+    }
+
+    filters = f:row{
+      f:column {
+        groupFilterLabel, groupFilterEntry,
+        margin_left = 0,
+      },
+      f:column {
+        tagFilterLabel, tagFilterEntry,
+        margin_left = 0,
+      },
+      f:column {
+        valueFilterLabel, valueFilterEntry,
+        margin_left = 0,
+      },
+      f:spacer{fill_horizontal = 1},
+      f:column {
+        f:static_text { title = "" },
+        filterHint,
+      },
+    }
+
     ----------------------------------------------------------------------------
-    -- Definition of the two columns with labels and values
+    -- Definition of the columns with labels and values
     ----------------------------------------------------------------------------
     do
       local myText1 = f:static_text {
         title = LrView.bind "column1",
         selectable = false,
-        -- for proper window dimensions on MAC and WIN need to set different properties
---      width_in_chars  = column1Length * bool_to_number[MAC_ENV == true],
---      This logic obviously does not apply (any more?), since it leads to fields that are too wide on the MAC.
-        width_in_digits = column1Length, -- * bool_to_number[WIN_ENV == true],
+        width_in_digits = column1Length,
         height_in_lines = numLines * bool_to_number[MAC_ENV == true] + 1 * bool_to_number[WIN_ENV == true],  -- #181: numLines for MAC, 1 for WIN
       }
 
       local myText2 = f:static_text {
         title = LrView.bind "column2",
         selectable = false,
-        -- for proper window dimensions on MAC and WIN need to set different properties
---      width_in_chars  = column2Length * bool_to_number[MAC_ENV == true],
-        width_in_digits = column2Length, -- * bool_to_number[WIN_ENV == true],
---      This logic obviously does not apply (any more?), since it leads to fields that are too wide on the MAC.
+        width_in_digits = column2Length,
+        height_in_lines = numLines * bool_to_number[MAC_ENV == true] + 1 * bool_to_number[WIN_ENV == true],  -- #181: numLines for MAC, 1 for WIN
+      }
+
+      local myText3 = f:static_text {
+        title = LrView.bind "column3",
+        selectable = false,
+        width_in_digits = column3Length,
         height_in_lines = numLines * bool_to_number[MAC_ENV == true] + 1 * bool_to_number[WIN_ENV == true],  -- #181: numLines for MAC, 1 for WIN
       }
 
       local row = f:row {
-        myText1, myText2,
+        myText1, myText2, myText3,
         margin_left = 5,
       }
 
@@ -234,7 +280,7 @@ function MetadataDialog.showDialog(photo, column1, column2, column1Length, colum
 
       metadataView = f:scrolled_view {
         row,
-        width  = pixelWidth(column1Length*2 + string.len("Hint: use ^ $ . * + for pattern matching")),
+        width  = pixelWidth(column1Length + column2Length*2 + string.len(hintText)+2),
         height = contentHeight,
       }
     end
@@ -252,6 +298,7 @@ function MetadataDialog.showDialog(photo, column1, column2, column1Length, colum
     -- Initialize text for the two columns
     properties.column1 = column1
     properties.column2 = column2
+    properties.column3 = column3
 
     -- Open the dialog window
     result = LrDialogs.presentModalDialog {

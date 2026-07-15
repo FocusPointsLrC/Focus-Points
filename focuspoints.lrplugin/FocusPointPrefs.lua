@@ -40,12 +40,12 @@ local LrView          = import  'LrView'
 local Info            = require 'Info'
 local KeyboardLayout  = require 'KeyboardLayout'
 local Log             = require 'Log'
-local _strict         = require 'strict'
 local Utils           = require 'Utils'
 
 -- Important plugin definitions and settings -----------------------------------
 
 -- Size options for plugin window
+FocusPointPrefs.pluginWindow3XL    = 0.9
 FocusPointPrefs.pluginWindowXXL    = 0.8
 FocusPointPrefs.pluginWindowXL     = 0.7
 FocusPointPrefs.pluginWindowL      = 0.6
@@ -66,12 +66,22 @@ FocusPointPrefs.kbdInputInvisible  = 0
 FocusPointPrefs.kbdInputSmall      = 1
 FocusPointPrefs.kbdInputRegular    = 2
 
--- URL to handle Update mechanism
+-- Settings for photo view base image display
+FocusPointPrefs.displayModePreview = 1
+FocusPointPrefs.displayModeExport  = 2
+FocusPointPrefs.displayModeDirect  = 3
+FocusPointPrefs.displayModeFallback= 4
+FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export(fallback)" }
+
+-- Definitions to handle Update mechanism
+local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
+local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
+
 FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
 FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
 
 FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/develop/focuspoints.lrplugin/Version.txt"
+FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v34/focuspoints.lrplugin/Version.txt"
 FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
 
 -- URL definitions for accessing documents from the UI
@@ -89,10 +99,8 @@ FocusPointPrefs.kbdShortcutsReject          = "x"
 FocusPointPrefs.kbdShortcutsPickNext        = "P"
 FocusPointPrefs.kbdShortcutsUnflagNext      = "U"
 FocusPointPrefs.kbdShortcutsRejectNext      = "X"
-FocusPointPrefs.kbdShortcutsToggleImageInfo = "iI"
-FocusPointPrefs.kbdShortcutsToggleShootInfo = "sS"
-FocusPointPrefs.kbdShortcutsToggleFocusInfo = "fF"
-FocusPointPrefs.kbdShortcutsToggleInfoView  = "vV"
+FocusPointPrefs.kbdShortcutsStraighten      = "sS"
+FocusPointPrefs.kbdShortcutsStraightenReset = "rR"
 FocusPointPrefs.kbdShortcutsCheckLog        = "lL"
 FocusPointPrefs.kbdShortcutsTroubleShooting = "?hH"
 FocusPointPrefs.kbdShortcutsHelp            = "kK"
@@ -115,24 +123,31 @@ local bind = LrView.bind
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
-  if not prefs.screenScaling               then prefs.screenScaling              = 0 end
-  if not prefs.pluginWindowScaling         then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
-  if     prefs.truncateLongText    == nil  then prefs.truncateLongText           = true      end
-  if not prefs.truncateLimit               then prefs.truncateLimit              = 32        end
-  if not prefs.focusBoxSize                then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
-  if not prefs.focusBoxColor               then prefs.focusBoxColor              = "red"     end
-  if     prefs.taggingControls     == nil  then prefs.taggingControls            = true      end
-  if     prefs.keyboardLayout      == nil  then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
-  if not prefs.loggingLevel                then prefs.loggingLevel               = "AUTO"    end
-  if     prefs.overwriteCropAngle  == nil  then prefs.overwriteCropAngle         = false     end
-  if     prefs.straightenLimits    == nil  then prefs.straightenLimits           = false     end
-  if not prefs.straightenLimitLow          then prefs.straightenLimitLow         = -0        end
-  if not prefs.straightenLimitHigh         then prefs.straightenLimitHigh        =  45       end
-  if not prefs.straightenSummaryCondition  then prefs.straightenSummaryCondition = "SKIPPED" end
-  if     prefs.straightenApplyBias == nil  then prefs.straightenApplyBias        = false     end
-  if not prefs.straightenBias              then prefs.straightenBias             = 0.0       end
-  if     prefs.checkForUpdates     == nil  then prefs.checkForUpdates            = true      end   -- here we need a nil pointer check!!
-  if     prefs.keyboardInput       == nil  then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
+  if not prefs.screenScaling                  then prefs.screenScaling              = 0 end
+  if not prefs.pluginWindowScaling            then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
+  if     prefs.truncateLongText        == nil then prefs.truncateLongText           = true      end
+  if not prefs.truncateLimit                  then prefs.truncateLimit              = 32        end
+  if     prefs.hideKofiControl         == nil then prefs.hideKofiControl            = false     end
+  if not prefs.focusBoxSize                   then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
+  if not prefs.focusBoxColor                  then prefs.focusBoxColor              = "red"     end
+  if     prefs.straightenControls      == nil then prefs.straightenControls         = true      end
+  if     prefs.taggingControls         == nil then prefs.taggingControls            = true      end
+  if     prefs.keyboardLayout          == nil then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
+  if not prefs.loggingLevel                   then prefs.loggingLevel               = "AUTO"    end
+  if     prefs.overwriteCropAngle      == nil then prefs.overwriteCropAngle         = false     end
+  if     prefs.straightenLimits        == nil then prefs.straightenLimits           = false     end
+  if not prefs.straightenLimitLow             then prefs.straightenLimitLow         = -0        end
+  if not prefs.straightenLimitHigh            then prefs.straightenLimitHigh        =  45       end
+  if not prefs.straightenSummaryCondition     then prefs.straightenSummaryCondition = "SKIPPED" end
+  if     prefs.straightenApplyBias     == nil then prefs.straightenApplyBias        = false     end
+  if not prefs.straightenBias                 then prefs.straightenBias             = 0.0       end
+  if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
+  if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
+  if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
+  if not prefs.previewTimeout                 then prefs.previewTimeout             = 0.5       end
+  if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
+  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 0.5       end
+
   -- get the latest plugin version for update checks
   FocusPointPrefs.retrieveVersionOfLatestRelease()
 end
@@ -234,7 +249,7 @@ end
   public float
   getPluginWindowSize()
 
-  Returns the sizing factor for supported plugin window sizes S..XXL
+  Returns the sizing factor for supported plugin window sizes S..3XL
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getPluginWindowSize()
   local prefs = LrPrefs.prefsForPlugin( nil )
@@ -326,18 +341,18 @@ function FocusPointPrefs.isUpdateAvailable()
             elseif tonumber(revision) == pluginVersion.revision then
               -- major, minor versions and revision numbers are the same, so check the build version
               if build then
-                if tonumber(build) >= 9000 then
+                if tonumber(build) >= preReleaseBuildNumbers then
                   -- latest release is a pre-release
                   if  pluginVersion.build
-                  and pluginVersion.build >= 9000
+                  and pluginVersion.build >= preReleaseBuildNumbers
                   and pluginVersion.build < tonumber(build) then
                     -- new pre-release available
                     result = true
                   end
-                else
+                elseif tonumber(build) < previewBuildNumbers then
                   -- latest release is a regular release
                   if pluginVersion.build then
-                    if tonumber(pluginVersion.build) >= 9000 then
+                    if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
                       -- release available for local pre-release version
                       result = true
                     elseif tonumber(build) > pluginVersion.build then
@@ -345,6 +360,8 @@ function FocusPointPrefs.isUpdateAvailable()
                       result = true
                     end
                   end
+                else
+                  -- no update mechanism for preview builds
                 end
               end
             end
@@ -370,7 +387,7 @@ end
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
   local pluginVersion = Info.VERSION
-  if tonumber(pluginVersion.build) >= 9000 then
+  if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
     -- pre-release
     return FocusPointPrefs.urlReleases
   else
@@ -410,10 +427,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
   end
 
   -- Width of the drop-down lists in px, to make the naming aligned across rows
-  local dropDownWidth = 75
+  local dropDownWidth = 6
 
   local function sectionScreenScaling()
-    if not WIN_ENV then return {} end
+    if not WIN_ENV then return nil end
     return {
       title = "Screen Scaling",
       f:row {
@@ -421,8 +438,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Scaling",
-          value = bind ("screenScaling"),
-          width = dropDownWidth,
+          value = bind("screenScaling"),
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Auto", value = 0    },
             { title = "100%", value = 1.0  },
@@ -440,35 +457,53 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
   local function sectionUserInterface()
+    local function straightenControlsSetting()
+      if LR5 then return LrView.kIgnoredView end
+      return f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "straightenControls",
+          value = bind("straightenControls"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title = "On",  value = true  },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = 'Enable controls to straighten a photo (mouse and keyboard)'
+        },
+      }
+    end
     local function taggingControlsSetting()
-      if LR5 then return f:control_spacing{} end  -- return empty space
-      return
-        f:row {
-          bind_to_object = prefs,
-          spacing = f:control_spacing(),
-          f:popup_menu {
-            title = "taggingControls",
-            value = bind ("taggingControls"),
-            width = dropDownWidth,
-            items = {
-              { title = "On",  value = true  },
-              { title = "Off", value = false },
-            }
-          },
-          f:static_text {
-            title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
-          },
-        }
+      if LR5 then return LrView.kIgnoredView end
+      return f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "taggingControls",
+          value = bind("taggingControls"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title = "On",  value = true  },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
+        },
+      }
     end
     local function keyboardLayoutSetting()
-      if LR5 then return f:control_spacing{} end  -- return empty space
+      if LR5 then return LrView.kIgnoredView end
       return f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "keyboardLayout",
-          value = bind ("keyboardLayout"),
-          width = dropDownWidth,
+          value = bind("keyboardLayout"),
+          width_in_chars = dropDownWidth,
           items = KeyboardLayout.buildDropdownItems(),
         },
         f:static_text {
@@ -476,6 +511,65 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
       }
     end
+    local function previewGenerationSettings()
+      if not WIN_ENV then return nil end
+      return f:column{
+        spacing = f:control_spacing(),
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+          f:popup_menu {
+            title = "previewFallback",
+            value = bind("previewFallback"),
+            width_in_chars = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
+          },
+          f:static_text {
+            title = 'Preview Image: Use Export Image if no preview becomes available within'
+          },
+          f:edit_field {
+            value = bind("previewTimeout"),
+            width_in_chars = 3,
+            min = 0,
+            max = 10,
+            precision = 1,
+          },
+          f:static_text {
+            title = 'seconds',
+          },
+        },
+        f:row {
+          bind_to_object = prefs,
+          spacing = f:control_spacing(),
+          f:popup_menu {
+            title = "previewShowProgress",
+            value = bind("previewShowProgress"),
+            width_in_chars = dropDownWidth,
+            items = {
+              { title = "On", value = true },
+              { title = "Off", value = false },
+            },
+          },
+          f:static_text {
+            title = 'Preview Image: Show progress notification after '
+          },
+          f:edit_field {
+            value = bind("previewProgressDelay"),
+            width_in_chars = 3,
+            min = 0,
+            max = 10,
+            precision = 1,
+          },
+          f:static_text {
+            title = 'seconds',
+          },
+        },
+      }
+    end
+
     return {
       title = "User Interface",
       f:row {
@@ -483,9 +577,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "pluginWindowScaling",
-          value = bind ("pluginWindowScaling"),
-          width = dropDownWidth,
+          value = bind("pluginWindowScaling"),
+          width_in_chars = dropDownWidth,
           items = {
+            { title = "3XL", value = FocusPointPrefs.pluginWindow3XL },
             { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
             { title = "XL",  value = FocusPointPrefs.pluginWindowXL  },
             { title = "L",   value = FocusPointPrefs.pluginWindowL   },
@@ -502,8 +597,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "keyboardInput",
-          value = bind ("keyboardInput"),
-          width = dropDownWidth,
+          value = bind("keyboardInput"),
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Invisible",  value = FocusPointPrefs.kbdInputInvisible },
             { title = "Small",      value = FocusPointPrefs.kbdInputSmall     },
@@ -519,8 +614,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "truncateLongText",
-          value = bind ("truncateLongText"),
-          width = dropDownWidth,
+          value = bind("truncateLongText"),
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On",  value = true  },
             { title = "Off", value = false },
@@ -530,7 +625,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = 'Truncate or wrap strings after'
         },
         f:edit_field {
-          value = bind ("truncateLimit"),
+          value = bind("truncateLimit"),
           width_in_chars = 3,
           min = 10,
           max = 100,
@@ -540,9 +635,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           title = 'characters',
         },
       },
-
-      taggingControlsSetting(),   -- empty for LR5
-      keyboardLayoutSetting(),    -- empty for LR5
+      straightenControlsSetting(), -- empty for LR5
+      taggingControlsSetting(),    -- empty for LR5
+      keyboardLayoutSetting(),     -- empty for LR5
+      previewGenerationSettings(), -- empty for MAC
     }
   end
   local function sectionViewingOptions()
@@ -555,7 +651,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "focusBoxColor",
           value = bind("focusBoxColor"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Red",   value = "red" },
             { title = "Green", value = "green" },
@@ -571,11 +667,11 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "focusBoxSize",
           value = bind("focusBoxSize"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
-            { title = "Small", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeSmall] },
+            { title = "Small",  value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeSmall]  },
             { title = "Medium", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeMedium] },
-            { title = "Large", value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeLarge] },
+            { title = "Large",  value = FocusPointPrefs.focusBoxSize[FocusPointPrefs.focusBoxSizeLarge]  },
           }
         },
         f:static_text {
@@ -593,8 +689,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Logging level",
-          value = bind ('loggingLevel'),
-          width = dropDownWidth,
+          value = bind('loggingLevel'),
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Auto",  value = "AUTO"  },
             { title = "Full",  value = "FULL"  },
@@ -639,7 +735,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "overwriteCropAngle",
           value = bind("overwriteCropAngle"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -655,7 +751,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "straightenLimits",
           value = bind("straightenLimits"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -691,7 +787,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "straightenApplyBias",
           value = bind("straightenApplyBias"),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "On", value = true },
             { title = "Off", value = false },
@@ -717,7 +813,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:popup_menu {
           title = "Straighten Summary Condition",
           value = bind('straightenSummaryCondition'),
-          width = dropDownWidth,
+          width_in_chars = dropDownWidth,
           items = {
             { title = "Always", value = "ALWAYS" },
             { title = "Skipped Images", value = "SKIPPED" },
@@ -745,6 +841,34 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
         f:spacer{fill_horizontal = 1},
         updateMessage,
+      },
+    }
+  end
+  local function sectionSupport()
+    return
+    {
+      title = "Support the Author",
+      bind_to_object = prefs,
+      spacing = f:control_spacing(),
+      f:row{
+        fill_horizontal = 1,
+        spacing = f:control_spacing(),
+        f:picture {
+          value = _PLUGIN:resourceId("assets/icons/kofi.png")
+        },
+        f:static_text {
+          title = "Buy me a coffee on Ko-fi.com!",
+          text_color = LrColor("blue"),
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
+          end,
+        },
+        f:spacer{fill_horizontal = 1},
+        f:checkbox {
+          title = 'I have already donated. Hide Ko-fi icon and link from the plugin window.',
+          value = bind("hideKofiControl")
+        },
       },
     }
   end
@@ -835,15 +959,25 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     }
   end
 
-  return {
-    sectionScreenScaling(),
-    sectionUserInterface(),
-    sectionViewingOptions(),
-    sectionLogging(),
-    sectionStraighteningOptions(),
-    sectionUpdates(),
-    sectionAcknowledgements(),
-  }
+  -- Non-relevant sections (e.g. not relevant to LR5) need to be omitted from the table
+  local sections = {}
+  local function add(section)
+    if section then
+      sections[#sections + 1] = section
+    end
+  end
+
+  add(sectionScreenScaling())
+  add(sectionUserInterface())
+  add(sectionViewingOptions())
+  add(sectionLogging())
+  add(sectionStraighteningOptions())
+  add(sectionUpdates())
+  add(sectionSupport())
+  add(sectionAcknowledgements())
+
+  return sections
+
 end
 
 return FocusPointPrefs

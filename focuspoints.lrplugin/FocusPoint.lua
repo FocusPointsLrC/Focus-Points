@@ -1,6 +1,6 @@
 --[[
-  Original work © Whizzbang Inc
-  Ongoing maintenance and modifications © 2026 Karsten Gieselmann
+  Original work Â© Whizzbang Inc
+  Ongoing maintenance and modifications Â© 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -29,15 +29,17 @@ local LrApplication         = import  'LrApplication'
 local LrApplicationView    -- import only for SDK 7.4 and later
 local LrBinding             = import  'LrBinding'
 local LrColor               = import  'LrColor'
+local LrDate                = import  'LrDate'
 local LrDialogs             = import  'LrDialogs'
 local LrFunctionContext     = import  'LrFunctionContext'
 local LrHttp                = import  'LrHttp'
 local LrPrefs               = import  'LrPrefs'
+local LrSelection          -- import only for SDK 6.0 and later
 local LrTasks               = import  'LrTasks'
 local LrView                = import  'LrView'
-local LrSelection          -- import only for SDK 6.0 and later
 
 -- Required Lua definitions
+local Crop                  = require 'Crop'
 local ExifUtils             = require 'ExifUtils'
 local FocusInfo             = require 'FocusInfo'
 local FocusPointDialog      = require 'FocusPointDialog'
@@ -46,7 +48,7 @@ local GlobalDefs            = require 'GlobalDefs'
 local KeyboardLayout        = require 'KeyboardLayout'
 local Log                   = require 'Log'
 local PointsRendererFactory = require 'PointsRendererFactory'
-local _strict               = require 'strict'
+local Straighten            = require 'Straighten'
 local Utf8                  = require 'Utf8'
 local Utils                 = require 'Utils'
 
@@ -63,24 +65,35 @@ local Utils                 = require 'Utils'
 ------------------------------------------------------------------------------]]
 local function showFocusPoint()
 
-
   LrFunctionContext.callWithContext("showFocusPointDialog", function(context)
 
     local catalog = LrApplication.activeCatalog()
     local current
     local errorMsg
     local photoView, infoView
-    local dialogScope
     local rendererTable
     local metadata
     local switchedToLibrary
     local userResponse
     local exitPlugin
-    local clicked
+    local startTimer, stopTimer
+    local clicked = false
+    local straightenBusy = false
+    local undoCrops = {}
     local prefs = LrPrefs.prefsForPlugin( nil )
+
+    local function closeDialog(view, response)
+      -- Central helper to close dialog; to be extended by handling of floating dialog for 'Second Screen' mode
+      LrDialogs.stopModalWithResult(view, response)
+    end
+
     local props = LrBinding.makePropertyTable(context)
     local LR5 = (LrApplication.versionTable().major == 5) -- or true -- to simulate running on LR5
     local LrC = (LrApplication.versionTable().major >= 8) -- or true -- to simulate running on LR < 7.4
+
+    local rollAngleNA         = 'Roll: n/a'
+    local rollAngleStraighten = 'Straighten'
+    local rollAngleReset      = 'Reset'
 
     -- special Unicode characters used as replacement for icons
     local utfRightPointingTriangle = string.char(0xe2, 0x96, 0xb6)
@@ -100,6 +113,7 @@ local function showFocusPoint()
     local utfGreenLargeSquare      = string.char(0xf0, 0x9f, 0x9f, 0xa9)
     local utfBlueLargeSquare       = string.char(0xf0, 0x9f, 0x9f, 0xa6)
     local utfPurpleLargeSquare     = string.char(0xf0, 0x9f, 0x9f, 0xaa)
+    local utfDegree                = string.char(194, 176)
     local buttonNextImage = "Next image " .. utfRightPointingTriangle
     local buttonPreviousImage      =  utfLeftPointingTriangle .. " Previous image"
     local taggingSymbols = {
@@ -156,6 +170,7 @@ local function showFocusPoint()
       end
       return current
     end
+
     local function needSyncWithFilmStrip()
       local result = false
       local activePhoto = catalog:getTargetPhoto()
@@ -167,6 +182,7 @@ local function showFocusPoint()
       end
       return result
     end
+
     local function nextPhoto()
       -- Advance to the next photo of user selection or film strip (if only a single image was selected)
       local function nextPhotoOfSelection()
@@ -191,6 +207,7 @@ local function showFocusPoint()
         nextPhotoOfFilmStrip()
       end
     end
+
     local function previousPhoto()
       -- Advance to the previous photo of user selection or film strip (if only a single image was selected)
       local function previousPhotoOfSelection()
@@ -215,6 +232,7 @@ local function showFocusPoint()
         previousPhotoOfFilmStrip()
       end
     end
+
     -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
     FocusPointPrefs.InitializePrefs(prefs)
     -- Initialize logging, log system level information
@@ -223,29 +241,28 @@ local function showFocusPoint()
     -- Set scale factor for sizing of dialog window
     if WIN_ENV then
       FocusPointPrefs.setDisplayScaleFactor()
-
     end
 
     -- Log applicaton level information (includes scale factor and app window size)
     logAppInfo()
+
     -- only on WIN (issue #199):
     -- if launched in Develop module switch to Library to enforce that a preview of the image is available
     -- must switch to loupe view because only in this view previews will be rendered
     -- perform module switch as early as possible to give Library time to create a preview if none exists
     if WIN_ENV and LrC then
-      local done
-      LrTasks.startAsyncTask(function()
-        LrApplicationView = import 'LrApplicationView'
-        local moduleName = LrApplicationView.getCurrentModuleName()
-        if moduleName == "develop" then
-          LrApplicationView.switchToModule("library")
-          LrApplicationView.showView("loupe")
-          switchedToLibrary = true
+      LrApplicationView = import 'LrApplicationView'
+      local moduleName = LrApplicationView.getCurrentModuleName()
+      if moduleName == "develop" then
+        LrApplicationView.switchToModule("library")
+        LrApplicationView.showView("loupe")
+        switchedToLibrary = true
+        local waited = 0
+        while LrApplicationView.getCurrentModuleName() ~= "library" and waited < 5.0 do
+          LrTasks.sleep(0.2)
+          waited = waited + 0.2
         end
-        done = true
-      end)
-      -- wait for async task to end
-      while not done do LrTasks.sleep(0.2) end
+      end
     end
 
     local function inputFieldWidth()
@@ -261,6 +278,20 @@ local function showFocusPoint()
       else
         return nil -- automatic
       end
+    end
+
+    -- Forward reference
+    local straightenControlHandler
+
+    local function straightenAndRefresh(view)
+      if straightenBusy then return else straightenBusy = true end
+      LrTasks.startAsyncTask(function()
+        local success = straightenControlHandler()
+        straightenBusy = false
+        if success then
+          closeDialog(view, "refresh")
+        end
+      end)
     end
 
     local function kbdShortcutInputField()
@@ -300,12 +331,12 @@ local function showFocusPoint()
           -- Get the most recently entered character
           local char = Utf8.last_char(text)
           Log.logDebug("FocusPoint", string.format("Shortcut input: c = '%s'", char))
-          Log.logDebug("FocusPoint", string.format("Text length: text = '%s', previous = '%s'", string.len(text), prevTextLen))
-          if not char or char == "" or string.len(text) < prevTextLen then
-            prevTextLen = string.len(text)
+          Log.logDebug("FocusPoint", string.format("Text length: text = '%s', previous = '%s'", Utf8.len(text), prevTextLen))
+          if not char or char == "" or Utf8.len(text) < prevTextLen then
+            prevTextLen = Utf8.len(text)
             return true
           end
-          prevTextLen = string.len(text)
+          prevTextLen = Utf8.len(text)
           --------------------------------------------------------------------------------------
           -- Parse character and perform designated operation if it is a shortcut
           -- Tagging operations: flagging / rating / coloring
@@ -330,7 +361,7 @@ local function showFocusPoint()
             -- Pick photo and advance to next
             elseif string.find(FocusPointPrefs.kbdShortcutsPickNext, char, 1, true) then
               LrSelection.flagAsPick()
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             -- Reject photo
             elseif string.find(FocusPointPrefs.kbdShortcutsReject, char, 1, true) then
               if LrSelection.getFlag() ~= -1 then   -- reject
@@ -342,7 +373,7 @@ local function showFocusPoint()
               if LrSelection.getFlag() ~= -1 then   -- reject
                 LrSelection.flagAsReject()
               end
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             -- Unflag photo
             elseif string.find(FocusPointPrefs.kbdShortcutsUnflag, char, 1, true) then
               LrSelection.removeFlag()
@@ -350,7 +381,7 @@ local function showFocusPoint()
             -- Unflag photo and advance to next
             elseif string.find(FocusPointPrefs.kbdShortcutsUnflagNext, char, 1, true) then
               LrSelection.removeFlag()
-              LrDialogs.stopModalWithResult(view, "next")
+              closeDialog(view,"next")
             end
 
             -- Input of digits (unshifted/shifted top row keys) depends on intl keyboard layout!
@@ -371,9 +402,9 @@ local function showFocusPoint()
                 end
               end
               if shifted then
-                LrDialogs.stopModalWithResult(view, "next")
+                closeDialog(view, "next")
               elseif needSyncWithFilmStrip() then
-                LrDialogs.stopModalWithResult(view, "sync")
+                closeDialog(view, "sync")
               else
               end
               return true  -- done
@@ -386,12 +417,22 @@ local function showFocusPoint()
           --------------------------------------------------------------------------------------
           -- Next image
           if string.find(FocusPointPrefs.kbdShortcutsNext, char, 1, true) then
-            LrDialogs.stopModalWithResult(view, "next")
+            closeDialog(view, "next")
             return true  -- done
           -- Previous image
           elseif string.find(FocusPointPrefs.kbdShortcutsPrev, char, 1, true) then
-            LrDialogs.stopModalWithResult(view, "previous")
+            closeDialog(view,"previous")
             return true  -- done
+          elseif string.find(FocusPointPrefs.kbdShortcutsStraighten, char, 1, true) then
+            if props.rollAngleAction == rollAngleStraighten then
+              straightenAndRefresh(view)
+              return true
+            end
+          elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
+            if props.rollAngleAction == rollAngleReset then
+              straightenAndRefresh(view)
+              return true
+            end
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
@@ -410,28 +451,14 @@ local function showFocusPoint()
               Utils.openFileInApp(Log.getLogFileName())
             end
             return true  -- done
-          -- Toggle visibility of Image Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleImageInfo, char, 1, true) then
-            props.imageInfoEnabled = not props.imageInfoEnabled
-          -- Toggle visibility of Shooting Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleShootInfo, char, 1, true) then
-            props.shootInfoEnabled = not props.shootInfoEnabled
-          -- Toggle visibility of Focus Information
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleFocusInfo, char, 1, true) then
-            props.focusInfoEnabled = not props.focusInfoEnabled
-          -- Toggle visibility of Info View
-          elseif string.find(FocusPointPrefs.kbdShortcutsToggleInfoView, char, 1, true) then
-            props.imageInfoEnabled = not (props.imageInfoEnabled or props.shootInfoEnabled or props.focusInfoEnabled)
-            props.shootInfoEnabled = props.imageInfoEnabled
-            props.focusInfoEnabled = props.imageInfoEnabled
           -- Close
           elseif string.find(FocusPointPrefs.kbdShortcutsClose, char, 1, true)
           or (MAC_ENV and char == ".") then
-            LrDialogs.stopModalWithResult(view, "ok")
+            closeDialog(view,"ok")
           end
           -- always return true; in case of false the entire text is displayed in red color if visible
           return true
-          end,
+        end,
       }
     end
 
@@ -455,7 +482,7 @@ local function showFocusPoint()
           f:static_text {
             title = "keyboard shortcuts " .. utfLinkSymbol,
             font  = "<system/small>",
-            tooltip = "Learn how to use the plugin's keyboard shortcuts and familiarize yourself with its limitations and restrictions",
+            tooltip = "Learn how to use the plugin's keyboard shortcuts and familiarize yourself with its limitations and restrictions (K)",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
             mouse_down = function(_view)
@@ -470,8 +497,6 @@ local function showFocusPoint()
 
     local function navigationControls()
       local f = LrView.osFactory()
-      props.fileName = ""
-      props.fileNameTooltip = ""
       return f:row {
         margin = 0,
         spacing = 0,     -- removes uniform spacing; we control it manually
@@ -482,7 +507,7 @@ local function showFocusPoint()
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!
             if clicked then return else clicked = true end
-            LrDialogs.stopModalWithResult(button, "previous")
+            closeDialog(button,"previous")
           end
         },
         f:spacer { width = 10 }, -- space before the file name
@@ -501,7 +526,7 @@ local function showFocusPoint()
             -- Prevent multiple executions - known LrC SDK quirk!
             if clicked then return else clicked = true end
             -- set index to next image, wrap around at end of list
-            LrDialogs.stopModalWithResult(button, "next")
+            closeDialog(button,"next")
           end
         },
       }
@@ -518,9 +543,8 @@ local function showFocusPoint()
         LrSelection.setRating(rating)
       end
 
-      if not prefs.taggingControls or LR5 then
-        return f:spacer{width = 10}
-      end
+      if not prefs.taggingControls or LR5 then return LrView.kIgnoredView end
+
       return f:row{
         spacing = 0,
         --------------------------------------------------------------------
@@ -628,13 +652,177 @@ local function showFocusPoint()
       }
     end
 
-    local function miscControls()
-      local f = LrView.osFactory()
+    local function initializeStraightenControl(photo)
 
+      local function formatAngle(x)
+        local str = string.format("%+0.1f", x)
+        -- Matches either +0.0 or -0.0 and replaces it with just 0.0
+        return str:gsub("([%-%+])0%.0", "0.0")
+      end
+
+      -- Retrieve crop information from Develop settings
+      props.crop             = Crop.ofPhoto(photo)
+      props.cropAngle        = props.crop.a
+      props.cropAngleText    = string.format("Crop: %s%s", formatAngle(props.cropAngle), utfDegree)
+      props.cropAngleTooltip = "Angle of current crop"
+
+      -- Retrieve RollAngle information from metadata, normalize and create text controls
+      -- Note: props.rollAngle is same as -straightenAngle used in the code handling batch mode straightening!
+      local cameraRollAngle, status, message = Straighten.getRollAngleCW(photo, metadata)
+      if (status == Straighten.WARNING) or (status == Straighten.ERROR) then
+        -- Roll angle information not available for this photo
+        props.rollAngle        = nil
+        props.rollAngleText    = rollAngleNA
+        props.rollAngleTooltip = message
+      else
+        -- Normalize roll angle with respect to different handling of landscape/portait formats by some makers
+        props.rollAngle        = -Straighten.calculateStraightenAngle(cameraRollAngle)
+        props.rollAngleText    = string.format("Roll: %s%s", formatAngle(props.rollAngle), utfDegree)
+        props.rollAngleTooltip = "Camera angle at the time of capture"
+      end
+    end
+
+    function straightenControlHandler()
+
+      -- Reset bypasses the normal validation rules because it restores a
+      -- previously saved crop state rather than applying a new correction.
+      if props.rollAngleAction == rollAngleReset then
+        -- key is localIdentifier (integer), not the photo object itself
+        if undoCrops[targetPhoto.localIdentifier] then
+          -- existing crop has been saved by preceding 'Straighten' action
+          catalog:withWriteAccessDo("Undo Straighten Images", function()
+            Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Reset Crop")
+          end)
+          -- Remove the table entry to avoid it growing over time
+          undoCrops[targetPhoto.localIdentifier] = nil
+        else
+          -- if no crop is available we just revert the roll angle correction
+          if not Straighten.straightenImage(targetPhoto, props.rollAngle, "Undo Roll Angle Correction") then
+            LrDialogs.message("Straightening could not be undone")
+          end
+        end
+        return true
+      end
+
+      -- Retrieve existing crop angle of photo
+      local settings = targetPhoto:getDevelopSettings()
+      local photoTransformed = Straighten.hasTransform(settings)
+
+      if Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
+        LrDialogs.message(
+          "Straightening not applied",
+          "Photo has been already straightened")
+        return false
+      end
+
+      if photoTransformed then
+        LrDialogs.message(
+          "Straightening not applied",
+          "Transform operations have been applied to this photo.\n\n" ..
+          "Hint: You can 'Straighten' only images that have not been changed using 'Transform'"
+        )
+        return false
+      end
+
+      if props.cropAngle ~= 0 and not prefs.overwriteCropAngle then
+        LrDialogs.message(
+          "Straightening not applied",
+          "A non-zero crop angle exists for this photo.\n\n" ..
+          "Hint: To overwrite an existing crop angle, go to 'Straightening' options on the plugin's settings page."
+        )
+        return false
+      end
+
+      if prefs.straightenLimits and
+      ((math.abs(props.rollAngle) < prefs.straightenLimitLow) or
+       (math.abs(props.rollAngle) > prefs.straightenLimitHigh)) then
+        LrDialogs.message(
+          "Straightening not applied",
+          "Roll angle exceeds user-defined limits.\n\n" ..
+          "Hint: To set the limits, go to 'Straightening' options on the plugin's settings page."
+        )
+        return false
+      end
+
+      -- Preserve the original crop the first time Straighten is applied
+      -- so that Reset can restore the exact previous crop later
+      undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
+
+      if props.cropAngle ~= 0 then
+        -- Reset existing crop before "overwriting" crop angle
+        catalog:withWriteAccessDo("Straighten Images", function()
+          Crop.photoReset(targetPhoto, "Reset Crop")
+        end)
+      end
+
+      if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
+        return true
+      else
+        LrDialogs.message("Straightening could not be applied", "An internal error occured")
+      end
+
+      return false
+    end
+
+    local function straightenControl()
+      local f = LrView.osFactory()
+      local status = {
+        { text = rollAngleStraighten, tooltip = "Apply roll angle correction to straighten image (S)", color = LrColor("red") },
+        { text = rollAngleReset,      tooltip = "Undo straightening (R)", color = LrColor(0, 0.66, 0)  },
+        { text = rollAngleStraighten, tooltip = "", color = LrColor("black") },
+      }
+
+      if not prefs.straightenControls or LR5 then return LrView.kIgnoredView end
+
+      -- Button title, tooltip, and enabled state are all set from condition at dialog-construction time.
+      -- Which is fine because the dialog needs to be created freshly for every image.
+      local condition = 1
+      if not props.rollAngle then
+        condition = 3
+      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
+        condition = 2
+      end
+
+      props.rollAngleAction = status[condition].text
+
+      return f:row {
+        margin = 0,
+        spacing = 0,
+        f:static_text {
+          margin = 0,
+          title   = LrView.bind {key = "rollAngleText",    object = props},
+          tooltip = LrView.bind {key = "rollAngleTooltip", object = props},
+          text_color = status[condition].color,
+        },
+        f:static_text {
+          margin = 0,
+          title   = LrView.bind {key = "cropAngleText",    object = props},
+          tooltip = LrView.bind {key = "cropAngleTooltip", object = props},
+          text_color = status[condition].color,
+        },
+        f:spacer { width = 5 },  -- space before the button
+        f:push_button {
+          title   = status[condition].text,
+          tooltip = status[condition].tooltip,
+          enabled = props.rollAngleText ~= rollAngleNA and not Utils.floatsEqual(props.rollAngle, 0),
+          margin  = 0,
+          action = function(button)
+            -- Prevent multiple executions - known LrC SDK quirk!
+            straightenAndRefresh(button)
+          end
+        },
+      }
+    end
+
+    local function kofiControl()
+      local f = LrView.osFactory()
+      if prefs.hideKofiControl then
+        return f:spacer{width = 10}
+      end
       return f:row{
         spacing = 0,
         f:picture {
-          value = _PLUGIN:resourceId("assets/icons/kofi.png")
+          value = _PLUGIN:resourceId("assets/icons/kofi.png"),
         },
         f:spacer { width = 5 },
         f:static_text {
@@ -646,17 +834,23 @@ local function showFocusPoint()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
-      f:spacer { width = 20 },
-      f:spacer{fill_horizontal = 1},
-      f:static_text {
-        title = "User Manual " .. utfLinkSymbol,
-        text_color = LrColor("blue"),
-          tooltip = "Click to open user documentation (M)",
-        immediate = true,
-        mouse_down = function(_view)
-          LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
-        end,
-      },
+      }
+    end
+
+    local function userManualControl()
+      local f = LrView.osFactory()
+      return f:row{
+        spacing = 0,
+        f:spacer{fill_horizontal = 1},  -- make the control appear right next to Close button
+        f:static_text {
+          title = "User Manual " .. utfLinkSymbol,
+          text_color = LrColor("blue"),
+            tooltip = "Click to open user documentation (M)",
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
+          end,
+        },
       }
     end
 
@@ -669,7 +863,11 @@ local function showFocusPoint()
         f:spacer { width = 20 },
         taggingControls(),
         f:spacer { width = 20 },
-        miscControls(),
+        straightenControl(),
+        f:spacer { width = 20 },
+        kofiControl(),
+        f:spacer { width = 20 },
+        userManualControl(),
         f:spacer { width = 5 },    -- space before 'Close' button
       }
       return result
@@ -690,13 +888,21 @@ local function showFocusPoint()
       props.fileNameTooltip = tooltip or ""
     end
 
-    -- Create static containers for use in dialog
-    local kbdShortcutInput = buildKbdShortcutInput()
-    local controlPanel     = buildControlPanel()
+    local function runModalDialog()
+      -- Create static containers for use in dialog
+      local kbdShortcutInput = buildKbdShortcutInput()
+      local controlPanel     = buildControlPanel()
 
-    props.imageInfoEnabled = true
-    props.shootInfoEnabled = true
-    props.focusInfoEnabled = true
+      userResponse = LrDialogs.presentModalDialog {
+        title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
+        contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
+        accessoryView = controlPanel,
+        save_frame = "FocusPointsModalDialogFrame",
+        actionVerb = "Close",
+        cancelVerb = "< exclude >",
+      }
+      return userResponse
+    end
 
     -- Find the index 'current' of the target photo in set of selectedPhotos
     current = getPositionInSelection(targetPhoto, selectedPhotos)
@@ -704,9 +910,13 @@ local function showFocusPoint()
     -- twice if clicked on really quickly
     -- let the renderer build the view now and show progress dialog
     repeat
+
       -- Get logging ready for next photo
-      Log.logInfo("FocusPoint", string.rep("=", 72))
+      Log.logInfo("FocusPoint", string.rep("=", 79))
       Log.resetErrorsWarnings()
+
+      -- Start timer to measure the time taken to create the dialog
+      startTimer = LrDate.currentTime()
 
       -- Save link to current photo, eg. as supplementary information in user messages
       GlobalDefs.currentPhoto = targetPhoto
@@ -717,50 +927,48 @@ local function showFocusPoint()
       -- Make the current photo the only selected one:
       -- otherwise potential flagging operations will apply to all selected photos
       catalog:setSelectedPhotos(targetPhoto, {})
-      LrFunctionContext.callWithContext("innerContext", function(dialogContext)
-        dialogScope = LrDialogs.showModalProgressDialog {
-          title = "Loading Data",
-          caption = "Calculating Focus Point",
-          width = 200,
-          cannotCancel = false,
-          functionContext = dialogContext,
-        }
-        dialogScope:setIndeterminate()
 
-        errorMsg = nil
-        if (targetPhoto:checkPhotoAvailability()) then
-          local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
-          rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
+      -- Save reference to selected photo and its crop to detect whether were any missed updates during processing
+--      local buildCropSignature = getCropSignature(targetPhoto)
 
-          if rendererTable then
-            metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
-            photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-            infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
-            if not (photoView and infoView) then
-              errorMsg = "Internal error: Unable to create main window"
-            end
-          else
-            -- just to have this case covered - normally this condition should not occur
-            errorMsg = "Internal error: Unmapped points renderer"
+      -- Build the views for the current photo. The 'Loading Data / Calculating
+      -- Focus Point' progress dialog has been removed: in the new non-modal
+      -- workflow it would flash up briefly each time the photo is changed in
+      -- the Library view, which is distracting.
+      photoView = nil
+      infoView  = nil
+      errorMsg  = nil
+      if (targetPhoto:checkPhotoAvailability()) then
+        local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
+        rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
+        if rendererTable then
+          metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
+          photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
+          infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
+          if not (photoView and infoView) then
+            errorMsg = "Internal error: Unable to create main window"
           end
+        -- Update initial roll angle display
+        initializeStraightenControl(targetPhoto)
         else
-          errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
+          -- just to have this case covered - normally this condition should not occur
+          errorMsg = "Internal error: Unmapped points renderer"
         end
-      end)
-      LrTasks.sleep(0.02) -- this actually closes the dialog. go figure.
+      else
+        errorMsg = "Photo is not available. Make sure hard drives are attached and try again"
+      end
 
-      -- "Loading Data" dialog has been canceled
       -- photoView should never be nil in the absence of a fatal error
       local skipMainWindow
-      if (dialogScope:isCanceled() or not photoView) then
+      if not photoView then
         skipMainWindow = true
       end
 
       -- a fatal error has occured for the current image: ask user whether to "Exit" the plugin
       -- or "Continue" with the next image in multi-image mode (which means repeat in single-image mode)
       if errorMsg then
-        userResponse = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
-        if userResponse == "cancel" then
+        local action = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
+        if action == "cancel" then
           -- Stop plugin operation
           return
         else
@@ -771,22 +979,24 @@ local function showFocusPoint()
 
       if skipMainWindow then
         -- A fatal error has occured for the current image, "Exit" the plugin operation or
-        -- "Continue" to next image (in multi-image mode) or repeat (single-image mode)
-        nextPhoto()
+        -- "Continue" with the next image as per last user response
+        if userResponse == "previous" then
+          previousPhoto()
+        else
+          nextPhoto()
+        end
       else
 
-        -- Open main window
-        Log.logInfo("FocusPoint", "Present dialog and information")
+        -- Write the final log entries for this photo before opening the dialog window
+        stopTimer = LrDate.currentTime()
+        Log.logInfo("FocusPoint", string.format(
+          "Open Dialog ( %.2f seconds, source=%s )",
+          stopTimer-startTimer,
+          FocusPointPrefs.displayModeName[rendererTable.imageSource]))
 
-        local f = LrView.osFactory()
+        -- Open the plugin window and dialog
         clicked = false
-        userResponse = LrDialogs.presentModalDialog {
-          title = "Focus-Points (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
-          contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
-          accessoryView = controlPanel,
-          actionVerb = "Close",
-          cancelVerb = "< exclude >",
-        }
+        userResponse = runModalDialog()
 
         if userResponse == "next" then
           nextPhoto()
@@ -818,7 +1028,7 @@ local function showFocusPoint()
     end
 
     -- Let LR breathe to do garbage collection
-    for i = 1, 5 do
+    for _i = 1, 5 do
       LrTasks.yield()
     end
 

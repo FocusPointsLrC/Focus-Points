@@ -40,8 +40,9 @@ local FocusPointPrefs  = require 'FocusPointPrefs'
 local GlobalDefs       = require 'GlobalDefs'
 local Log              = require 'Log'
 local MogrifyUtils     = require 'MogrifyUtils'
-local _strict          = require 'strict'
 local Utils            = require 'Utils'
+
+DefaultPointRenderer.imageSource = nil
 
 local prefs = LrPrefs.prefsForPlugin( nil )
 
@@ -60,24 +61,56 @@ local getShotOrientation, getUserRotationAndMirroring, prepareRendering, createP
 ------------------------------------------------------------------------------]]
 function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDisplayHeight, metadata)
 
-  local fpTable = prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata)
   local f = LrView.osFactory()
-
   local photoView, overlayViews
+
+  -- Retrieve autofocus points and prepare data for rendering
+  local fpTable = prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata)
 
   Log.logDebug("DefaultPointRenderer", "Create photo view: " .. photoDisplayWidth .. " x " .. photoDisplayHeight)
 
-  if WIN_ENV then
-    local fileName = MogrifyUtils.createDiskImage(photo, photoDisplayWidth, photoDisplayHeight)
-    MogrifyUtils.drawFocusPoints(photo,fpTable)
-    photoView = f:view {
-      f:picture {
-        width = photoDisplayWidth,
+  -- Rendering strategy depends on the operating system:
+  -- Windows uses a temporary disk image and ImageMagick, while macOS renders overlays directly in memory.
+  if WIN_ENV and not (prefs.displayMode == FocusPointPrefs.displayModeDirect) then
+
+    -- Create a temporary image file. The image is obtained either from Lightroom's preview system or
+    -- via Export fallback, then ImageMagick draws the focus point overlays onto that file.
+    local fileName, errorText
+    fileName, DefaultPointRenderer.imageSource, errorText =
+      MogrifyUtils.createDiskImage(photo, photoDisplayWidth, photoDisplayHeight)
+
+    -- Was a temporary image created successfully?
+    if fileName then
+      MogrifyUtils.drawFocusPoints(photo,fpTable)
+      photoView = f:view {
+        f:picture {
+          width = photoDisplayWidth,
+          height = photoDisplayHeight,
+          value = fileName,
+        },
+      }
+    else
+      -- No image is available. Display an explanatory message instead.
+      photoView = f:view {
+        width  = photoDisplayWidth,
         height = photoDisplayHeight,
-        value = fileName,
-      },
-    }
+        f:column {
+            width  = photoDisplayWidth,
+            height = photoDisplayHeight,
+            f:spacer { fill_vertical = 1 },
+            f:static_text {
+                title = "Preview temporarily unavailable.\n\n" .. (errorText or ""),
+                width = photoDisplayWidth,
+                alignment = "center",
+            },
+            f:spacer { fill_vertical = 1 },
+        },
+      }
+    end
+
   else
+    -- On macOS, we can use the fast, in-memory "Direct" mode
+    DefaultPointRenderer.imageSource = FocusPointPrefs.displayModeDirect
     -- create base view, i.e. only the image
     local imageView = f:catalog_photo {
       width = photoDisplayWidth,
@@ -85,23 +118,30 @@ function DefaultPointRenderer.createPhotoView(photo, photoDisplayWidth, photoDis
       photo = photo,
     }
 
+    -- Create a view that combines all focus point etc. markings
     overlayViews = createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
-    if overlayViews then
-      -- create compound view incl. overlays
-      photoView = f:view {
-        imageView, overlayViews,
-        place = 'overlapping',
-      }
-    else      -- no overlays, just display the image
-      photoView = imageView
+    -- Create a table of the child views that make up the photo view
+    local children = { place = "overlapping" }
+
+    -- In MAC, the photo must be the first item in the overlay view order to be used as a background image
+    if MAC_ENV then table.insert(children, imageView) end
+
+    -- Insert the focus point overlays
+    for _, v in ipairs(overlayViews) do
+      table.insert(children, v)
     end
 
+    -- On Windows, the photo must be the last item in the overlay view order to be used as a background image
+    if WIN_ENV then table.insert(children, imageView) end
+
+    -- Create the parent view
+    photoView = f:view(children)
+
   end
 
-  photoView.mouse_down = function()
-    return true
-  end
+  -- This prevents the keyboard focus from being moved by unintentionally clicking on the photo
+  photoView.mouse_down = function() return true  end
 
   return photoView
 end
@@ -138,8 +178,9 @@ function DefaultPointRenderer.getNormalizedDimensions(photo, metadata)
   local userRotation = getUserRotationAndMirroring(photo, metadata)
 
   if userRotation == 90 or userRotation == -90 or originalWidth < originalHeight then
-    -- In case the image has been rotated by the user in the grid view, LR inverts width and height but does NOT change cropLeft and cropTop...
-    -- In this methods, width and height refer to the original width and height
+    -- When a photo is rotated in Lightroom, width and height are swapped, but crop coordinates remain
+    -- in the original coordinate system. Normalize all dimensions so that subsequent calculations
+    -- always use the unrotated image coordinate system.
     local tmp = originalHeight
     originalHeight = originalWidth
     originalWidth = tmp
@@ -229,9 +270,9 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
   -- We read the rotation written in the Exif just for logging as it happens that the Lightroom rotation already includes it which is pretty handy
   local exifRotation = getShotOrientation(photo, metadata)
 
-  -- "Dirty fix" for Apple: iPhone OOC JPGs in portrait format are missing rotation information.
-  -- This is neither available in Lightroom, nor does it exist in EXIF
-  -- This is a workaround to set the proper rotation angle to make the transformations work
+  -- Workaround for some out-of-camera iPhone JPEGs:
+  -- Portrait images may not contain usable orientation information in either Lightroom metadata or EXIF,
+  -- so infer the rotation from the displayed image dimensions.
   if photo:getFormattedMetadata("cameraMake") == "Apple" then
     if photoDisplayWidth < photoDisplayHeight and userRotation == 0 then
       userRotation = -90
@@ -247,7 +288,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
   Log.logDebug("DefaultPointRenderer", "exifRotation: " .. exifRotation .. "°, userRotation: " .. userRotation .. "°, userMirroring: " .. userMirroring)
   Log.logDebug("DefaultPointRenderer", "cropRotation: " .. cropRotation .. "°, cropLeft: " .. cropLeft .. ", cropTop: " .. cropTop)
 
-  -- Calculating transformations
+  -- Build the transformation chain that maps coordinates from the original image space into the displayed image space
   local cropTransformation = a.rotate(math.rad(-cropRotation)) * a.trans(-cropLeft * originalWidth, -cropTop * originalHeight)
   local userRotationTransformation
   local userMirroringTransformation
@@ -272,7 +313,13 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
     userMirroringTransformation = a.scale(1, 1)
   end
 
-  local resultingTransformation = userMirroringTransformation * (userRotationTransformation * (displayScalingTransformation * cropTransformation))
+  -- Order: crop -> scale -> rotate -> mirror
+  local resultingTransformation =
+    userMirroringTransformation *
+    userRotationTransformation *
+    displayScalingTransformation *
+    cropTransformation
+
   local inverseResultingTransformation = a.inverse(resultingTransformation)
 
   --[[------------------------------------------------------
@@ -346,7 +393,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
         return nil
       end
 
-      -- Placing icons
+      -- Transform the focus point center into display coordinates
       local x, y = resultingTransformation(point.x, point.y)
       Log.logInfo("DefaultPointRenderer",
         string.format("Placing point of type %s at position [%s,%s] -> ([%s,%s] on display)",
@@ -356,8 +403,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
       local pointWidth = point.width
       local pointHeight = point.height
 
-      -- Checking if the distance between corners goes under the value of template.bigToSmallTriggerDist
-      -- If so, we switch to small icons (when available)
+      -- Switch to the compact icon set when the rendered focus frame becomes too small for the normal corner graphics
       local x0, y0 = resultingTransformation(0, 0)
       local xHorizontal, yHorizontal = resultingTransformation(pointWidth, 0)
       local distHorizontal = math.sqrt((xHorizontal - x0)^2 + (yHorizontal - y0)^2)
@@ -371,8 +417,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
         Log.logFull("DefaultPointRenderer", "distHorizontal: " .. distHorizontal .. ", distVertical: " .. distVertical .. ", bigToSmallTriggerDist: " .. template.bigToSmallTriggerDist .. " -> useSmallIcons: FALSE")
       end
 
-      -- Checking if the distance between corners goes under the value of template.minCornerDist
-      -- If so, we set pointWidth and/or pointHeight to the corresponding size to garantee this minimum distance
+      -- Enforce a minimum visible frame size so that corner markers do not collapse into each other at high zoom-out levels.
       local pixX0, pixY0 = inverseResultingTransformation(0, 0)
       local pixX1, pixY1 = inverseResultingTransformation(template.minCornerDist, 0)
       local minCornerPhotoDist = math.sqrt((pixX1 - pixX0)^2 + (pixY1 - pixY0)^2)
@@ -403,7 +448,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
       }
       table.insert(fpTable, { points = points, rotation = cropRotation + userRotation, userMirroring= userMirroring, template = template, useSmallIcons = useSmallIcons})
 
-      -- if any of these coordinates is negative than the focus point or parts of it are not visible
+      -- Detect focus frames that extend beyond the visible image area
       if point.pointType:find("^af_focus") then
         -- only perform this check for focus points
         FocusInfo.focusPointsInvisible =
@@ -434,15 +479,14 @@ end
 ------------------------------------------------------------------------------]]
 function createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
-local viewsTable = {
-  place = "overlapping"
-
-}
+  local viewsTable = {
+    place = "overlapping"
+  }
 
   if fpTable then
 
     for _, fpPoint in pairs(fpTable) do
-      -- Inserting center icon view
+      -- Add center marker if it is visible within the displayed image area
       if fpPoint.template.center then
         if fpPoint.points.center.x >= 0 and fpPoint.points.center.x <= photoDisplayWidth and fpPoint.points.center.y >= 0 and fpPoint.points.center.y <= photoDisplayHeight then
           local centerTemplate = fpPoint.template.center
@@ -453,7 +497,7 @@ local viewsTable = {
         end
       end
 
-      -- Inserting corner icon views
+      -- Add corner markers for the focus frame
       if fpPoint.template.corner then
         local cornerTemplate = fpPoint.template.corner
         if fpPoint.useSmallIcons and fpPoint.template.corner_small then
@@ -469,13 +513,13 @@ local viewsTable = {
         if fpPoint.points.br.x >= 0 and fpPoint.points.br.x <= photoDisplayWidth and fpPoint.points.br.y >= 0 and fpPoint.points.br.y <= photoDisplayHeight then
           table.insert(viewsTable, createPointView(fpPoint.points.br.x, fpPoint.points.br.y, fpPoint.rotation - 180, fpPoint.userMirroring, cornerTemplate.fileTemplate, cornerTemplate.anchorX, cornerTemplate.anchorY, fpPoint.template.angleStep))
         end
-        if fpPoint.points.bl.y >= 0 and fpPoint.points.bl.x <= photoDisplayWidth and fpPoint.points.bl.y >= 0 and fpPoint.points.bl.y <= photoDisplayHeight then
+        if fpPoint.points.bl.x >= 0 and fpPoint.points.bl.x <= photoDisplayWidth and fpPoint.points.bl.y >= 0 and fpPoint.points.bl.y <= photoDisplayHeight then
           table.insert(viewsTable, createPointView(fpPoint.points.bl.x, fpPoint.points.bl.y, fpPoint.rotation - 270, fpPoint.userMirroring, cornerTemplate.fileTemplate, cornerTemplate.anchorX, cornerTemplate.anchorY, fpPoint.template.angleStep))
         end
       end
     end
   end
-  return LrView.osFactory():view(viewsTable)
+  return viewsTable
 end
 
 --[[----------------------------------------------------------------------------
@@ -559,7 +603,8 @@ end
   createPointView(int x, int y, int rotation, int horizontalMirroring,
                   string iconFileTemplate, int anchorX, int anchorY, int angleStep)
 
-  Creates a view with the focus box placed rotated and mirrored at the right place.
+  Create a view containing a single marker icon positioned at the correct location,
+  rotation and mirroring state.
   As Lightroom does not allow for rotating icons nor for drawing, we get the
   rotated/mirrored image from the corresponding file name template.
   The method replaces the first '%s' in the iconFileTemplate by the passed rotation
@@ -600,7 +645,7 @@ function createPointView(x, y, rotation, horizontalMirroring, iconFileTemplate, 
     -- center dot, fill in the color placeholder
     fileName = string.format(iconFileTemplate, prefs.focusBoxColor)
   else
-    -- fill in the rotation placeholder
+    -- icon filename contains only a rotation placeholder
     fileName = string.format(iconFileTemplate, fileRotationStr)
   end
 
@@ -608,7 +653,7 @@ function createPointView(x, y, rotation, horizontalMirroring, iconFileTemplate, 
 
   local f = LrView.osFactory()
 
-  local view = f:view {
+  local view = f:row {
     f:picture {
       value = _PLUGIN:resourceId(fileName)
     },

@@ -24,11 +24,12 @@
 local GlobalDefs = {}
 
 -- Imported LR namespaces
-local LrSystemInfo     = import  'LrSystemInfo'
+local LrSystemInfo      = import  'LrSystemInfo'
 
 -- Required Lua definitions
-local Info             = require 'Info'
+local Info              = require 'Info'
 
+GlobalDefs.appName      = "Focus Points"
 GlobalDefs.currentPhoto = nil
 
 -- Store LR windows size WxH at time of start

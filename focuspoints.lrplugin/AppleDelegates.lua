@@ -41,7 +41,6 @@ local DefaultPointRenderer  = require 'DefaultPointRenderer'
 local ExifUtils             = require 'ExifUtils'
 local FocusInfo             = require 'FocusInfo'
 local Log                   = require 'Log'
-local _strict               = require 'strict'
 local Utils                 = require 'Utils'
 
 -- Tag indicating that makernotes / AF section exists

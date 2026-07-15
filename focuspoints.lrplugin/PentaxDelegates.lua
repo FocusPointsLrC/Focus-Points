@@ -53,7 +53,6 @@ local ExifUtils            = require 'ExifUtils'
 local FocusInfo            = require 'FocusInfo'
 local Log                  = require 'Log'
 local PointsUtils          = require 'PointsUtils'
-local _strict              = require 'strict'
 local Utils                = require 'Utils'
 
 -- List of supported models is sorted by date / Pentax version
