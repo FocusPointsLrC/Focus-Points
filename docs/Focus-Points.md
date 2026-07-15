@@ -1,6 +1,6 @@
-# Focus Points – User Manual
+# User Manual (V3.4)
 
-## Content ##
+## Content
 
 ### [Troubleshooting / FAQ](Troubleshooting_FAQ.md#troubleshooting--faq)
 
@@ -24,9 +24,15 @@
 ### [Special Topics](#4-special-topics)
 
 * [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
+* [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
-___
+### [Compatibility](Compatibility.md)
 
+* [Cameras that support display of autofocus points](Compatibility.md#cameras-that-support-display-of-autofocus-points)
+* [Cameras that support straightening images](Compatibility.md#cameras-that-support-straightening-images)
+* [Features not supported in earlier versions of Lightroom](Compatibility.md#features-not-supported-in-earlier-versions-of-lightroom)
+
+<br>
 
 # 1. Scope and Limitations
 
@@ -39,7 +45,8 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Straightening images by applying compensation for camera roll angle<sup>3,6,7</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple. See full [list of supported cameras](../README.md#supported-cameras).<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple.<br>
+&nbsp;&nbsp;&nbsp;Check the [list of supported cameras](Compatibility.md#cameras-that-support-display-of-autofocus-points) to see if your camera is supported.<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
 <sup>5</sup> Currently supported for Fuji, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
@@ -47,7 +54,7 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 <sup>7</sup> Not for LR5.<br>
 
 
-To understand the principles of this plugin, how to use it and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
+To understand how to use this plugin and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
 <br>
 <br>
 
@@ -137,20 +144,13 @@ _Library → Plug-in Extras → Focus Point_
 Develop module:<br>
 _File → Plug-in Extras → Focus Point_
 
-In V3.2, you no longer need to select the corresponding photos before starting the plugin to display the focus point for multiple photos. The plugin now supports next and previous function when run on a single image (the current one in Lightroom filmstrip). `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. Unlike with a set of selected photos, there is no wrap-around when the beginning or end of the film strip is reached.
-
-To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin.
-
-<u>Note</u>: _Filmstrip_ navigation uses the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, this feature is not available on LR5.7.
-
-
 ### User Interface
 
 The user interface is divided into three main areas. On the left is the Photo View, which shows visualized focus points and detected elements. On the right is the Info View, a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating and flagging images are located at the bottom of the window.
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
-The Focus Point Viewer window is not dynamically resizable. However, V3.2 introduces a [Size of plugin window](#size-of-plugin-window) setting that allows you to customize the size of the plugin window. You can choose from five options ranging from XXL to S. This setting corresponds to 80% (XXL) downto 40% (S), in increments of 10%, of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
+The Focus Point Viewer window cannot be resized dynamically. However, you can customize the size of the window using the [Size of plugin window](#size-of-plugin-window) setting. There are six options to choose from, ranging from 3XL to S. This setting corresponds to 90% (3XL) downto 40% (S), in increments of 10% of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
 The info view and the bottom row of user controls are not included in this percentage. The space allocated to these areas is in addition to the size setting.
 
 Click on the following links for more detailed information:
@@ -160,8 +160,9 @@ Click on the following links for more detailed information:
 3. [Plugin Status](#plugin-status)
 4. [Navigation Controls](#navigation-controls)
 5. [Flagging Controls](#flagging-controls)
-6. [Keyboard Shortcuts](#keyboard-shortcuts)
-7. [Buy me a coffee](#buy-me-a-coffee)
+6.  [Straightening Control](#straightening-control)
+7. [Keyboard Shortcuts](#keyboard-shortcuts)
+8. [Buy me a coffee](#buy-me-a-coffee)
 
 
 ### Photo View
@@ -261,12 +262,14 @@ The tag `CameraSettingsVersion` has not been found which means that this file do
 
 ### Navigation Controls
 
-In V3.2, you no longer need to select the corresponding photos before starting the plugin to display the focus point for multiple photos. The plugin now supports next and previous function when run on a single image (the current one in Lightroom filmstrip). `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. Unlike with a set of selected photos, there is no wrap-around when the beginning or end of the film strip is reached.
+Use the `Next image` and `Previous image` buttons to scroll through the photos.
 
-To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin.
+In Lightroom, if only one photo is selected in the filmstrip, `Next image` will advance to the next photo in the _filmstrip_, and `Previous image` will advance to the previous photo in the _filmstrip_. There is no wrap-around when the beginning or end of the film strip is reached.
+
+To run the plugin on a specific series of photos, select those photos in Lightroom _before_ running the plugin. In this case, `Next image` will advance to the next photo in the selection, and `Previous image` will advance to the previous photo in the selection. A wrap-around occurs when the beginning or end of the film strip is reached.
+
 
 <u>Note</u>: _Filmstrip_ navigation uses the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, this feature is not available on LR5.7.
-
 
 ### Flagging Controls
 
@@ -293,12 +296,48 @@ The keyboard layout in use can be configured in the plugin preferences, under th
 - Note: Tagging features use the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, these features is not available on LR5.7 (which is still in use by a few plugin users!).
 
 
+### Straightening Control
+
+V3.4 enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the ['Straightening Images'](#24-straighten-images) batch process. The same options and restrictions apply.
+
+**How the Straighten Control Works**
+
+1. Images supported by this feature have two relevant angle values associated with them:  
+   - Roll Angle – the horizontal tilt of the camera at the time the image was captured.
+   - Crop Angle – the rotation angle currently applied to the image in Lightroom.
+
+2. Both angles are measured in degrees. A negative value indicates rotation to the left, while a positive value indicates rotation to the right.
+
+3. If the camera was tilted by x° when the image was captured, applying a Crop Angle of −x° compensates for that tilt and displays the image as if the camera had been held level. 
+
+4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the `Straighten` button rotates the image by the opposite of the Roll Angle, resulting in a level image.
+
+5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the `Straighten` button changes to `Reset`. Clicking `Reset` restores the crop settings that were in effect before the image was straightened.
+<br>
+
+**Example:**  
+
+The user opens a photo in the Focus Point Viewer. The red text displayed in the 'Straighten' control indicates that the roll and crop angles are not balanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
+
+<img src="images/Straighten Control 1.jpg" alt="Straighten Control 1" style="width: 1000px;"/>
+
+The result of the straightening process is displayed in a refreshed window. The text now indicates in green color that Roll Angle and Crop Angle are balanced, the image is level:
+
+<img src="images/Straighten Control 2.jpg" alt="Straighten Control 2" style="width: 1000px;"/>
+
+If the result is not satisfactory, it can be undone using the `Reset` button, which returns the image to its original state.
+
+The performed edits are recorded in Lightroom's History panel:
+
+<img src="images/Straighten Control 3.jpg" alt="Straighten Control 3" style="width: 600px;"/><br><br>
+For images that cannot be straightened because Roll Angle information is unavailable, the text is displayed in black and the control is disabled. Hovering the mouse pointer over the text displays a tooltip explaining the reason (e.g. unsupported camera model or missing Roll Angle information).
+
+<img src="images/Straighten Control 4.jpg" alt="Straighten Control 4" style="width: 1000px;"/>
+<br><br>
+
 ### Keyboard Shortcuts
 
-To simplify the operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, so the plugin can be controlled entirely by the keyboard, without the need to touch the mouse.
-
-Some shortcuts in V3.1 have been changed to avoid collision with Lightroom tagging shortcuts. Previously, 'p' was used for 'previous', 'x' for 'exit', and 'u' for 'user manual'. Instead of 'Exit', the plugin will now close using the 'Close' button (shortcut 'C').
-
+To simplify operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, meaning you can operate the plugin entirely with the keyboard and never need to touch the mouse.
 
 | Action                                      | Keyboard shortcuts |
 |---------------------------------------------|--------------------|
@@ -321,6 +360,9 @@ Some shortcuts in V3.1 have been changed to avoid collision with Lightroom taggi
 | Assign a green label                        | `8`                |
 | Assign a blue label                         | `9`                |
 | Assign a color label and go to next photo   | `Shift`+`6`-`9`    |
+| **Straighten**                              | &nbsp;             |
+| Straighten image                            | `S`                |
+| Reset crop (Undo straightening)             | `R`               |
 | **Miscelleanous**                           | &nbsp;             |
 | Open User Manual                            | `M`                |
 | Open Troubleshooting Information (Help)     | `?`, `H`           |
@@ -338,17 +380,15 @@ Due to limitations in the LR SDK, the plugin can only work with text input and c
 
 **Arrow keys, Function keys, Esc, Return, etc. do not change text input, so the choice of hotkeys is limited to text (i.e. printable ASCII characters).**
 
-This approach works well as long as the focus remains on the input field.
+This approach is effective as long as the keyboard focus remains on the input field.
 
 In Windows, only pressing the Tab key or clicking on the photo will remove the focus from the input field. As a result, further keyboard input will not be recognized. Mouse operation does not remove the focus.
 
-On macOS, clicking on any control (button, link text or tagging icon) takes focus away from the input field. With the large number of new controls in V3.2, it is not possible to perform operations using keyboard shortcuts and the mouse simultaneously for the same image.
+On macOS, clicking on any control (such as a button, link or tagging icon) removes the focus from the input field. Given the large number of different controls, it is difficult to perform operations using keyboard shortcuts and the mouse simultaneously on the same image.
 
-n V3.1, the text input field for keyboard shortcuts was invisible. The user could not understand why keyboard shortcuts stopped working when focus was removed from the input field by mouse operation. As the LR SDK offers no option to focus on a specific control, the input field must be refocused by the userto continue working with keyboard shortcuts.
+By default, the input field is visible to indicate when it has lost focus. To continue working with keyboard shortcuts, you need to click the field again.
 
-To make this procedure more transparent and intuitive, the text input field is now visible by default.
-
-You can configure the size of the text input field, including the labelling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
+You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
 
 <br>
 
@@ -361,12 +401,13 @@ Payments are processed securely via PayPal or credit/debit card, and no account 
 <br>                               
 
 ## 2.3 Metadata Viewer
-The plugin also features a Metadata Viewer with live search:
+
+The Metadata Viewer enables you to interactively explore all the information recorded by the camera when the picture was taken. This goes far beyond what Lightroom or even the Focus Point Viewer covers. In short, it contains all the information that ExifTool knows.
 
 * _Library → Plug-in Extras → Show Metadata_, or
 * _File → Plug-in Extras → Show Metadata_
 
-This is useful for viewing information that is not visible in the info sections of the focus point window. The data is retrieved by ExifTool directly from the image file on disk, so it gives a complete picture of the metadata written by the camera. Metadata can be filtered by key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
+Metadata can be filtered by group, key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
 
  | Char  | Meaning                                        |
  |:-----:|------------------------------------------------|
@@ -381,26 +422,27 @@ The plugin is written in the Lua programming language and uses Lua string.find()
 
 For further processing as text, the full metadata (retrieved via 'exiftool -a -u -sort <file>') can also be opened in a text editor.
 
-### Sizing of the Metadata Viewer window
+Let's look at an example how to use it - a shot of a White-tailed Eagle: 
 
-In V3.1, tag names that were significantly longer than 40 characters could result in an unusual display in the metadata viewer.
+<img src="images/metadata1.jpg" alt="Metadata 1" style="width: 1000px;"/>
 
-This has been improved in V3.2:
+I can still remember that, when I took the shot, the eagle was quite close by and not flying very high. But I want to know exactly what the heigth was.
 
-- The maximum length of tags displayed is limited to 32 characters.
-- The maximum length of values displayed is limited to 128 characters.
-- Truncated strings are indicated by an ellipsis symbol '...'.<br>If the truncated part contains  relevant information, it can still be reviewed by opening the metadata as text.
-- The edit fields for the 'Tag' and 'Value' filters are the same size as in point 1.
-- The height of the metadata window is given by the Size of plugin window setting S .. XXL
-- The width of the metadata window is chosen so that the head line (filter entry fields, hint) fits in but is minimum 70% of the window height.
+My OM-1 camera records the roll and pitch angles, which define the tilt of the camera in the horizontal and vertical planes. We are looking for the pitch angle. We can either scroll through the entire list of metadata and search for the relevant tag:
 
-<img src="images/metadata1.jpg" alt="Metdata 1" style="width: 200px;"/>         <img src="images/metadata2.jpg" alt="Metadata 2" style="width: 200px;"/>         <img src="images/metadata3.jpg" alt="Metadata 3" style="width: 200px;"/>
+<img src="images/metadata2.jpg" alt="Metadata 2" style="width: 800px;"/>
+
+Or we filter the list by showing only tags than contain 'angle'
+
+<img src="images/metadata3.jpg" alt="Metadata 3" style="width: 800px;"/>
+
+The pitch angle is 4.1°, which means that it's height was approximately 50m * sin(4.1°) ~ 3.60m. Quite close for such a majestic bird!
 
 <br>
 
 ## 2.4 Straighten Images
 
-Straighten Images is a new plugin function in V3.3:
+To straighten a selection of photos, run
 
 * Library → Plug-in Extras → Straighten Images, or
 * File → Plug-in Extras → Straighten Images
@@ -409,30 +451,7 @@ This function reads the camera roll angle from the metadata of the selected phot
 
 Straightening individual images manually is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature can come in handy for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the captured scenes lack clear reference information to help you (or the Transform tool) straighten the images.
 
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to
-
-- Canon 
-  - R5 (FW 1.5), R5m2
-  - R6m2 (FW 1.4), R6m3
-  - R7 (FW 1.3), R8 (FW 1.2), R10??
-- Nikon (D5, D500 and later models)
-- Fuji (XT-5 and later models)<sup>1</sup>
-- Olympus/OM (EM-1/5/10 III and later models)
-- Panasonic (Lumix G6 and later models)
-- Pentax (K-7 and later models)<sup>2</sup>
-- Ricoh (GR III and later models)<sup>2</sup>
-
-<sup>1</sup> Fuji represents roll angle information within the range of -1° to +1° as `RollAngle=0`. <br>
-<sup>2</sup> Pentax and Ricoh also record roll angle information for the specified models. However, when used to straighten photos, the results are typically not as precise as those provided by other brands.
-
-- The value's numeric precision is 0.5°, so you will see roll angle values of 0, 0.5, 1.0, 1.5, and so on.
-- The recorded roll angle value does not always seem to correspond reasonably to the actual tilt angle. Consequently, images aligned based on the RollAngle tag do not always appear straight.
-- With older Pentax models in particular, a Roll Angle of -45/+45° is sometimes recorded, despite this value bearing no relation to the captured image.
-
-Nevertheless, the plugin will support the straightening of photos taken with Pentax and Ricoh cameras.
-Whether this feature is useful for straightening images is up to the individual user to decide.
-
-Unfortunately, it seems that Sony does not record roll angle information in photo metadata. Even a deep analysis of a series of custom-made A7RV test images did not reveal any evidence of its presence.
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras, that record this information](Compatibility.md#cameras-that-support-straightening-images).
 
 Straighten Images is not available for LR5, since version 5.x of the Lightroom SDK does not yet supported the  required functionality.
 
@@ -523,11 +542,11 @@ This section is new in version 3.2. It contains several settings that can be use
 
 **_Size of plugin window_**. Default setting: `L`<br>
 <a id="size-of-plugin-window"></a>
-This setting allows you to customize the size of the plugin window. You can choose from five options ranging from XXL to S. 
+This setting allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. 
 
 <img src="images/README WindowSize.jpg" alt="Screenshot" style="width: 600px;"/>
 
-In the Focus Point dialog, this setting corresponds to 80% (XXL) to 40% (S), in increments of 10%, of the size of the Lightroom application window used to display the photo. Please note that the text pane to the right of the photo and the bottom row of user controls are not included in this percentage.
+In the Focus Point dialog, this setting corresponds to 90% (3XL) to 40% (S), in increments of 10%, of the size of the Lightroom application window used to display the photo. Please note that the text pane to the right of the photo and the bottom row of user controls are not included in this percentage.
 
 In the Metadata Viewer, this setting determines the height of the dialog box. The width is determined by the header line, which includes the two filter entry fields and the hint text. 
 
@@ -541,7 +560,7 @@ This setting can be used to customize the appearance of the input field:
 <img src="images/README%20TextInputSetting.jpg" alt="Screenshot" style="width: 600px;"/>
 
 - Invisible. This is self-explaining
-- Small. A narrow input field without labelling
+- Small. A narrow input field without labeling
 - Regular. An input field that can display a minimum of 10 characters, along with a label containing a link to the 'Keyboard Shortcuts' section of the user manual.
 
 **_Truncate or wrap long strings_**. Default setting: `On`, `32` characters<br>
@@ -885,7 +904,7 @@ A typical example of a situation where no focus point is displayed.
 Focus Information shows that the `AFSearch` tag has a value of "Not Ready", which means that the camera was unable to lock focus when the shutter was pressed. A typical use case is when shooting with release priority or using the back button focus.<br><br>
 
 <img src="images/Olympus 4.jpg" alt="Olympus 4" style="width: 1000px;"/>
-Since V3.1 the plugin supports the whole E-System. While the benefit of supporting the focus point display for the old DSLR models is questionable<sup>3</sup> due to their very limited number of AF points (e.g. the E-1 has only 3 AF points), the implementation effort was small since the pre-2008 E-System models follow a very similar logic as the mirrorless models. Instead of using `AFPointSelected`, the focus area stored in `AFAreas` can be used to visualize the focus point/area.
+The plugin is compatible with the entire E-System. While the benefit of supporting the focus point display for the old DSLR models is questionable<sup>3</sup> due to their very limited number of AF points (e.g. the E-1 has only 3 AF points), the implementation effort was small since the pre-2008 E-System models follow a very similar logic as the mirrorless models. Instead of using `AFPointSelected`, the focus area stored in `AFAreas` can be used to visualize the focus point/area.
 
 <sup>3</sup> Using autofocus with a camera that has few focus points usually results in a two-step process: 1. focus on the desired point, then 2. hold the shutter button halfway down and pan the camera to achieve the desired composition. While this can produce great results, it's impossible to reconstruct the actual focus point. However, the focus point indicator can be useful for action shots, as "focus and pan" is not the best way to capture such scenes.
 
@@ -903,7 +922,7 @@ Supported features:
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 <sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).<br>
 
-With the release of plugin version V3.1, OM System has its own chapter in this user documentation. This is mainly because previously unknown metadata tags have been identified and decoded: `AFSelection`, `AFFocusArea` and `SubjectDetectionArea`.
+OM System has its own chapter in this user documentation. This is mainly because previously unknown metadata tags have been identified and decoded: `AFSelection`, `AFFocusArea` and `SubjectDetectionArea`.
 
 With this information, it is possible to visualize not only the AF area selected by the user and the point of focus, but also the frames used to detect the subject. These frames are the same frames that you can see in the viewfinder or on the camera display when shooting with Subject Detection enabled.
 
@@ -1026,7 +1045,7 @@ Supported features:
 
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 
-With the release of V3.1, Pentax is not only on par with other camera manufacturers and models in terms of supported features, it is even ahead of the "Big Three", Canon, Nikon and Sony.
+Pentax is not only on par with other camera manufacturers and models in terms of supported features, it is even ahead of the "Big Three", Canon, Nikon and Sony.
 
 While working on Pentax support, a lot of effort was put into finding and decoding relevant metadata tags for newer models (like the K-3 III) and fixing tags that were already supported by ExifTool but not properly decoded for models like the K-Sx, K-70 and KP.
 
@@ -1131,7 +1150,7 @@ Face detection for an image exported from Apple Photos:
 
 Although the plugin supports multi-image operation by selecting multiple images in Lightroom before launching the plugin, it can be tedious to navigate Lightroom's menu structure each time you want to use the plugin. How much more convenient would it be to launch the plugin with the press of a button?
 
-Unfortunately, there is no solution to this problem *within* Lightroom. Plugins like [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) or [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) are limited to assigning custom shortcuts to commands that are part of the predefined, static portion of Lightroom's menus. They do not support assigning shortcuts to commands (menu items) that are part of the menus that Lightroom dynamically creates and maintains based on user-defined additions to Lightroom (e.g. _Plug-in Extras_, _Edit in_, _Export with Preset_). The Focus-Points plugin is one such user-defined extension.
+Unfortunately, there is no solution to this problem *within* Lightroom. Plugins like [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) or [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) are limited to assigning custom shortcuts to commands that are part of the predefined, static portion of Lightroom's menus. They do not support assigning shortcuts to commands (menu items) that are part of the menus that Lightroom dynamically creates and maintains based on user-defined additions to Lightroom (e.g. _Plug-in Extras_, _Edit in_, _Export with Preset_). The Focus Points plugin is one such user-defined extension.
 
 However, at the system level, there are ways to automate the startup of the plugin.
 
@@ -1202,3 +1221,61 @@ Note: `NumPad *` and `NumPad /` may not work because macOS sometimes treats NumP
 
 Note:<br> 
 Of course, you can use any other keys you like. Just note, that if you assign the same shortcut to two different items, macOS picks one unpredictably.
+
+
+## How to reduce long wait times when opening the plugin window on Windows
+
+Until V3.3, the time taken for the plugin window to appear in Windows has mainly been determined by the time taken to **obtain a preview of the current photo**. If a preview is available in Lightroom, this can be obtained instantly. Otherwise, it can take several seconds for the plugin window to appear.
+
+The time required for preview generation depends on image size and system performance. For RAW files this can range from less than one second to several seconds. The plugin window size also impacts the rendering time: the more space it occupies on the screen, the longer it takes to create the image to be displayed.
+
+The following chart compares the typical plug-in start-up time for different camera models when using different methods to create the image displayed in [Photo View](#photo-view). Direct View is the display mode used on macOS.
+
+<img src="images/Performance%20Control%201.jpg" alt="Performance Control 1" style="width: 1000px;"/>
+
+If the plugin window takes more than a second to open, the main reason for the delay is usually the time taken for Lightroom to make a usable preview available. However, if the plugin window takes considerably longer than one to two seconds to open, it is usually quicker not to wait for the preview to become available, but to instead generate the image file using Lightroom's Export function.
+
+V3.4 introduces the **'Performance Control'** feature, which enables you to customize the process used to create the image displayed in Photo View.
+
+Once the configured waiting time for a preview has elapsed, the image will be created for display using Lightroom's Export function rather than waiting for the preview to become available. Depending on the camera model, it can take much longer for Lightroom to generate a preview than it takes to create an image via Export. For example, consider Z8/Z9 in the chart. Switching to Export Image after a short timeout can significantly reduce the time required for the plugin window to appear in these cases.
+
+The plugin settings allow you to configure when the plugin should stop waiting for a preview and switch to Lightroom Export.
+
+<img src="images/Performance%20Control%202.jpg" alt="Performance Control 2" style="width: 600px;"/>
+
+The first setting controls whether a fallback from preview acquisition to export is enabled, along with the corresponding waiting time for the preview. If this duration is set to zero, the plugin bypasses the preview stage and proceeds directly to export.
+
+The second setting determines whether a progress indicator is displayed to notify the user that the plugin is waiting for an image to be created. This indicator appears after the configured time period has elapsed and disappears when the plugin window is opened. The progress indicator is useful when the waiting time exceeds 1–2 seconds, as it shows that the plugin has started or is still active.
+
+The optimum values for the preview acquisition timeout and the progress indicator display depend largely on the hardware setup and the type of image files. These, in turn, depend on the camera manufacturer and model. As such, there is no one-fits-all recommendation, and each user must determine the optimal timeout value for their specific environment. The default values timeout = 0.5s and progress indicator delay = 0.5 should be a good starting point.
+
+To help you find reasonable settings that will ensure the plugin performs well overall, the log file output has been enhanced to provide insight into how long it takes to create and display the plugin window.
+
+
+**Example**
+
+Let's look at an example of a photo taken with the Nikon Z9:
+
+<img src="images/Performance%20Control%203.jpg" alt="Performance Control 3" style="width: 1000px;"/>
+
+ We open the same photo three times in the plugin window, each time under different conditions and with different performance settings. The resulting log file contains information about: 
+ - how quickly a preview could be obtained; 
+ - whether a waiting timeout was reached;
+ - how long it took the plugin window to open.
+
+<img src="images/Performance%20Control%204.jpg" alt="Performance Control 4" style="width: 1000px;"/>
+
+1. Section highlighted in blue (correlates with the blue bars in the chart)  
+   A preview of the image is already available because Lightroom created it when the image was imported. The preview can be obtained instantly — the time taken to open the dialogue is less than one second.
+
+2. Section highlighted in red (the red bars in the chart)  
+  Straightening the image causes a refresh of the plugin window. Straightening, cropping or transforming an image invalidates Lightroom's existing preview, forcing it to regenerate. With the 'Use temporary export' setting disabled, the plugin waits for the preview to become available. This takes 6.8 seconds. The plugin window does not open until 7.63 seconds have elapsed.
+
+3. Section highlighted in orange (the orange bars in the chart).
+It's the same image, and there is no preview available. This time, the 'Use temporary export' setting has been enabled with a timeout of 0.5 seconds. After 0.6 seconds, the plugin stops acquiring the preview and uses Export instead. The plugin window opens after 3.5 seconds, which is less than half the time.
+
+**How can you use this information to determine the optimal settings for your setup?**
+
+Check for your images, how long it takes typically to **obtain a preview that is already available**. Add a small buffer to this number and enter it as the **timeout value**.
+
+If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e. non-SSD), it may be useful to experiment with higher timeout values.
