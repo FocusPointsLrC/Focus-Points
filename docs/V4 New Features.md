@@ -174,7 +174,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 **Reason:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#5-known-limitations)
+[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255]([https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 **Workaround:** Use the Focus Point Viewer alongside Lightroom on the primary screen.
 
@@ -191,7 +191,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 **Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. 
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.   
-[https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366](https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#5-known-limitations)
+[https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366]([https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
@@ -208,7 +208,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363](https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#5-known-limitations)
+[https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363]([https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
@@ -224,7 +224,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 **Effect:** In Second Screen mode on Windows, the Focus Point Viewer is always displayed at the top of all visible windows on the screen. It is not possible to bring other windows to the top. This limits usability, particularly when the Focus Point Viewer overlaps with applications that the user wants to run simultaneously. 
 
 **Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:  
-[https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457](https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#5-known-limitations)
+[https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457]([https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 **Current status:** New bug report to be filed with Adobe (by user aboswrt)
 
@@ -243,7 +243,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 **Reason:** Inconsistent behavior of the underlying SDK function **when using transparent PNG** overlays in overlapping layouts on Windows vs macOS.
 
 **Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087](https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#5-known-limitations)
+[https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087]([https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 **Workaround:** Use Preview Image or Export Image instead.
 
