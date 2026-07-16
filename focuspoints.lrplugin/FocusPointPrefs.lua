@@ -74,15 +74,23 @@ FocusPointPrefs.displayModeFallback= 4
 FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export(fallback)" }
 
 -- Definitions to handle Update mechanism
-local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
-local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
+local previewBuildNumbers     = 8000 -- .. 8999 reserved range for preview build numbers
+local preReleaseBuildNumbers  = 9000 -- .. 9999 reserved range for pre-release build numbers
 
-FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
-FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
+local branch                  = Info.VERSION.branch
+local githubRawBaseUrl        = Info.VERSION.rawBaseUrl
 
-FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v34/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
+local masterVersionFile       = githubRawBaseUrl .. "master/Version.txt"
+local masterVersionFileLegacy = githubRawBaseUrl .. "master/focuspoints.lrplugin/Version.txt"
+local branchVersionFile       = githubRawBaseUrl .. branch .. "/Version.txt"
+local branchVersionFileLegacy = githubRawBaseUrl .. branch .. "/focuspoints.lrplugin/Version.txt"
+
+local latestVersion
+local versionFileFoundUrl
+local latestVersionUrl
+
+local urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
+local urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
 
 -- URL definitions for accessing documents from the UI
 FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
@@ -174,8 +182,8 @@ local function getWinScalingFactor()
       LrTasks.yield()
   end
 
-  Log.logDebug("Utils", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
-  Log.logDebug("Utils", "REG command: " .. cmd .. ", rc=" .. rc)
+  Log.logDebug("System", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
+  Log.logDebug("System", "REG command: " .. cmd .. ", rc=" .. rc)
 
   -- Read redirected stdout from temp file and find the line that starts with "AppliedDPI"
   local regOutput = LrFileUtils.readFile(output)
@@ -191,20 +199,20 @@ local function getWinScalingFactor()
     end
     regOutputStr = regOutputStr .. line .. "^"
   end
-  Log.logDebug("Utils", "REG output: " .. regOutputStr)
+  Log.logDebug("System", "REG output: " .. regOutputStr)
 
   -- Set and log the result
   if dpiValue then
     result = 100 / scale
-    Log.logDebug("Utils", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
+    Log.logDebug("System", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
   else
     result = 100 / 125
-    Log.logWarn("Utils", "Unable to retrieve Windows scaling level, using 125% instead")
+    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 125% instead")
   end
 
   -- Clean up: remove the temp file
   if LrFileUtils.exists(output) and not LrFileUtils.delete(output) then
-    Log.logWarn("Utils", "Unable to delete REG output file " .. output)
+    Log.logWarn("System", "Unable to delete REG output file " .. output)
   end
 
   return result
@@ -262,33 +270,71 @@ end
 
   Retrieves the version number of the latest plug-in release. This information
   is stored in a text file 'Version.txt' in the Github plugin folder.
-  The result is stored in 'prefs.latestVersion' for use by update-related routines.
+  The result is stored in 'latestVersion' for use by update-related routines.
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.retrieveVersionOfLatestRelease()
+
+  local function getVersionFile(urlNew, urlLegacy)
+    local body, headers
+
+    body, headers = LrHttp.get(urlNew)
+    if headers and headers.status == 200 then
+      return body, urlNew
+    end
+
+    body, headers = LrHttp.get(urlLegacy)
+    if headers and headers.status == 200 then
+      return body, urlLegacy
+    end
+
+    return nil
+  end
+
+  local function parseVersionInfo(body)
+    -- Helper to parse contents
+    local version = string.match(body, "v%d+%.%d+%.%d+%.%d+") or
+                    string.match(body, "v%d+%.%d+%.%d+")
+
+    -- Normalize to four components
+    if version and not version:match("^v%d+%.%d+%.%d+%.%d+$") then
+      version = version .. ".0"
+    end
+    local url = string.match(body, "https?://%S+")
+
+    return version, url
+  end
 
   -- Need to execute this as a collaborative task
   LrTasks.startAsyncTask( function()
     local prefs = LrPrefs.prefsForPlugin( nil )
-    local body, headers
+    local body, url
 
     -- By default, if an error occurs, it is assumed that there is no update available
-    prefs.latestVersion = nil
+    versionFileFoundUrl = nil
+    latestVersion       = nil
+    latestVersionUrl    = nil
 
     -- Read the contents of the 'latest version' file
-    body, headers = LrHttp.get(FocusPointPrefs.latestVersionFile)
-    if headers and headers.status == 200 then
-      -- file found: parse contents
-      prefs.latestVersion = string.match(body, "v%d+%.%d+%.%d+%.%d+")
-    else
-      -- file not found: has the branch been removed?
-      if FocusPointPrefs.latestVersionFile ~= FocusPointPrefs.masterVersionFile then
-        -- Public version update for pre-release available!
-        body, headers = LrHttp.get(FocusPointPrefs.masterVersionFile)
-        if headers and headers.status == 200 then
-          -- file found: parse contents
-          prefs.latestVersion = string.match(body, "v%d+%.%d+%.%d+%.%d+")
+    body, url = getVersionFile(branchVersionFile, branchVersionFileLegacy)
+    versionFileFoundUrl = url
+    if not body and branch ~= "master" then
+      -- Branch no longer available.
+      -- Try the public release on master instead.
+      body, url = getVersionFile(masterVersionFile, masterVersionFileLegacy)
+      versionFileFoundUrl = url
+      if not body then
+        -- for some reason (e.g. no access to GitHub) there is no valid information available
+        if not latestVersion then
+          Log.logWarn("System", "Unable to retrieve version information for update check")
         end
+        return
       end
+    end
+
+    -- Parse the retrieved version information
+    latestVersion, latestVersionUrl = parseVersionInfo(body)
+    if not latestVersion then
+      Log.logWarn("System", "Invalid version information in Version.txt")
     end
     return
   end)
@@ -302,8 +348,8 @@ end
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getlatestVersion()
   local prefs = LrPrefs.prefsForPlugin( nil )
-  if prefs.latestVersion then
-    return prefs.latestVersion
+  if latestVersion then
+    return latestVersion
   else
     return ""
   end
@@ -322,8 +368,12 @@ function FocusPointPrefs.isUpdateAvailable()
 
   if isUpdateAvailable == nil then
     -- information still empty, so determine its status
-    if prefs.latestVersion then
-      local major, minor, revision, build = prefs.latestVersion:match("v(%d+)%.(%d+)%.(%d+)%.(%d+)")
+    if latestVersion then
+      Log.logDebug("System", string.format(
+        "Latest version '%s' retrieved from %s", latestVersion, versionFileFoundUrl))
+      Log.logDebug("System", string.format(
+        "Latest version at %s", latestVersionUrl))
+      local major, minor, revision, build = latestVersion:match("v(%d+)%.(%d+)%.(%d+)%.(%d+)")
       if major and minor and revision then
         -- we have a valid version number from the URL
         local pluginVersion = Info.VERSION
@@ -368,10 +418,10 @@ function FocusPointPrefs.isUpdateAvailable()
           end
         end
       else
-        Log.logWarn("Utils", "Update check failed, no valid combination of major, minor and revision number")
+        Log.logWarn("System", "Update check failed, no valid combination of major, minor and revision number")
       end
     else
-      Log.logWarn("Utils", "Update check failed, unable to retrieve version info from website")
+      Log.logWarn("System", "Update check failed, unable to retrieve version info from website")
     end
     isUpdateAvailable = result
   end
@@ -386,13 +436,19 @@ end
   For a public release, returns ./releases/latest
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
-  local pluginVersion = Info.VERSION
-  if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
-    -- pre-release
-    return FocusPointPrefs.urlReleases
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  if latestVersionUrl then
+    -- link to release from version.txt file
+    return latestVersionUrl
   else
-    -- public release
-    return FocusPointPrefs.urlLatestRelease
+    local pluginVersion = Info.VERSION
+    if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
+      -- pre-release
+      return FocusPointPrefs.urlReleases
+    else
+      -- public release
+      return FocusPointPrefs.urlLatestRelease
+    end
   end
 end
 
@@ -404,7 +460,7 @@ end
   This creates the bottom section of the dialogue box on the plugin settings page.
   This section contains the plugin-specific settings that the user can modify.
 ------------------------------------------------------------------------------]]
-function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
+function FocusPointPrefs.genSectionsForBottomOfDialog( f )
   local prefs = LrPrefs.prefsForPlugin( nil )
 
   -- Set the defaults
@@ -860,7 +916,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           title = "Buy me a coffee on Ko-fi.com!",
           text_color = LrColor("blue"),
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
@@ -894,7 +950,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://imagemagick.org/index.php",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://imagemagick.org/index.php")
               end)
@@ -921,7 +977,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://exiftool.org/",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://exiftool.org/")
               end)
@@ -948,7 +1004,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://johnrellis.com/lightroom/allplugins.htm",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://johnrellis.com/lightroom/allplugins.htm")
               end)

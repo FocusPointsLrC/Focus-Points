@@ -95,7 +95,7 @@ local function createMagickScript(photo, params)
   local scriptName = Utils.getTempFileName()
   local imageFileName = getImageFileName(photo)
 
-  local success, _errorCode = pcall(function()
+  local success = pcall(function()
     local file = io.open(scriptName, "w")
     if file then
       file:write('-read \"' .. imageFileName .. '\"', "\n")
@@ -495,7 +495,7 @@ end
 
 --[[----------------------------------------------------------------------------
   public void
-  mogrifyResize(_photo, int xSize, int ySize)
+  mogrifyResize(int xSize, int ySize)
 
   Resize the disk image to the given size:
   xSize: width in pixel
@@ -505,7 +505,7 @@ end
   This was a separate call to Mogrify earlier. Now it's executed along with the
   draw commands to save one extra call to Mogrify and a little bit of runtime.
 ------------------------------------------------------------------------------]]
-local function mogrifyResize(_photo, xSize, ySize)
+local function mogrifyResize(xSize, ySize)
   resizeParams = '-resize ' .. math.floor(xSize) .. 'x' .. math.floor(ySize) .. ' '
 end
 
@@ -604,7 +604,7 @@ end
 function MogrifyUtils.createDiskImage(photo, xSize, ySize)
   local fileName, displayMode, errorText = writeToDisk (photo, xSize, ySize)
   if fileName then
-    mogrifyResize(photo, xSize, ySize)  -- this only determines the resize params!
+    mogrifyResize(xSize, ySize)  -- this only determines the resize params!
   end
   return fileName, displayMode, errorText
 end
@@ -636,7 +636,7 @@ end
 ------------------------------------------------------------------------------]]
 function MogrifyUtils.cleanup()
   if LrFileUtils.exists(tempFileName) then
-    local _resultOK, errorMsg = LrFileUtils.delete( tempFileName )
+    local _, errorMsg = LrFileUtils.delete( tempFileName )
     if errorMsg ~= nil then
       Log.logWarn('Mogrify', "Unable to delete Mogrify temp file " .. tempFileName .. ": " .. errorMsg)
     end

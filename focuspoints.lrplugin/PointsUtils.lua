@@ -98,11 +98,11 @@ function PointsUtils.readIntoTable(folder, fileName)
 
         -- parse the single value items: x, y, [h, w]
         local points = {}
-        for i in pairs(dataPoints) do
-          local item = dataPoints[i]
+        for j in pairs(dataPoints) do
+          local item = dataPoints[j]
           item = string.gsub(item, "[^0-9]", "")
           item = LrStringUtils.trimWhitespace(item)
-          points[i] = item
+          points[j] = item
         end
 
         if #dataPoints > 2 then

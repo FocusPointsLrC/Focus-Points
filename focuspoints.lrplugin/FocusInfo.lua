@@ -73,7 +73,6 @@ local statusModelNotSupported       =   7
 local statusMakerNotSupported       =   8
 local statusMissingMetadata         =   9
 local statusSevereErrorEncountered  =  10
-local statusUndefined               = 255
 local status = {
     {  message = "Focus points detected",
        color   = LrColor(0, 0.66, 0),
@@ -334,7 +333,7 @@ local function statusMessage(statusCode)
         text_color = LrColor(0, 0.25, 1),
         tooltip = "Open troubleshooting information (?)",
         immediate = true,
-        mouse_down = function(_view)
+        mouse_down = function()
           FocusInfo.openTroubleShooting(statusCode)
         end,
       },
@@ -365,7 +364,7 @@ local function pluginStatus()
           text_color=LrColor("blue"), font="<system>",
           tooltip = "Click to open update release notes",
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function()
               LrHttp.openUrlInBrowser( FocusPointPrefs.getReleaseURL() )
             end)
@@ -516,7 +515,6 @@ end
 ------------------------------------------------------------------------------]]
 function FocusInfo.createInfoView(photo, props, metadata, funcGetImageInfo, funcGetShootingInfo, funcGetFocusInfo)
   local f = LrView.osFactory()
-  local prefs = LrPrefs.prefsForPlugin( nil )
 
   local makerImageInfo    = getMakerInfo(photo, props, metadata, funcGetImageInfo)
   local makerShootingInfo = getMakerInfo(photo, props, metadata, funcGetShootingInfo)

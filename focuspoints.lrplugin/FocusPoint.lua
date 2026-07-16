@@ -485,7 +485,7 @@ local function showFocusPoint()
             tooltip = "Learn how to use the plugin's keyboard shortcuts and familiarize yourself with its limitations and restrictions (K)",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser(FocusPointPrefs.urlkbdShortcuts)
               end)
@@ -830,7 +830,7 @@ local function showFocusPoint()
           text_color = LrColor("blue"),
           tooltip = "Click to make a donation on Ko-fi",
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
@@ -847,7 +847,7 @@ local function showFocusPoint()
           text_color = LrColor("blue"),
             tooltip = "Click to open user documentation (M)",
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
           end,
         },
@@ -1028,7 +1028,7 @@ local function showFocusPoint()
     end
 
     -- Let LR breathe to do garbage collection
-    for _i = 1, 5 do
+    for _ = 1, 5 do
       LrTasks.yield()
     end
 

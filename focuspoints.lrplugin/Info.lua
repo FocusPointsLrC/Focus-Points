@@ -58,7 +58,17 @@ return {
     },
   },
 
-	VERSION = { major=3, minor=4, revision=0, build=1, display="3.4" },
+  VERSION = {
+      major      = 3,
+      minor      = 4,
+      revision   = 0,
+      build      = 0,
+      display    = "3.4",
+      -- custom additions:
+      channel    = "release",
+      branch     = "master",
+      rawBaseUrl = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/",
+  },
 
   LrPluginInfoProvider = 'FocusPointsInfoProvider.lua',
 

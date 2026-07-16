@@ -306,7 +306,7 @@ end
 ------------------------------------------------------------------------------]]
 function ExifUtils.cleanup()
   if LrFileUtils.exists(metadataFileName) then
-    local _resultOK, errorMsg = LrFileUtils.delete( metadataFileName )
+    local _, errorMsg = LrFileUtils.delete( metadataFileName )
     if errorMsg ~= nil then
       Log.logWarn(string.format(
         'ExifUtils', "Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
