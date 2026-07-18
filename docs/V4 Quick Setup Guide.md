@@ -16,7 +16,7 @@ Some steps are specific to the operating system (OS) you are running. To keep th
 4. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><img src="images/Quick%20Setup%201.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
  
-   1. Configure `Second Screen` mode and behavior [↗](V4%20New%20Features.md#13-configuration):<br>
+   1. Configure `Second Screen` mode and behavior [ⓘ](V4%20New%20Features.md#13-configuration):<br>
       1. Select `On` to continue working in Lightroom while the Focus Points window remains open.
       2. Choose whether you want Focus Point Viewer to `Follow` while you're working in Lightroom or if you want to use it interactively.
       3. Select the aspect ratio which is fixed in Second Screen mode     
