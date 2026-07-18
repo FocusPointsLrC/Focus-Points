@@ -2,7 +2,7 @@
 
 This document describes the basic steps for setting up the plugin in Second Screen mode.
 
-Some steps are specific to the operating system (OS) you are running. To keep things simple, there are separate sections for [Windows](#setup-on-windows) and [macOS](#setup-on-macos).
+Some steps are specific to the operating system (OS) you are running. To keep things simple, there are separate sections for **[Windows](#setup-on-windows)** and **[macOS](#setup-on-macos)**.
 
 
 ## Setup on Windows
@@ -31,6 +31,7 @@ Some steps are specific to the operating system (OS) you are running. To keep th
 2. You're done!<br> 
    **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey `NumPad *` (if configured in step 3) or by selecting `File → Plug-in Extras → Show Focus Point`.
 
+<br>
 
 ## Setup on macOS
 
