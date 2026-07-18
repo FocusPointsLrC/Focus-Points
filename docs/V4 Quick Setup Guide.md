@@ -32,3 +32,8 @@ Some steps are specific to the operating system (OS) you are running. To keep th
    You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br><br>
 2. You're done!<br> 
    **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey `NumPad *` (if configured in step 3) or by selecting `File → Plug-in Extras → Show Focus Point`.
+
+
+## Setup on macOS
+
+Coming soon!
