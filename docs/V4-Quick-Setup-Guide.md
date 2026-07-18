@@ -8,13 +8,13 @@ Some steps are specific to the operating system (OS) you are running. To keep th
 ## Setup on Windows
 
 1. Download and install the plugin [↗](Focus-Points.md#21-installation)
-2. Load the AutoHotkey companion script [↗](V4%20New%20Features.md#6-autohotkey-companion-script-for-windows)<br>
+2. Load the AutoHotkey companion script [↗](V4-New-Features.md#6-autohotkey-companion-script-for-windows)<br>
    This script works around current Lightroom SDK limitations to provide a smoother experience in `Follow` and `Interactive` mode.
 3. Optional: Load the AutoHotkey script to use a keyboard shortcut to run the plugin [↗](Focus-Points.md#windows)
 4. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><br><img src="images/Quick%20Setup%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
  
-   1. `Second Screen` mode and behavior [↗](V4%20New%20Features.md#13-configuration):<br>
+   1. `Second Screen` mode and behavior [↗](V4-New-Features.md#13-configuration):<br>
       1. Set `Second Screen` to `On` to continue working in Lightroom while the Focus Points window remains open.
       2. Choose whether you want Focus Point Viewer to `Follow` while you're working in Lightroom or if you want to use it interactively.
       3. Select the aspect ratio used in Second Screen mode.<br><br>     
