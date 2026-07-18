@@ -46,7 +46,7 @@ The macOS version currently requires less configuration because some V4 features
       1. Set `Second Screen` to `On` to continue working in Lightroom while the Focus Points window remains open.
       1. Currently, `Interactive` is the recommended mode for macOS. Current Lightroom SDK limitations significantly limit the usability of `Follow` mode because the plugin window<br>
          - will not keep its position on a secondary display but switch back to the primary screen [↗](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos) 
-         - will become the active window when opened, thus interrupting user operations in Lightroom [↗](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened-)
+         - will become the active window when opened, thus interrupting user operations in Lightroom [↗](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened)
    
          If the `Follow` workflow is important to you, **please vote** for the linked Adobe bug reports. Community votes help increase its visibility.
    
@@ -58,4 +58,4 @@ The macOS version currently requires less configuration because some V4 features
    **Remark:** V4 PRE 1 only supports `Direct View` on macOS. With the addition of `Preview Image` and `Export Image` in an upcoming pre-release, the `Display mode` settings  and the `Preview Image` performance control settings will also become available on macOS.<br><br>
 
 4. You're done!<br> 
-   **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey `NumPad *` (if configured in step 2) or by selecting `File → Plug-in Extras → Show Focus Point`.
+   **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey you configured in step 2 or by selecting `File → Plug-in Extras → Show Focus Point`.
