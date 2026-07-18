@@ -591,9 +591,11 @@ This setting can be used to customize the appearance of the input field:
 **_Truncate or wrap long strings_**. Default setting: `On`, `32` characters<br>
 This setting enables you to specify whether long strings, such as metadata values or file names, should be truncated in the display. You can choose the truncation limit, which can be set between 10 and 100 characters. A truncated string is marked with the symbol '...' at the end. The full text can be seen in the tooltip that appears when you hover over a truncated string with the mouse.
 
+<span id="enable-controls-for-flagging"></span>
 **_Enable controls for flagging_**. Default setting: `On`<br>
 If you don't need the controls for flagging, rating or coloring photos in the Focus Point viewer, and you want to avoid overloading the navigation bar, use this setting to hide the tagging controls and disable the related keyboard shortcuts. 
 
+<span id="keyboard-layout"></span>
 **_Keyboard layout_**. Default setting: empty<br>
 <a id="keyboard-layout"></a>
 The keyboard shortcuts for flagging, rating and coloring are the same as those used in Lightroom, including the `Shift` combinations that perform an action and advance to the next photo. Since the plugin cannot recognize key codes and can only work with text input, using the `Shift` + `0`-`9` keyboard shortcuts requires the plugin to be aware of the currently used international keyboard layout.<br>
