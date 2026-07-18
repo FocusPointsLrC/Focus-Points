@@ -2,7 +2,7 @@
 
 This document describes the basic steps for setting up the plugin in Second Screen mode.
 
-Some steps are specific to the operating system (OS) you are running. To keep things simple, there are separate sections for [Windows](#) and [macOS](#).
+Some steps are specific to the operating system (OS) you are running. To keep things simple, there are separate sections for [Windows](#setup-on-windows) and [macOS](#setup-on-macos).
 
 
 ## Setup on Windows
