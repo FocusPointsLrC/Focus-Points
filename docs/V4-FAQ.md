@@ -12,7 +12,7 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 ### Display modes
 
-* [`Direct View`: gray boxes around AF corner markers (Windows)](#why-does-direct-view-display-gray-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
+* [`Direct View`: gray artifacts around corner markers (Windows)](#why-does-direct-view-display-gray-artifacts-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
 * [`Preview Image` / `Export Image`: why unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
 
@@ -20,15 +20,15 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 * [Window switches back to the primary screen (macOS)](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
 
-* [Viewer becomes the active window in `Follow` mode](#how-can-i-prevent-focus-point-viewer-from-automatically-becoming-the-active-window-whenever-a-new-photo-is-loaded-in-follow-mode)
+* [Viewer becomes the active window in `Follow Lightroom` mode](#how-can-i-prevent-focus-point-viewer-from-automatically-becoming-the-active-window-whenever-a-new-photo-is-loaded-in-follow-lightroom-mode)
 
 * [Keyboard input after opening in `Interactive` mode (Windows)](#why-doesnt-focus-point-viewer-accept-keyboard-input-immediately-after-opening-in-interactive-mode-on-windows)
 
 * [Window always in front (Windows)](#why-is-focus-point-viewer-always-in-front-on-windows)
   
-* [`Export file` when `Preview Image` is selected](#why-does-lightroom-display-an-export-file-progress-bar-even-though-i-have-chose-preview-image-display-mode)
+* [`Export file` when `Preview Image` is selected](#why-does-lightroom-display-an-export-file-progress-bar-even-though-i-have-chosen-preview-image-display-mode)
 
-* [Arrow keys stop working in filmstrip (`Follow` mode, Windows)](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-mode)
+* [Arrow keys stop working in filmstrip (`Follow Lightroom` mode, Windows)](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-lightroom-mode)
 
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view-on-macos)
   
@@ -45,7 +45,7 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 <br>
 
 
-#### Why does `Direct View` display gray boxes around the AF corner markings on Windows? Is my GPU the cause?
+#### Why does `Direct View` display gray artifacts around the AF corner markings on Windows? Is my GPU the cause?
 
 `Direct View` on Windows produces corner markings with rectangular artifacts around the overlay images:
 
@@ -61,7 +61,7 @@ _This limitation of the Lightroom SDK only affects Windows and does not indicate
 
 #### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
 
-The availability of `Preview Image` and `Export Image` display modes on macOS requires the integration of the third-party tool (ImageMagick) which is used on Windows to draw rectangular markings onto the image file.
+The availability of `Preview Image` and `Export Image` display modes on macOS requires the integration of the third-party tool ImageMagick which is used on Windows to draw rectangular markings onto the image file.
 
 _Support for macOS is planned for a future V4 pre-release._ 
 
@@ -78,13 +78,13 @@ _This limitation of the Lightroom SDK only affects macOS and cannot currently be
 
 <br>
 
-#### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
+#### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow Lightroom` mode?
 
-Lightroom opens so-called floating dialogs as active window by default. Once a dialog has been opened, keyboard input is accepted and processed by the dialog. While this is desired behavior in `Interactive` mode, it breaks the user workflow in `Follow` mode. The Lightroom SDK lacks the option of a parameter controlling the window behavior.
+Lightroom opens floating dialogs as active window by default. Once a dialog has been opened, keyboard input is accepted and processed by the dialog. While this is desired behavior in `Interactive` mode, it breaks the user workflow in `Follow Lightroom` mode. The Lightroom SDK lacks the option of a parameter controlling the window behavior.
 
 A workaround has been implemented on Windows using an AutoHotkey script. While this is acceptable for a pre-release, it is not a viable solution for a public release.
 
-A similar workaround for macOS has not been investigated, since a practical application of `Follow` mode on macOS is currently anyway prevented by [another issue](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos).  
+A similar workaround for macOS has not been investigated because Follow mode is currently of limited practical use on macOS due to another [Lightroom SDK limitation](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos).  
 
 **See also:** [Known Limitations 2)](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened) for background information, how to install the available workaround, and instructions on how to support the Adobe bug report.
 
@@ -94,7 +94,7 @@ _A workaround is available on Windows for this limitation of the Lightroom SDK._
 
 #### Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
 
-While Focus Point Viewer becomes the active window after it has been opened, it doesn't accept and process keyboard input until the user presses Tab, Left Arrow, Down Arrow or clicks a UI control. This behavior is a limitation of the Lightroom SDK and affects Windows only.
+While Focus Point Viewer becomes the active window after it has been opened, it doesn't accept and process keyboard input until the user presses Tab, Right Arrow, Down Arrow or clicks a UI control. This behavior is a limitation of the Lightroom SDK and affects Windows only.
 
 A workaround has been implemented using an AutoHotkey script. While this is acceptable for a pre-release, it is not a viable solution for a public release.
 
@@ -115,18 +115,18 @@ _A limited workaround for Windows exists. macOS is not affected._
 
 <br>
 
-#### Why does Lightroom display an 'Export file' progress bar even though I have chose `Preview Image` display mode?
+#### Why does Lightroom display an 'Export file' progress bar even though I have chosen `Preview Image` display mode?
 
-Apart from an explicite choice of `Export Image`, Focus Point Viewer can choose this method in two situations:
+Apart from an explicit choice of `Export Image`, Focus Point Viewer can choose this method in two situations:
 
 1. In `Develop` module  
-Lightroom's preview generation does not work reliably and fast enough when in `Develop` module. (that's also why Lightroom's `Build Previews` command is not accessible in `Develop`)
+Lightroom cannot always generate or update previews quickly enough while you are working in `Develop` module. (that's also why Lightroom's `Build Previews` command is not accessible in `Develop`)
 2. If a `Preview Image` timeout has been specified  
   In order to reduce long opening times of Focus Point Viewer (which is basically waiting for a preview to become available), you can specify a timeout after which Focus Point Viewer no longer waits for a preview but uses `Export` instead. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows).
 
 <br>
 
-#### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?
+#### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow Lightroom` mode?
 
 Observed on Windows.
 
@@ -140,13 +140,13 @@ _Sending Lightroom to the background and then back to the foreground will resolv
 
 #### Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view on macOS?
 
-_This is normal behavior on macOS when you any application is active and you click in the grid._   
+_This is normal macOS behavior when any application is active and you click in the grid._   
   
 <br>
 
 #### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
 
-The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can lead to empty margins, which can be removed by resizing the window manually once. [↗](V4-New-Features.md#13-configuration)  
+The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
 <br>
 
