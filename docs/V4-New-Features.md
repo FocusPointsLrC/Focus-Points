@@ -205,7 +205,7 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 ### **<sup>3)</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-**Effect:** In Second Screen Interactive mode, Focus Point Viewer is the active window but keyboard input is not received until the user presses Tab, Left Arrow, Down Arrow or clicks a UI control.   
+**Effect:** In Second Screen Interactive mode, Focus Point Viewer is the active window but keyboard input is not received until the user presses Tab, Right Arrow, Down Arrow or clicks a UI control.   
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
