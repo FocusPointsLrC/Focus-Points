@@ -51,7 +51,7 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. 
 
-See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
+_See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed._
 
 <br>
 
@@ -59,7 +59,7 @@ See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-
 
 The availability of `Preview Image` and `Export Image` display modes on macOS requires the integration of the third-party tool (ImageMagick) which is used on Windows to draw rectangular markings onto the image file.
 
-This is not yet available in V4 PRE 1, but it is planned for an upcoming pre-release. 
+_This is not yet available in V4 PRE 1, but it is planned for an upcoming pre-release._ 
 
 <br>
 
