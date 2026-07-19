@@ -49,19 +49,24 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width:600px;"/><br>
 
-This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
+This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
 
 <br>
 
 #### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
 
-Availability of `Preview Image` and `Export Image` display modes on macOS requires integration of the same third-party tool (ImageMagick) which is used on Windows to draw rectangular markings onto the image file.
-This is not available in V4 PRE 1, but it is planned for an upcoming pre-release. 
+The availability of `Preview Image` and `Export Image` display modes on macOS requires the integration of the third-party tool (ImageMagick) which is used on Windows to draw rectangular markings onto the image file.
+
+This is not yet available in V4 PRE 1, but it is planned for an upcoming pre-release. 
 
 <br>
 
 
 #### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
+
+The Focus Point Viewer remembers its size and position when you close and reopen the window. However, on macOS, it doesn't remember which screen the window was opened on. If you drag the window to a secondary display, it will switch back to the primary display when you open another photo.     
+
+See [Known Limitations 1)](V4-New-Features.md#sup1sup-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos) for more details, workaround and what you can do to get this issue fixed.
 
 <br>
 
