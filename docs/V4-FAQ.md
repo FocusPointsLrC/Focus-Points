@@ -84,7 +84,7 @@ Lightroom opens so-called floating dialogs as active window by default. Once a d
 
 A workaround has been implemented on Windows using an AutoHotkey script. While this is acceptable for a pre-release, it is not a viable solution for a public release.
 
-A similar workaround for macOS has not been investigated, since a practical application of `Follow` mode on macOS is currently anyway prevented by [this major issue]((#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)).  
+A similar workaround for macOS has not been investigated, since a practical application of `Follow` mode on macOS is currently anyway prevented by [another issue](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos).  
 
 **See also:** [Known Limitations 2)](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened) for background information, how to install the available workaround, and instructions on how to support the Adobe bug report.
 
