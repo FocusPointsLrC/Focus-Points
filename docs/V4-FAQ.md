@@ -42,16 +42,18 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 <br>
 
+---
+
 #### Why does `Direct View` display grey boxes around the AF corner markings on Windows? Is my GPU the cause?
 
 `Direct View` on Windows produces corner markings with rectangular artifacts around the overlay images:
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width:600px;"/><br>
 
-This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details and what you can do to get this issue fixed.
+This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
 
+---
 <br>
-
 #### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
 
 The `Preview Image` and `Export Image` display modes require the third-party tool ImageMagick to be integrated with the plugin on macOS. This is not available in V4 PRE 1, but it is planned for an upcoming pre-release. See xxx for more information. 
