@@ -10,13 +10,13 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 ## Browse by topic
 
-### Display modes:
+### Display modes
 
 * [`Direct View`: grey boxes around AF corner markers (Windows)](#why-does-direct-view-display-grey-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
 * [`Preview Image` / `Export Image`: why unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
 
-### Second Screen mode:
+### Second Screen mode
 
 * [Window switches back to the primary screen (macOS)](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
 
@@ -30,11 +30,11 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view)
   
-* [Window has empty margins](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode-)  
+* [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode-)  
 
-### General:
+### General
 
-* [Set up a hotkey to open Focus Points Viewer](#how-can-i-set-up-a-hotkey-to-open-the-focus-points-viewer-) 
+* [Keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-the-focus-points-viewer-) 
 
 <br>
 
@@ -48,33 +48,47 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width:600px;"/><br>
 
-This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See xxx for more details and what you can do to get this issue fixed.
+This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details and what you can do to get this issue fixed.
 
-
+<br>
 
 #### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
 
 The `Preview Image` and `Export Image` display modes require the third-party tool ImageMagick to be integrated with the plugin on macOS. This is not available in V4 PRE 1, but it is planned for an upcoming pre-release. See xxx for more information. 
 
 
-
+<br>
 
 
 
 
 #### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
 
+<br>
+
 #### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
+
+<br>
 
 #### Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
 
+<br>
+
 #### Why does the Focus Point Viewer window always stay on top in Windows?
+
+<br>
 
 #### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?
 
+<br>
+
 #### Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?
   
+<br>
+
 #### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
+
+<br>
 
 #### How can I set up a hotkey to open the Focus Points Viewer? 
 
