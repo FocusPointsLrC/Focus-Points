@@ -24,17 +24,19 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 * [Keyboard input after opening in `Interactive` mode (Windows)](#why-doesnt-focus-point-viewer-accept-keyboard-input-immediately-after-opening-in-interactive-mode-on-windows)
 
-* [Window always in front (Windows)](#why-is focus-point-viewer-always-in front-on-windows)
+* [Window always in front (Windows)](#why-is-focus-point-viewer-always-in-front-on-windows)
+
+* [`Export file' when `Preview Image`is selected](#why-does-lightroom-display-an-export-file-progress-bar-even-though-i-have-chose-preview-image-display-mode)
 
 * [Arrow keys stop working in filmstrip (`Follow` mode, Windows)](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-mode)
 
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view)
   
-* [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-focus-points-viewer-when-i-change-its-size-in-second-screen-mode-)  
+* [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-focus-points-viewer-when-i-change-its-size-in-second-screen-mode)  
 
 ### General
 
-* [Keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer-) 
+* [Keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer) 
 
 <br>
 
