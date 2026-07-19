@@ -8,33 +8,33 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 
 
-## Questions
+## Browse by topic
 
-Display modes:
+### Display modes:
 
-* [Why does `Direct View` display grey boxes around the AF corner markers on Windows? Is my GPU the cause?](#why-does-direct-view-display-grey-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
+* [`Direct View`: grey boxes around AF corner markers (Windows)](#why-does-direct-view-display-grey-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
-* [Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
+* [`Preview Image` / `Export Image`: why unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
 
-Second Screen mode:
+### Second Screen mode:
 
-* [How can I stop Focus Point Viewer from switching back to the primary screen on macOS?](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
+* [Window switches back to the primary screen (macOS)](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
 
-* [How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?](#how-can-i-prevent-focus-point-viewer-from-automatically-becoming-the-active-window-whenever-a-new-photo-is-loaded-in-follow-mode)
+* [Viewer becomes the active window in `Follow` mode](#how-can-i-prevent-focus-point-viewer-from-automatically-becoming-the-active-window-whenever-a-new-photo-is-loaded-in-follow-mode)
 
-* [Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?](#why-doesnt-focus-point-viewer-accept-keyboard-input-immediately-after-opening-in-interactive-mode-on-windows)
+* [Keyboard input after opening in `Interactive` mode (Windows)](#why-doesnt-focus-point-viewer-accept-keyboard-input-immediately-after-opening-in-interactive-mode-on-windows)
 
-* [Why does the Focus Point Viewer window always stay on top in Windows?](#why-does-the-focus-point-viewer-window-always-stay-on-top-in-windows)
+* [Window always stays on top (Windows)](#why-does-the-focus-point-viewer-window-always-stay-on-top-in-windows)
 
-* [Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-mode)
+* [Arrow keys stop working in filmstrip (`Follow` mode, Windows)](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-mode)
 
-* [Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view)
+* [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view)
   
-* [Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode-)  
+* [Window has empty margins](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode-)  
 
-General:
+### General:
 
-* [How can I set up a hotkey to open the Focus Points Viewer?](#how-can-i-set-up-a-hotkey-to-open-the-focus-points-viewer-) 
+* [Set up a hotkey to open Focus Points Viewer](#how-can-i-set-up-a-hotkey-to-open-the-focus-points-viewer-) 
 
 <br>
 
