@@ -86,7 +86,7 @@ A workaround has been implemented on Windows using an AutoHotkey script. While t
 
 A similar workaround for macOS has not been investigated, since a practical application of `Follow` mode on macOS is currently anyway prevented by [this major issue]((#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)).  
 
-**See also:** [Known Limitations 2)](V4-New-Features.md#sup2sup-focus-point-viewer-always-becomes-the-active-window-when-opened) for background information, how to install the available workaround, and instructions on how to support the Adobe bug report.
+**See also:** [Known Limitations 2)](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened) for background information, how to install the available workaround, and instructions on how to support the Adobe bug report.
 
 _A workaround is available on Windows for this limitation of the Lightroom SDK._
 
@@ -109,7 +109,7 @@ When running Lightroom in screen mode `Normal` or `Full Screen with Menubar`, Fo
 
 Use Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` to be able to switch between the two windows.
 
-**See also:** [Known Limitations 4)](V4-New-Features.md#4-focus-point-viewer-windows-is-always-on-top-in-second-screen-mode-on-windows) for background information.
+**See also:** [Known Limitations 4)](V4-New-Features.md#4-focus-point-viewer-is-always-in-front-in-second-screen-mode-on-windows) for background information.
 
 _A limited workaround for Windows exists. macOS is not affected._ 
 
