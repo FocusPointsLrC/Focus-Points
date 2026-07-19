@@ -49,7 +49,9 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width:600px;"/><br>
 
-This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
+This is due to inconsistent behavior of the underlying Lightroom SDK function when using transparent PNG overlays in overlapping layouts on Windows vs macOS. 
+
+See [Known Limitations 5)](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows) for more details, workaround and what you can do to get this issue fixed.
 
 <br>
 
@@ -66,19 +68,29 @@ This is not yet available in V4 PRE 1, but it is planned for an upcoming pre-rel
 
 The Focus Point Viewer remembers its size and position when you close and reopen the window. However, on macOS, it doesn't remember which screen the window was opened on. If you drag the window to a secondary display, it will switch back to the primary display when you open another photo.     
 
-See [Known Limitations 1)](V4-New-Features.md#sup1sup-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos) for more details, workaround and what you can do to get this issue fixed.
+_See [Known Limitations 1)](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos) for more details and what you can do to get this issue fixed._
 
 <br>
 
 #### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
 
+_See [Known Limitations 2)](V4-New-Features.md#sup2sup-focus-point-viewer-always-becomes-the-active-window-when-opened) for more details, workaround on Windows and what you can do to get this issue fixed._
+
+
 <br>
 
 #### Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
 
+See [Known Limitations 3)](V4-New-Features.md#3-keyboard-shortcuts-do-not-work-immediately-after-opening-focus-point-viewer-in-interactive-mode-on-windows) for more details, workaround and what you can do to get this issue fixed.
+
+
 <br>
 
 #### Why does the Focus Point Viewer window always stay on top in Windows?
+
+See [Known Limitations 4)](V4-New-Features.md#4-focus-point-viewer-windows-is-always-on-top-in-second-screen-mode-on-windows) for more details and what you can do to get this issue fixed.
+
+This behavior on Windows is the result of a bug ("Floating dialogs always in back, never in front") that Adobe fixed in LrC 15.1.
 
 <br>
 
