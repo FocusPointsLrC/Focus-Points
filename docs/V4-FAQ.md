@@ -14,32 +14,33 @@ Display modes:
 
 * [Why does `Direct View` display grey boxes around the AF corner markers on Windows? Is my GPU the cause?](#why-does-direct-view-display-grey-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
-* [Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?](#)
+* [Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
 
 Second Screen mode:
 
-* How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
+* [How can I stop Focus Point Viewer from switching back to the primary screen on macOS?](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
 
-* How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
+* [How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?](#how-can-i-prevent-focus-point-viewer-from-automatically-becoming-the-active-window-whenever-a-new-photo-is-loaded-in-follow-mode)
 
-* Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
+* [Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?](#why-doesnt-focus-point-viewer-accept-keyboard-input-immediately-after-opening-in-interactive-mode-on-windows)
 
-* Why does the Focus Point Viewer window always stay on top in Windows?
+* [Why does the Focus Point Viewer window always stay on top in Windows?](#why-does-the-focus-point-viewer-window-always-stay-on-top-in-windows)
 
-* Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?
+* [Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?](#why-do-the-left-and-right-arrow-keys-sometimes-stop-working-in-lightroom-when-focus-point-viewer-is-running-in-follow-mode)
 
-* Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?
+* [Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view)
   
-* Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
+* [Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode-)  
 
 General:
 
-* How can I set up a hotkey to open the Focus Points Viewer? 
+* [How can I set up a hotkey to open the Focus Points Viewer?](#how-can-i-set-up-a-hotkey-to-open-the-focus-points-viewer-) 
 
-
+<br>
 
 ## Q&A
 
+<br>
 
 #### Why does `Direct View` display grey boxes around the AF corner markings on Windows? Is my GPU the cause?
 
@@ -51,7 +52,7 @@ This is due to inconsistent behavior of the underlying Lightroom SDK function wh
 
 
 
-### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
+#### Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
 
 The `Preview Image` and `Export Image` display modes require the third-party tool ImageMagick to be integrated with the plugin on macOS. This is not available in V4 PRE 1, but it is planned for an upcoming pre-release. See xxx for more information. 
 
@@ -61,19 +62,19 @@ The `Preview Image` and `Export Image` display modes require the third-party too
 
 
 
-### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
+#### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
 
-### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
+#### How can I prevent Focus Point Viewer from automatically becoming the active window whenever a new photo is loaded in `Follow` mode?
 
-### Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
+#### Why doesn't Focus Point Viewer accept keyboard input immediately after opening in `Interactive` mode on Windows?
 
-### Why does the Focus Point Viewer window always stay on top in Windows?
+#### Why does the Focus Point Viewer window always stay on top in Windows?
 
-### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?
+#### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow` mode?
 
-### Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?
+#### Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view?
   
-### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
+#### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
 
-### How can I set up a hotkey to open the Focus Points Viewer? 
+#### How can I set up a hotkey to open the Focus Points Viewer? 
 
