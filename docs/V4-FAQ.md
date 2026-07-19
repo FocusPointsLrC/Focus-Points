@@ -12,9 +12,9 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 Display modes:
 
-* Why does `Direct View` display grey boxes around the AF corner markers on Windows? Is my GPU the cause?
+* [Why does `Direct View` display grey boxes around the AF corner markers on Windows? Is my GPU the cause?](#why-does-direct-view-display-grey-boxes-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
-* Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?
+* [Why are the `Preview Image` and `Export Image` display modes unavailable on macOS?](#)
 
 Second Screen mode:
 
@@ -41,7 +41,7 @@ General:
 ## Q&A
 
 
-### Why does `Direct View` display grey boxes around the AF corner markings on Windows? Is my GPU the cause?
+#### Why does `Direct View` display grey boxes around the AF corner markings on Windows? Is my GPU the cause?
 
 `Direct View` on Windows produces corner markings with rectangular artifacts around the overlay images:
 
