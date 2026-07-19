@@ -117,7 +117,7 @@ After selecting a different display mode, the window will automatically refresh 
 
 <img src="images/Display%20Modes.jpg" alt="Direct View on Windows" style="width: 1000px;"/><br>
 
-### 2.2 How display modes affect the Focus Point Viewer performance
+### 2.2 How display modes affect Focus Point Viewer performance
 
 Startup time depends on the selected display mode, camera model, and whether Lightroom already has a preview available. The following measurements illustrate the typical behavior.
 
@@ -169,16 +169,17 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 ---
 ### <sup>1)</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
 
-**Effect:** On macOS, the Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image it will reopen on the primary screen.
+**Effect:** On macOS, Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image, the window reopens on the primary screen.
 
 **Reason:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
+**Status:** Adobe has acknowledged the issue and a bug report has been filed.  
 
-**Workaround:** Use the Focus Point Viewer alongside Lightroom on the primary screen.
+**Workaround:** Use Focus Point Viewer alongside Lightroom on the primary screen.
 
-**How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+
+**Bug Report:** [https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
 <br>
 
@@ -190,12 +191,13 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 **Reason:** Lightroom SDK does not allow to specify whether a floating dialog should be activated or not when opened. 
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed.   
-[https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366](https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366)
+**Status:** Adobe has acknowledged the issue and a bug report has been filed.   
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
-**How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+
+**Bug Report:** [https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366](https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366)
 
 <br>
 
@@ -203,34 +205,32 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 ### **<sup>3)</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.** 
 
-**Effect:** In Second Screen Interactive mode, the Focus Point Viewer is the active window but keyboard input is not received until the user presses Tab, Left Arrow, Down Arrow or clicks a UI control.   
+**Effect:** In Second Screen Interactive mode, Focus Point Viewer is the active window but keyboard input is not received until the user presses Tab, Left Arrow, Down Arrow or clicks a UI control.   
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363](https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363)
+**Status:** Adobe has acknowledged the issue and a bug report has been filed.  
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
-**How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+
+**Bug Report:** [https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363](https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363)
 
 <br>
 
-
 --- 
 
-### **<sup>4)</sup> Focus Point Viewer windows is always on top in Second Screen mode on Windows**
+### **<sup>4)</sup> Focus Point Viewer is always in front in Second Screen mode on Windows**
 
-**Effect:** In Second Screen mode on Windows, the Focus Point Viewer is always displayed at the top of all visible windows on the screen. It is not possible to bring other windows to the top. This limits usability, particularly when the Focus Point Viewer overlaps with applications that the user wants to run simultaneously. 
+**Effect:** In Second Screen mode on Windows, Focus Point Viewer is always displayed in front of all visible windows on the screen. It is not possible to bring other windows to front. This limits usability, particularly when Focus Point Viewer overlaps with applications that the user wants to run simultaneously. 
 
-**Reason:** Recent changes by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite:  
-[https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457](https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457)
+**Reason:** Recent changes in LrC 15.1 by Adobe with respect to handling of floating dialogs. Earlier, floating dialogs were always in back, never in front. Now it's the opposite: floating dialogs always in front, never in back.
 
-**Current status:** New bug report to be filed with Adobe (by user aboswrt)
+**Status:** The respective [bug report](https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457) is still under discussion at Adobe Community. The discussion suggests that the "always in front" behavior is limited to Lightroom screen modes (Windows -> Screen Mode) `Normal` and `Full Screen with Menubar`.   
+A new bug report addressing the undesired behavior may be filed soon. 
 
-**Workaround:** None.
-
-**How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+**Workaround:** Use Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` to be able to switch between the two windows.
 
 <br>
 
@@ -242,12 +242,13 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 **Reason:** Inconsistent behavior of the underlying SDK function **when using transparent PNG** overlays in overlapping layouts on Windows vs macOS.
 
-**Current status:** Adobe has acknowledged the issue and a bug report has been filed.  
-[https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087](https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087)
+**Status:** Adobe has acknowledged the issue and a bug report has been filed.  
 
 **Workaround:** Use Preview Image or Export Image instead.
 
-**How you can help:** If this issue affects your workflow, **please vote** for the Adobe bug report. Community votes help increase its visibility.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+
+**Bug Report:** [https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087](https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087)
 
 <br>
 
