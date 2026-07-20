@@ -563,10 +563,10 @@ The drawing routines used on Windows are not aware of any display scale factor t
 
 ### User Interface Settings
 
-This section is new in version 3.2. It contains several settings that can be used to customize the appearance and functionality of the plugin's user interface. 
+This section is new in version 3.2. It contains several settings that can be used to customize the appearance and functionality of the plugin's user interface.
 
-**_Size of plugin window_**. Default setting: `L`<br>
 <span id="size-of-plugin-window"></span>
+**_Size of plugin window_**. Default setting: `L`<br>
 This setting allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. 
 
 <img src="images/README WindowSize.jpg" alt="Screenshot" style="width: 600px;"/>
@@ -598,7 +598,6 @@ If you don't need the controls for flagging, rating or coloring photos in the Fo
 
 <span id="keyboard-layout"></span>
 **_Keyboard layout_**. Default setting: empty<br>
-<a id="keyboard-layout"></a>
 The keyboard shortcuts for flagging, rating and coloring are the same as those used in Lightroom, including the `Shift` combinations that perform an action and advance to the next photo. Since the plugin cannot recognize key codes and can only work with text input, using the `Shift` + `0`-`9` keyboard shortcuts requires the plugin to be aware of the currently used international keyboard layout.<br>
 The predefined options cover a large percentage of the available layouts, and more can be added on request. In this specific context, it is important to note that the term 'layout' refers only to the codes produced by the `0`–`9` keys in the top row, and not to the entire keyboard.
 <br><br>
