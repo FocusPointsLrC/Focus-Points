@@ -566,7 +566,7 @@ The drawing routines used on Windows are not aware of any display scale factor t
 This section is new in version 3.2. It contains several settings that can be used to customize the appearance and functionality of the plugin's user interface. 
 
 **_Size of plugin window_**. Default setting: `L`<br>
-<a id="size-of-plugin-window"></a>
+<span id="size-of-plugin-window"></span>
 This setting allows you to customize the size of the plugin window. You can choose from six options ranging from 3XL to S. 
 
 <img src="images/README WindowSize.jpg" alt="Screenshot" style="width: 600px;"/>
@@ -577,8 +577,8 @@ In the Metadata Viewer, this setting determines the height of the dialog box. Th
 
 <u>Note</u>: Windows users already had the option to adjust the size of the focus points window using the screen scaling option specific to Windows. This setting remains as it is.
 
+<span id="text-input-field-for-keyboard shortcuts"></apan>
 **_Appearance of text input field for keyboard shortcuts_**. Default setting: `Regular`<br>
-<a id="text-input-field-for-keyboard shortcuts"></a>
 To make keyboard shortcuts more transparent and intuitive to use, the text input field that captures them is now visible by default. For a more detailed explanation, see xxx.
 This setting can be used to customize the appearance of the input field:
 
@@ -588,11 +588,12 @@ This setting can be used to customize the appearance of the input field:
 - Small. A narrow input field without labeling
 - Regular. An input field that can display a minimum of 10 characters, along with a label containing a link to the 'Keyboard Shortcuts' section of the user manual.
 
+<span id="truncate-or-wrap-long-strings"></span>
 **_Truncate or wrap long strings_**. Default setting: `On`, `32` characters<br>
 This setting enables you to specify whether long strings, such as metadata values or file names, should be truncated in the display. You can choose the truncation limit, which can be set between 10 and 100 characters. A truncated string is marked with the symbol '...' at the end. The full text can be seen in the tooltip that appears when you hover over a truncated string with the mouse.
 
-<span id="enable-controls-for-flagging"></span>
-**_Enable controls for flagging_**. Default setting: `On`<br>
+<span id="enable-controls-for-tagging"></span>
+**_Enable controls for tagging_**. Default setting: `On`<br>
 If you don't need the controls for flagging, rating or coloring photos in the Focus Point viewer, and you want to avoid overloading the navigation bar, use this setting to hide the tagging controls and disable the related keyboard shortcuts. 
 
 <span id="keyboard-layout"></span>
@@ -606,6 +607,7 @@ The predefined options cover a large percentage of the available layouts, and mo
 
 ### Viewing Options
 
+<span id="size-of-focus box"></span>
 **_Size of focus box for 'focus pixel' points_**. Default setting: `Red`<br>
 Depending on the camera maker and model, focus points may have a dimension (width and height) or they may be represented by a 'focus pixel'. For focus points that have a dimension, a box with the specified width and height is displayed. For 'focus pixel' points you can choose how to display them: small box or medium/large with a center dot.
 
@@ -1262,6 +1264,7 @@ The following chart compares the typical plug-in start-up time for different cam
 
 If the plugin window takes more than a second to open, the main reason for the delay is usually the time taken for Lightroom to make a usable preview available. However, if the plugin window takes considerably longer than one to two seconds to open, it is usually quicker not to wait for the preview to become available, but to instead generate the image file using Lightroom's Export function.
 
+<span id="performance-control"></span>
 V3.4 introduces the **'Performance Control'** feature, which enables you to customize the process used to create the image displayed in Photo View.
 
 Once the configured waiting time for a preview has elapsed, the image will be created for display using Lightroom's Export function rather than waiting for the preview to become available. Depending on the camera model, it can take much longer for Lightroom to generate a preview than it takes to create an image via Export. For example, consider Z8/Z9 in the chart. Switching to Export Image after a short timeout can significantly reduce the time required for the plugin window to appear in these cases.
