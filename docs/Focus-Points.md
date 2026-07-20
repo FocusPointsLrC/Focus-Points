@@ -577,7 +577,7 @@ In the Metadata Viewer, this setting determines the height of the dialog box. Th
 
 <u>Note</u>: Windows users already had the option to adjust the size of the focus points window using the screen scaling option specific to Windows. This setting remains as it is.
 
-<span id="text-input-field-for-keyboard shortcuts"></apan>
+<span id="text-input-field-for-keyboard shortcuts"></span>
 **_Appearance of text input field for keyboard shortcuts_**. Default setting: `Regular`<br>
 To make keyboard shortcuts more transparent and intuitive to use, the text input field that captures them is now visible by default. For a more detailed explanation, see xxx.
 This setting can be used to customize the appearance of the input field:
