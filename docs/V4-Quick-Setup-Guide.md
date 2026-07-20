@@ -19,7 +19,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
       1. Set `Second Screen` to `On` to continue working in Lightroom while Focus Points Viewer remains open.
       2. Choose whether you want Focus Point Viewer to `Follow` while you're working in Lightroom or if you want to use it interactively.
       3. Select the aspect ratio used in Second Screen mode.<br><br>     
-   1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-flagging)<br>
+   1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
       1. These controls were originally introduced because Lightroom could not be accessed while Focus Points Viewer was open. This is normally not required in second screen mode. You can set it to `Off`, which will make the control bar look less cluttered.
       2. If you also want to use these controls in Second Screen mode, select your keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br> 
    1. `Display mode` [↗](V4-New-Features.md#2-display-modes)<br>
