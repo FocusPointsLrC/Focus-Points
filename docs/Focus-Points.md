@@ -592,6 +592,10 @@ This setting can be used to customize the appearance of the input field:
 **_Truncate or wrap long strings_**. Default setting: `On`, `32` characters<br>
 This setting enables you to specify whether long strings, such as metadata values or file names, should be truncated in the display. You can choose the truncation limit, which can be set between 10 and 100 characters. A truncated string is marked with the symbol '...' at the end. The full text can be seen in the tooltip that appears when you hover over a truncated string with the mouse.
 
+<span id="enable-controls-for-straightening"></span>
+**_Enable controls for straightening_**. Default setting: `On`<br>
+If you don't need the controls for straightening photos in the Focus Point viewer, and you want to avoid overloading the navigation bar, use this setting to hide the straightening controls and disable the related keyboard shortcuts. 
+
 <span id="enable-controls-for-tagging"></span>
 **_Enable controls for tagging_**. Default setting: `On`<br>
 If you don't need the controls for flagging, rating or coloring photos in the Focus Point viewer, and you want to avoid overloading the navigation bar, use this setting to hide the tagging controls and disable the related keyboard shortcuts. 
