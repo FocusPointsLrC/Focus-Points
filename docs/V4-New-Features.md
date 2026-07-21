@@ -177,7 +177,8 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 **Workaround:** Use Focus Point Viewer alongside Lightroom on the primary screen.
 
-**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.  
+Voting is easy — simply sign in to the Adobe Community using your Adobe credentials and click the button.
 
 **Bug Report:** [https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
@@ -195,7 +196,8 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
-**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.  
+Voting is easy — simply sign in to the Adobe Community using your Adobe credentials and click the button.
 
 **Bug Report:** [https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366](https://community.adobe.com/bug-reports-674/p-keyboard-input-routing-of-floating-dialogs-depends-on-prior-sdk-calls-1631366)
 
@@ -213,7 +215,8 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 
-**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.  
+Voting is easy — simply sign in to the Adobe Community using your Adobe credentials and click the button.
 
 **Bug Report:** [https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363](https://community.adobe.com/bug-reports-674/p-floating-dialogs-are-opened-without-initial-keyboard-focus-1631363)
 
@@ -246,7 +249,8 @@ A new bug report addressing the undesired behavior may be filed soon.
 
 **Workaround:** Use Preview Image or Export Image instead.
 
-**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.
+**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.  
+Voting is easy — simply sign in to the Adobe Community using your Adobe credentials and click the button.
 
 **Bug Report:** [https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087](https://community.adobe.com/bug-reports-674/p-windows-sdk-transparent-png-overlays-do-not-composite-correctly-in-overlapping-layouts-1628087)
 
