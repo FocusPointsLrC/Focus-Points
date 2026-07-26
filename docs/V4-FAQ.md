@@ -36,6 +36,8 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 ### General
 
+
+
 * [Keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer) 
 
 <br>
