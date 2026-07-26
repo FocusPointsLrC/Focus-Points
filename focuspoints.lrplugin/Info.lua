@@ -61,9 +61,9 @@ return {
   VERSION = {
       major      = 3,
       minor      = 4,
-      revision   = 0,
+      revision   = 1,
       build      = 0,
-      display    = "3.4",
+      display    = "3.4.1",
       -- custom additions:
       channel    = "release",
       branch     = "master",

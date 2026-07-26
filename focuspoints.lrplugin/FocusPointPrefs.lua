@@ -71,11 +71,11 @@ FocusPointPrefs.displayModePreview = 1
 FocusPointPrefs.displayModeExport  = 2
 FocusPointPrefs.displayModeDirect  = 3
 FocusPointPrefs.displayModeFallback= 4
-FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export(fallback)" }
+FocusPointPrefs.displayModeName    = {"Preview", "Export", "Direct", "Export (fallback)" }
 
 -- Definitions to handle Update mechanism
-local previewBuildNumbers     = 8000 -- .. 8999 reserved range for preview build numbers
-local preReleaseBuildNumbers  = 9000 -- .. 9999 reserved range for pre-release build numbers
+local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
+local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
 
 local branch                  = Info.VERSION.branch
 local githubRawBaseUrl        = Info.VERSION.rawBaseUrl
@@ -89,14 +89,23 @@ local latestVersion
 local versionFileFoundUrl
 local latestVersionUrl
 
-local urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
-local urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
-
 -- URL definitions for accessing documents from the UI
-FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
-FocusPointPrefs.urlTroubleShooting = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
-FocusPointPrefs.urlkbdShortcuts    = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
-FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
+FocusPointPrefs.urlUserManual       = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
+FocusPointPrefs.urlTroubleShooting  = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
+FocusPointPrefs.urlkbdShortcuts     = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
+-- URL definitions for clickForHelp
+local urlHelpOnScreenScaling        = FocusPointPrefs.urlUserManual  .. "#screen-scaling"
+local urlHelpOnStraightenControls   = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-straightening"
+local urlHelpOnTaggingControls      = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-tagging"
+local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboard-layout"
+local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
+local urlHelpOnPluginWindowScaling  = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
+local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
+local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
+local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
+local urlHelpOnLoggingLevel         = FocusPointPrefs.urlUserManual  .. "#logging"
+local urlHelpOnStraighteningOptions = FocusPointPrefs.urlUserManual  .. "#straightening-options"
+FocusPointPrefs.urlKofi             = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
 FocusPointPrefs.kbdShortcutsPrev            = "-<"
@@ -175,13 +184,6 @@ local function getWinScalingFactor()
 
   -- Query registry value by calling REG.EXE
   local rc = LrTasks.execute(cmd)
-
-  -- Avoid Windows process queue saturation
-  if WIN_ENV then
-      LrTasks.sleep(0.02)
-      LrTasks.yield()
-  end
-
   Log.logDebug("System", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
   Log.logDebug("System", "REG command: " .. cmd .. ", rc=" .. rc)
 
@@ -271,17 +273,20 @@ end
   Retrieves the version number of the latest plug-in release. This information
   is stored in a text file 'Version.txt' in the Github plugin folder.
   The result is stored in 'latestVersion' for use by update-related routines.
+  Note: Logging does not work at this point because it has not yet been initialized.
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.retrieveVersionOfLatestRelease()
 
   local function getVersionFile(urlNew, urlLegacy)
     local body, headers
 
+    -- Check for Version.txt file on top level folder
     body, headers = LrHttp.get(urlNew)
     if headers and headers.status == 200 then
       return body, urlNew
     end
 
+    -- Check for Version.txt file in location in focuspoints.lrplugin folder
     body, headers = LrHttp.get(urlLegacy)
     if headers and headers.status == 200 then
       return body, urlLegacy
@@ -292,6 +297,9 @@ function FocusPointPrefs.retrieveVersionOfLatestRelease()
 
   local function parseVersionInfo(body)
     -- Helper to parse contents
+    if not body then return nil end
+
+    -- Parse version information
     local version = string.match(body, "v%d+%.%d+%.%d+%.%d+") or
                     string.match(body, "v%d+%.%d+%.%d+")
 
@@ -306,7 +314,6 @@ function FocusPointPrefs.retrieveVersionOfLatestRelease()
 
   -- Need to execute this as a collaborative task
   LrTasks.startAsyncTask( function()
-    local prefs = LrPrefs.prefsForPlugin( nil )
     local body, url
 
     -- By default, if an error occurs, it is assumed that there is no update available
@@ -347,7 +354,6 @@ end
   Returns the version number of the latest plug-in release as a string eg. 'v3.1.3'
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getlatestVersion()
-  local prefs = LrPrefs.prefsForPlugin( nil )
   if latestVersion then
     return latestVersion
   else
@@ -363,7 +369,6 @@ end
   Returns true if so, otherwise false
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.isUpdateAvailable()
-  local prefs  = LrPrefs.prefsForPlugin( nil )
   local result = false
 
   if isUpdateAvailable == nil then
@@ -436,7 +441,6 @@ end
   For a public release, returns ./releases/latest
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
-  local prefs = LrPrefs.prefsForPlugin( nil )
   if latestVersionUrl then
     -- link to release from version.txt file
     return latestVersionUrl
@@ -465,6 +469,27 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
 
   -- Set the defaults
   FocusPointPrefs.InitializePrefs(prefs)
+
+  -- Helper to link a setting to user manual explanation for quick help
+  local function clickForHelp(url, text)
+    local info = "[?]"
+    if url then
+      if not text then text = info end
+      return
+        f:static_text {
+          title = text,
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function()
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(url)
+            end)
+          end,
+        }
+      else
+        return LrView.kIgnoredView
+      end
+  end
 
   -- Check for updates
   local updateMessage
@@ -508,7 +533,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         },
         f:static_text {
           title = 'Select "Auto" for same display scale factor as on Windows OS (Display Settings -> Scale)'
-        }
+        },
+        f:spacer { fill_horizontal = 1 },
+        clickForHelp( urlHelpOnScreenScaling ),
       },
     }
   end
@@ -528,8 +555,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Enable controls to straighten a photo (mouse and keyboard)'
+          title = "Enable controls to straighten a photo (mouse and keyboard)"
         },
+        clickForHelp( urlHelpOnStraightenControls ),
       }
     end
     local function taggingControlsSetting()
@@ -547,8 +575,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
+          title = "Enable controls for flagging, rating and coloring a photo (mouse and keyboard)"
         },
+        clickForHelp( urlHelpOnTaggingControls ),
       }
     end
     local function keyboardLayoutSetting()
@@ -563,8 +592,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           items = KeyboardLayout.buildDropdownItems(),
         },
         f:static_text {
-            title = 'Keyboard layout. Required to process shortcuts 0..9 for rating and coloring'
+            title = "Keyboard layout. Required to process shortcuts 0..9 for rating and coloring"
         },
+        clickForHelp( urlHelpOnKeyboardLayout ),
       }
     end
     local function previewGenerationSettings()
@@ -584,7 +614,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             },
           },
           f:static_text {
-            title = 'Preview Image: Use Export Image if no preview becomes available within'
+            title = "Preview Image: Use Export Image if no preview becomes available within"
           },
           f:edit_field {
             value = bind("previewTimeout"),
@@ -594,8 +624,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             precision = 1,
           },
           f:static_text {
-            title = 'seconds',
+            title = "seconds",
           },
+          clickForHelp( urlHelpOnPerformanceControl ),
         },
         f:row {
           bind_to_object = prefs,
@@ -610,7 +641,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             },
           },
           f:static_text {
-            title = 'Preview Image: Show progress notification after '
+            title = "Preview Image: Show progress notification after "
           },
           f:edit_field {
             value = bind("previewProgressDelay"),
@@ -620,7 +651,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             precision = 1,
           },
           f:static_text {
-            title = 'seconds',
+            title = "seconds",
           },
         },
       }
@@ -645,8 +676,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Size of plugin window'
-        }
+          title = "Size of plugin window"
+        },
+        clickForHelp( urlHelpOnPluginWindowScaling ),
       },
       f:row {
         bind_to_object = prefs,
@@ -662,8 +694,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-            title = 'Appearance of text input field for keyboard shortcuts'
+            title = "Appearance of text input field for keyboard shortcuts"
         },
+        clickForHelp( urlHelpOnKeyboardInput ),
       },
       f:row {
         bind_to_object = prefs,
@@ -678,7 +711,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           },
         },
         f:static_text {
-            title = 'Truncate or wrap strings after'
+            title = "Truncate or wrap strings after"
         },
         f:edit_field {
           value = bind("truncateLimit"),
@@ -688,8 +721,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           precision = 0,
         },
         f:static_text {
-          title = 'characters',
+          title = "characters",
         },
+        clickForHelp( urlHelpOnTruncateLongText ),
       },
       straightenControlsSetting(), -- empty for LR5
       taggingControlsSetting(),    -- empty for LR5
@@ -715,8 +749,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Color for in-focus points',
+          title = "Color for in-focus points",
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnViewingOptions ),
       },
       f:row {
         bind_to_object = prefs,
@@ -745,7 +781,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Logging level",
-          value = bind('loggingLevel'),
+          value = bind("loggingLevel"),
           width_in_chars = dropDownWidth,
           items = {
             { title = "Auto",  value = "AUTO"  },
@@ -760,9 +796,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         f:static_text {
           title = 'Level of information to be logged (Recommended: "Auto")'
         },
+        f:spacer{fill_horizontal = 1},
         f:static_text {
-          title = 'Plugin log:',
-          alignment = 'right',
+          title = "Plugin log:",
+          alignment = "right",
           fill_horizontal = 1,
         },
         f:push_button {
@@ -776,6 +813,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             end
           end,
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnLoggingLevel ),
       },
     }
   end
@@ -798,8 +837,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Overwrite existing crop angle setting',
+          title = "Overwrite existing crop angle setting",
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnStraighteningOptions ),
       },
       f:row {
         bind_to_object = prefs,
@@ -814,7 +855,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           },
         },
         f:static_text {
-          title = 'Apply straightening only for angles between'
+          title = "Apply straightening only for angles between"
         },
         f:edit_field {
           value = bind("straightenLimitLow"),
@@ -824,7 +865,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           precision = 1,
         },
         f:static_text {
-          title = 'and',
+          title = "and",
         },
         f:edit_field {
           value = bind("straightenLimitHigh"),
@@ -834,7 +875,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           precision = 1,
         },
         f:static_text {
-          title = 'degrees (in any direction)',
+          title = "degrees (in any direction)",
         },
       },
       f:row {
@@ -850,7 +891,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           },
         },
         f:static_text {
-          title = 'Apply calibration offset of'
+          title = "Apply calibration offset of"
         },
         f:edit_field {
           value = bind("straightenBias"),
@@ -860,7 +901,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           precision = 2,
         },
         f:static_text {
-          title = 'degrees to roll angle',
+          title = "degrees to roll angle",
         },
       },
       f:row {
@@ -868,7 +909,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Straighten Summary Condition",
-          value = bind('straightenSummaryCondition'),
+          value = bind("straightenSummaryCondition"),
           width_in_chars = dropDownWidth,
           items = {
             { title = "Always", value = "ALWAYS" },
@@ -879,7 +920,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = 'Condition to open the summary dialog when straightening is complete'
+          title = "Condition to open the summary dialog when straightening is complete"
         },
       },
     }
@@ -892,8 +933,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
       spacing = f:control_spacing(),
       f:row {
         f:checkbox {
-          title = 'Display message when updates are available',
-          value = bind('checkForUpdates')
+          title = "Display message when updates are available",
+          value = bind("checkForUpdates")
         },
         f:spacer{fill_horizontal = 1},
         updateMessage,
@@ -922,7 +963,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         },
         f:spacer{fill_horizontal = 1},
         f:checkbox {
-          title = 'I have already donated. Hide Ko-fi icon and link from the plugin window.',
+          title = "I have already donated. Hide Ko-fi icon and link from the plugin window.",
           value = bind("hideKofiControl")
         },
       },
@@ -938,11 +979,11 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'ImageMagick Studio LLC'
+            title = "ImageMagick Studio LLC"
           },
           f:spacer{ height = 5 },
           f:static_text {
-            title = 'This plugin uses ImageMagick mogrify'
+            title = "This plugin uses ImageMagick mogrify"
           }
         },
         f:column {
@@ -965,7 +1006,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'ExifTool'
+            title = "ExifTool"
           },
           f:spacer{ height = 5 },
           f:static_text {
@@ -992,7 +1033,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'John R. Ellis'
+            title = "John R. Ellis"
           },
           f:spacer{ height = 5 },
           f:static_text {
