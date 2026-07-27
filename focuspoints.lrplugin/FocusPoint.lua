@@ -141,13 +141,20 @@ local function showFocusPoint()
 
     local function logAppInfo()
       -- Extend logfile header with application level information
-      if FocusPointPrefs.isUpdateAvailable() then
-        Log.logInfo("System", "Update to version " .. FocusPointPrefs.getlatestVersion() .. " available")
+
+      -- Update information
+      local isUpdateAvailable, latestVersion = FocusPointPrefs.isUpdateAvailable()
+      if isUpdateAvailable then
+        Log.logInfo("System", "Update to version " .. latestVersion .. " available")
       end
+
+      -- Windows display scaling level
       if WIN_ENV then
         Log.logInfo("System", "Display scaling level " ..
                 math.floor(100/FocusPointPrefs.getDisplayScaleFactor() + 0.5) .. "%")
       end
+
+      -- Application and plugin windows sizes
       Log.logInfo("System", string.format(
        "Application window size: %s x %s. Plugin window size: %sx",
           GlobalDefs.appWidth, GlobalDefs.appHeight, prefs.pluginWindowScaling))
@@ -233,15 +240,19 @@ local function showFocusPoint()
       end
     end
 
-    -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
-    FocusPointPrefs.InitializePrefs(prefs)
     -- Initialize logging, log system level information
     Log.initialize()
+
+    -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
+    FocusPointPrefs.InitializePrefs(prefs)
 
     -- Set scale factor for sizing of dialog window
     if WIN_ENV then
       FocusPointPrefs.setDisplayScaleFactor()
     end
+
+    -- Start version check for plugin updates
+    FocusPointPrefs.startVersionCheck()
 
     -- Log applicaton level information (includes scale factor and app window size)
     logAppInfo()

@@ -85,6 +85,7 @@ local masterVersionFileLegacy = githubRawBaseUrl .. "master/focuspoints.lrplugin
 local branchVersionFile       = githubRawBaseUrl .. branch .. "/Version.txt"
 local branchVersionFileLegacy = githubRawBaseUrl .. branch .. "/focuspoints.lrplugin/Version.txt"
 
+local versionChecked          = false
 local latestVersion
 local versionFileFoundUrl
 local latestVersionUrl
@@ -165,8 +166,13 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
   if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 0.5       end
 
-  -- get the latest plugin version for update checks
-  FocusPointPrefs.retrieveVersionOfLatestRelease()
+  -- To avoid dirt effects from V4 display mode setting
+  if WIN_ENV then
+    prefs.displayMode = FocusPointPrefs.displayModePreview
+  else
+    prefs.displayMode = FocusPointPrefs.displayModeDirect
+  end
+
 end
 
 --[[----------------------------------------------------------------------------
@@ -268,27 +274,74 @@ end
 
 --[[----------------------------------------------------------------------------
   public string
-  retrieveVersionOfLatestRelease()
+  startVersionCheck()
 
-  Retrieves the version number of the latest plug-in release. This information
-  is stored in a text file 'Version.txt' in the Github plugin folder.
-  The result is stored in 'latestVersion' for use by update-related routines.
-  Note: Logging does not work at this point because it has not yet been initialized.
+  Starts an asynchronous check for the latest plug-in release.
+  The current release information is stored in a text file 'Version.txt' on Github.
+  The retrieved information is cached for the remainder of the Lightroom session:
+  - versionChecked
+  - isUpdateAvailable
+  - latestVersion
 ------------------------------------------------------------------------------]]
-function FocusPointPrefs.retrieveVersionOfLatestRelease()
+function FocusPointPrefs.startVersionCheck()
+  local prefs = LrPrefs.prefsForPlugin( nil )
+
+  -- If update check is not wanted, don't even try to fetch the version information from server
+  if not prefs.checkForUpdates then return end
+
+  -- If a version check has already been performed in this plugin lifecycle we don't need another
+  if versionChecked then return end
+  versionChecked = true
 
   local function getVersionFile(urlNew, urlLegacy)
-    local body, headers
+    -- Helper to retrieve the Version.txt file.
+    -- Returns file content and source where the file was found.
 
-    -- Check for Version.txt file on top level folder
-    body, headers = LrHttp.get(urlNew)
-    if headers and headers.status == 200 then
+    local function tryUrl(url)
+      Log.logDebug("System", "Update Check: trying to retrieve Version.txt from " .. url)
+
+      local body, headers = LrHttp.get(url)
+
+      if not headers then
+      -- No HTTP response at all (timeout, DNS, connection failure, etc.).
+        Log.logWarn("System",
+          "Update Check: no HTTP response received from " .. url)
+        return nil
+      end
+
+      if headers.status ~= 200 then
+      -- Server responded, but with an error (404, 403, 503, ...).
+        Log.logWarn("System",
+          "Update Check: HTTP " .. tostring(headers.status) ..
+          " returned for " .. url)
+        return nil
+      end
+
+      if not body or body == "" then
+      -- The request succeeded but the downloaded file is unusable.
+        Log.logWarn("System",
+          "Update Check: empty Version.txt received from " .. url)
+        return nil
+      end
+
+      if not (body:find("v%d+%.%d+%.%d+") or body:find("v%d+%.%d+%.%d+%.%d+")) then
+      -- The request succeeded but the downloaded file has invalid content
+        Log.logWarn("System",
+            "Update Check: invalid Version.txt received from " .. url)
+        return nil
+      end
+
+      -- Success
+      return body
+    end
+
+    local body = tryUrl(urlNew)
+    if body then
       return body, urlNew
     end
 
-    -- Check for Version.txt file in location in focuspoints.lrplugin folder
-    body, headers = LrHttp.get(urlLegacy)
-    if headers and headers.status == 200 then
+    body = tryUrl(urlLegacy)
+    if body then
       return body, urlLegacy
     end
 
@@ -312,72 +365,15 @@ function FocusPointPrefs.retrieveVersionOfLatestRelease()
     return version, url
   end
 
-  -- Need to execute this as a collaborative task
-  LrTasks.startAsyncTask( function()
-    local body, url
+  local function checkIfUpdateAvailable()
+    local result = false
 
-    -- By default, if an error occurs, it is assumed that there is no update available
-    versionFileFoundUrl = nil
-    latestVersion       = nil
-    latestVersionUrl    = nil
-
-    -- Read the contents of the 'latest version' file
-    body, url = getVersionFile(branchVersionFile, branchVersionFileLegacy)
-    versionFileFoundUrl = url
-    if not body and branch ~= "master" then
-      -- Branch no longer available.
-      -- Try the public release on master instead.
-      body, url = getVersionFile(masterVersionFile, masterVersionFileLegacy)
-      versionFileFoundUrl = url
-      if not body then
-        -- for some reason (e.g. no access to GitHub) there is no valid information available
-        if not latestVersion then
-          Log.logWarn("System", "Unable to retrieve version information for update check")
-        end
-        return
-      end
-    end
-
-    -- Parse the retrieved version information
-    latestVersion, latestVersionUrl = parseVersionInfo(body)
-    if not latestVersion then
-      Log.logWarn("System", "Invalid version information in Version.txt")
-    end
-    return
-  end)
-end
-
---[[----------------------------------------------------------------------------
-  public string
-  getlatestVersion()
-
-  Returns the version number of the latest plug-in release as a string eg. 'v3.1.3'
-------------------------------------------------------------------------------]]
-function FocusPointPrefs.getlatestVersion()
-  if latestVersion then
-    return latestVersion
-  else
-    return ""
-  end
-end
-
---[[----------------------------------------------------------------------------
-  public boolean
-  isUpdateAvailable()
-
-  Checks whether an updated version of the plug-in is available
-  Returns true if so, otherwise false
-------------------------------------------------------------------------------]]
-function FocusPointPrefs.isUpdateAvailable()
-  local result = false
-
-  if isUpdateAvailable == nil then
-    -- information still empty, so determine its status
     if latestVersion then
+      -- valid information regarding the latest released version has been retrieved from server
       Log.logDebug("System", string.format(
-        "Latest version '%s' retrieved from %s", latestVersion, versionFileFoundUrl))
+        "Update Check: latest version '%s' retrieved from %s", latestVersion, versionFileFoundUrl))
       Log.logDebug("System", string.format(
-        "Latest version at %s", latestVersionUrl))
+        "Update Check: latest version at %s", latestVersionUrl))
       local major, minor, revision, build = latestVersion:match("v(%d+)%.(%d+)%.(%d+)%.(%d+)")
       if major and minor and revision then
         -- we have a valid version number from the URL
@@ -425,12 +421,68 @@ function FocusPointPrefs.isUpdateAvailable()
       else
         Log.logWarn("System", "Update check failed, no valid combination of major, minor and revision number")
       end
-    else
-      Log.logWarn("System", "Update check failed, unable to retrieve version info from website")
     end
-    isUpdateAvailable = result
+    return result
   end
-  return isUpdateAvailable
+
+  -- Need to execute this as a collaborative task
+  Log.logInfo("System", "Update Check: started")
+
+  LrTasks.startAsyncTask( function()
+    local body, url
+
+    -- By default, if an error occurs, it is assumed that there is no update available
+    isUpdateAvailable   = false
+    versionFileFoundUrl = nil
+    latestVersion       = nil
+    latestVersionUrl    = nil
+
+    -- Read the contents of the 'latest version' file
+    body, url = getVersionFile(branchVersionFile, branchVersionFileLegacy)
+    versionFileFoundUrl = url
+    if not body and branch ~= "master" then
+      -- Branch no longer available.
+      -- Try the public release on master instead.
+      body, url = getVersionFile(masterVersionFile, masterVersionFileLegacy)
+      versionFileFoundUrl = url
+    end
+
+    if not body then
+      -- for some reason (e.g. no access to GitHub) there is no valid information available
+      Log.logWarn("System", "Update Check: finished. Unable to retrieve version information.")
+      return
+    end
+
+    -- Parse the retrieved version information
+    latestVersion, latestVersionUrl = parseVersionInfo(body)
+    if latestVersion then
+      -- Perform the actual update check
+      isUpdateAvailable = checkIfUpdateAvailable()
+    else
+      Log.logWarn("System", "Update Check: invalid version information in Version.txt")
+    end
+
+    -- Log end of check and result
+    local resultOfCheck = "No update available"
+    if isUpdateAvailable then
+      resultOfCheck = "Update to version " .. latestVersion .. " available"
+    end
+    Log.logInfo("System", "Update Check: finished. " .. resultOfCheck)
+  end)
+
+end
+
+--[[----------------------------------------------------------------------------
+  public boolean, string latestVersion
+  isUpdateAvailable()
+
+  Checks whether an updated version of the plug-in is available
+  Returns
+  - true if so, otherwise false
+  - the version number of the latest plug-in release as a string eg. 'v3.1.3'
+------------------------------------------------------------------------------]]
+function FocusPointPrefs.isUpdateAvailable()
+  return isUpdateAvailable, latestVersion
 end
 
 --[[----------------------------------------------------------------------------
@@ -493,7 +545,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
 
   -- Check for updates
   local updateMessage
-  if FocusPointPrefs.isUpdateAvailable() then
+  if prefs.checkForUpdates and FocusPointPrefs.isUpdateAvailable() then
     updateMessage =
       f:row {
         f:static_text {title = "Update available!", text_color=LrColor("red")},
@@ -933,7 +985,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
       spacing = f:control_spacing(),
       f:row {
         f:checkbox {
-          title = "Display message when updates are available",
+          title = "Check for updates",
           value = bind("checkForUpdates")
         },
         f:spacer{fill_horizontal = 1},
