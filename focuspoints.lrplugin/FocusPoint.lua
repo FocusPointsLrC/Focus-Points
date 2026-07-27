@@ -204,8 +204,11 @@ local function showFocusPoint()
 
     local function logAppInfo()
       -- Extend logfile header with application level information
-      if FocusPointPrefs.isUpdateAvailable() then
-        Log.logInfo("System", "Update to version " .. FocusPointPrefs.getlatestVersion() .. " available")
+
+      -- Update information
+      local isUpdateAvailable, latestVersion = FocusPointPrefs.isUpdateAvailable()
+      if isUpdateAvailable then
+        Log.logInfo("System", "Update to version " .. latestVersion .. " available")
       end
       if WIN_ENV then
         Log.logInfo("System", "Display scaling level " ..
@@ -304,15 +307,19 @@ local function showFocusPoint()
       end
     end
 
-    -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
-    FocusPointPrefs.InitializePrefs(prefs)
     -- Initialize logging, log system level information
     Log.initialize()
+
+    -- To avoid nil pointer errors in case of "dirty" installation (copy new over old files)
+    FocusPointPrefs.InitializePrefs(prefs)
 
     -- Set scale factor for sizing of dialog window
     if WIN_ENV then
       FocusPointPrefs.setDisplayScaleFactor()
     end
+
+    -- Start version check for plugin updates
+    FocusPointPrefs.startVersionCheck()
 
     -- Log applicaton level information (includes scale factor and app window size)
     logAppInfo()
@@ -584,7 +591,7 @@ local function showFocusPoint()
             tooltip = "Learn how to use the plugin's keyboard shortcuts and familiarize yourself with its limitations and restrictions (K)",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser(FocusPointPrefs.urlkbdShortcuts)
               end)
@@ -592,6 +599,35 @@ local function showFocusPoint()
           },
         }
       end
+    end
+
+    local function whatsNewFAQ()
+      local f = LrView.osFactory()
+
+      return f:row {
+        spacing = 0,
+        f:static_text {
+          title = "What's new?",
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(FocusPointPrefs.urlNewFeatures)
+            end)
+          end,
+        },
+        f:spacer { width = 16 },
+        f:static_text {
+          title = "FAQ",
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function(_view)
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(FocusPointPrefs.urlFAQ)
+            end)
+          end,
+        },
+      }
     end
 
     local function displayModeSelector()
@@ -981,7 +1017,7 @@ local function showFocusPoint()
           text_color = LrColor("blue"),
           tooltip = "Click to make a donation on Ko-fi",
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
@@ -998,7 +1034,7 @@ local function showFocusPoint()
           text_color = LrColor("blue"),
             tooltip = "Click to open user documentation (M)",
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
           end,
         },
@@ -1047,7 +1083,7 @@ local function showFocusPoint()
       userResponse = LrDialogs.presentModalDialog {
         title = appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = FocusPointDialog.createDialog(
-                     targetPhoto, photoView, infoView, kbdShortcutInput, displayModeSelector()),
+                     photoView, infoView, kbdShortcutInput, LrView.kIgnoredView, displayModeSelector()),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
         actionVerb = "Close",
@@ -1102,7 +1138,7 @@ local function showFocusPoint()
               -- left margin
               f:spacer { width = leftMargin },
               FocusPointDialog.createDialog(
-                targetPhoto, photoView, infoView, kbdShortcutInput, displayModeSelector()),
+                photoView, infoView, kbdShortcutInput, whatsNewFAQ(), displayModeSelector()),
               -- right margin
               f:spacer { width = rightMargin },
             },
@@ -1328,6 +1364,7 @@ local function showFocusPoint()
               if not (photoView and infoView) then
                 errorMsg = "Internal error: Unable to create main window"
               end
+
               -- Update the roll and crop angle display
               initializeStraightenControl(targetPhoto)
             else
@@ -1430,7 +1467,7 @@ local function showFocusPoint()
     end
 
     -- Let LR breathe to do garbage collection
-    for _i = 1, 5 do
+    for _ = 1, 5 do
       LrTasks.yield()
     end
 

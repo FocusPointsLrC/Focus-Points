@@ -81,21 +81,42 @@ FocusPointPrefs.secondScreenBehaviorInteractive = "Interactive"
 local previewBuildNumbers         = 8000 -- .. 8999 reserved range for preview build numbers
 local preReleaseBuildNumbers      = 9000 -- .. 9999 reserved range for pre-release build numbers
 
-FocusPointPrefs.urlLatestRelease   = "https://github.com/FocusPointsLrC/Focus-Points/releases/latest/"
-FocusPointPrefs.urlReleases        = "https://github.com/FocusPointsLrC/Focus-Points/releases/"
+local branch                  = Info.VERSION.branch
+local githubRawBaseUrl        = Info.VERSION.rawBaseUrl
 
-FocusPointPrefs.masterVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/master/focuspoints.lrplugin/Version.txt"
-FocusPointPrefs.latestVersionFile  = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/v4/focuspoints.lrplugin/Version.txt"
+local masterVersionFile       = githubRawBaseUrl .. "master/Version.txt"
+local masterVersionFileLegacy = githubRawBaseUrl .. "master/focuspoints.lrplugin/Version.txt"
+local branchVersionFile       = githubRawBaseUrl .. branch .. "/Version.txt"
+local branchVersionFileLegacy = githubRawBaseUrl .. branch .. "/focuspoints.lrplugin/Version.txt"
+
+local versionChecked          = false
+local latestVersion
+local versionFileFoundUrl
+local latestVersionUrl
 
 -- URL definitions for accessing documents from the UI
-FocusPointPrefs.urlUserManual      = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
-FocusPointPrefs.urlTroubleShooting = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
-FocusPointPrefs.urlkbdShortcuts    = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
-FocusPointPrefs.urlSecondScreenMode= "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#1-second-screen-mode"
-FocusPointPrefs.urldisplayModes    = "https://focuspointslrc.github.io/Focus-Points/docs/V4%20New%20Features.html#2-display-modes"
+FocusPointPrefs.urlUserManual       = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
+FocusPointPrefs.urlTroubleShooting  = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
+FocusPointPrefs.urlkbdShortcuts     = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
+FocusPointPrefs.urlNewFeatures      = "https://focuspointslrc.github.io/Focus-Points/docs/V4-New-Features.html"
+FocusPointPrefs.urlFAQ              = "https://focuspointslrc.github.io/Focus-Points/docs/V4-FAQ.html"
 
-FocusPointPrefs.urlKofi            = "https://ko-fi.com/focuspoints"
+-- URL definitions for clickForHelp
+local urlHelpOnScreenScaling        = FocusPointPrefs.urlUserManual  .. "#screen-scaling"
+local urlHelpOnStraightenControls   = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-straightening"
+local urlHelpOnTaggingControls      = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-tagging"
+local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboard-layout"
+local urlHelpOnDisplayMode          = FocusPointPrefs.urlNewFeatures .. "#2-display-modes"
+local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
+local urlHelpOnSecondScreenMode     = FocusPointPrefs.urlNewFeatures .. "#1-second-screen-mode"
+local urlHelpOnPluginWindowScaling  = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
+local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
+local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
+local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
+local urlHelpOnLoggingLevel         = FocusPointPrefs.urlUserManual  .. "#logging"
+local urlHelpOnStraighteningOptions = FocusPointPrefs.urlUserManual  .. "#straightening-options"
+
+FocusPointPrefs.urlKofi             = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
 FocusPointPrefs.kbdShortcutsDirectMode      = "dD"
@@ -156,9 +177,9 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
   if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
   if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
-  if not prefs.previewTimeout                 then prefs.previewTimeout             = 1.0       end
+  if not prefs.previewTimeout                 then prefs.previewTimeout             = 0.5       end
   if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
-  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 1.0       end
+  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 0.5       end
 
   -- OS dependent initialization: displayMode
   -- required as long as not all modes can be supported on both WIN and MAC
@@ -185,8 +206,6 @@ function FocusPointPrefs.InitializePrefs(prefs)
     prefs.displayMode = FocusPointPrefs.displayModeDirect
   end
 
-  -- get the latest plugin version for update checks
-  FocusPointPrefs.retrieveVersionOfLatestRelease()
 end
 
 --[[----------------------------------------------------------------------------
@@ -204,8 +223,8 @@ local function getWinScalingFactor()
 
   -- Query registry value by calling REG.EXE
   local rc = LrTasks.execute(cmd)
-  Log.logDebug("Utils", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
-  Log.logDebug("Utils", "REG command: " .. cmd .. ", rc=" .. rc)
+  Log.logDebug("System", "Retrieving DPI scaling level from Windosws registry using REG.EXE")
+  Log.logDebug("System", "REG command: " .. cmd .. ", rc=" .. rc)
 
   -- Read redirected stdout from temp file and find the line that starts with "AppliedDPI"
   local regOutput = LrFileUtils.readFile(output)
@@ -221,20 +240,20 @@ local function getWinScalingFactor()
     end
     regOutputStr = regOutputStr .. line .. "^"
   end
-  Log.logDebug("Utils", "REG output: " .. regOutputStr)
+  Log.logDebug("System", "REG output: " .. regOutputStr)
 
   -- Set and log the result
   if dpiValue then
     result = 100 / scale
-    Log.logDebug("Utils", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
+    Log.logDebug("System", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
   else
     result = 100 / 125
-    Log.logWarn("Utils", "Unable to retrieve Windows scaling level, using 125% instead")
+    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 125% instead")
   end
 
   -- Clean up: remove the temp file
   if LrFileUtils.exists(output) and not LrFileUtils.delete(output) then
-    Log.logWarn("Utils", "Unable to delete REG output file " .. output)
+    Log.logWarn("System", "Unable to delete REG output file " .. output)
   end
 
   return result
@@ -288,78 +307,107 @@ end
 
 --[[----------------------------------------------------------------------------
   public string
-  retrieveVersionOfLatestRelease()
+  startVersionCheck()
 
-  Retrieves the version number of the latest plug-in release. This information
-  is stored in a text file 'Version.txt' in the Github plugin folder.
-  The result is stored in 'prefs.latestVersion' for use by update-related routines.
+  Starts an asynchronous check for the latest plug-in release.
+  The current release information is stored in a text file 'Version.txt' on Github.
+  The retrieved information is cached for the remainder of the Lightroom session:
+  - versionChecked
+  - isUpdateAvailable
+  - latestVersion
 ------------------------------------------------------------------------------]]
-function FocusPointPrefs.retrieveVersionOfLatestRelease()
-
-  -- Need to execute this as a collaborative task
-  LrTasks.startAsyncTask( function()
-    local prefs = LrPrefs.prefsForPlugin( nil )
-    local body, headers
-
-    local function parseVersionInfo(body)
-      -- Helper to arse contents
-      return
-        string.match(body, "v%d+%.%d+%.%d+%.%d+"),
-        string.match(body, "https?://%S+")
-    end
-
-    -- By default, if an error occurs, it is assumed that there is no update available
-    prefs.latestVersion = nil
-    prefs.latestVersionUrl = nil
-
-    -- Read the contents of the 'latest version' file
-    body, headers = LrHttp.get(FocusPointPrefs.latestVersionFile)
-    if headers and headers.status == 200 then
-      prefs.latestVersion, prefs.latestVersionUrl = parseVersionInfo(body)
-    else
-      -- file not found: has the branch been removed?
-      if FocusPointPrefs.latestVersionFile ~= FocusPointPrefs.masterVersionFile then
-        -- Public version update for pre-release available!
-        body, headers = LrHttp.get(FocusPointPrefs.masterVersionFile)
-        if headers and headers.status == 200 then
-          prefs.latestVersion, prefs.latestVersionUrl = parseVersionInfo(body)
-        end
-      end
-    end
-    return
-  end)
-end
-
---[[----------------------------------------------------------------------------
-  public string
-  getlatestVersion()
-
-  Returns the version number of the latest plug-in release as a string eg. 'v3.1.3'
-------------------------------------------------------------------------------]]
-function FocusPointPrefs.getlatestVersion()
+function FocusPointPrefs.startVersionCheck()
   local prefs = LrPrefs.prefsForPlugin( nil )
-  if prefs.latestVersion then
-    return prefs.latestVersion
-  else
-    return ""
+
+  -- If update check is not wanted, don't even try to fetch the version information from server
+  if not prefs.checkForUpdates then return end
+
+  -- If a version check has already been performed in this plugin lifecycle we don't need another
+  if versionChecked then return end
+  versionChecked = true
+
+  local function getVersionFile(urlNew, urlLegacy)
+    -- Helper to retrieve the Version.txt file.
+    -- Returns file content and source where the file was found.
+
+    local function tryUrl(url)
+      Log.logDebug("System", "Update Check: trying to retrieve Version.txt from " .. url)
+
+      local body, headers = LrHttp.get(url)
+
+      if not headers then
+      -- No HTTP response at all (timeout, DNS, connection failure, etc.).
+        Log.logWarn("System",
+          "Update Check: no HTTP response received from " .. url)
+        return nil
+      end
+
+      if headers.status ~= 200 then
+      -- Server responded, but with an error (404, 403, 503, ...).
+        Log.logWarn("System",
+          "Update Check: HTTP " .. tostring(headers.status) ..
+          " returned for " .. url)
+        return nil
+      end
+
+      if not body or body == "" then
+      -- The request succeeded but the downloaded file is unusable.
+        Log.logWarn("System",
+          "Update Check: empty Version.txt received from " .. url)
+        return nil
+      end
+
+      if not (body:find("v%d+%.%d+%.%d+") or body:find("v%d+%.%d+%.%d+%.%d+")) then
+      -- The request succeeded but the downloaded file has invalid content
+        Log.logWarn("System",
+            "Update Check: invalid Version.txt received from " .. url)
+        return nil
+      end
+
+      -- Success
+      return body
+    end
+
+    local body = tryUrl(urlNew)
+    if body then
+      return body, urlNew
+    end
+
+    body = tryUrl(urlLegacy)
+    if body then
+      return body, urlLegacy
+    end
+
+    return nil
   end
-end
 
---[[----------------------------------------------------------------------------
-  public boolean
-  isUpdateAvailable()
+  local function parseVersionInfo(body)
+    -- Helper to parse contents
+    if not body then return nil end
 
-  Checks whether an updated version of the plug-in is available
-  Returns true if so, otherwise false
-------------------------------------------------------------------------------]]
-function FocusPointPrefs.isUpdateAvailable()
-  local prefs  = LrPrefs.prefsForPlugin( nil )
-  local result = false
+    -- Parse version information
+    local version = string.match(body, "v%d+%.%d+%.%d+%.%d+") or
+                    string.match(body, "v%d+%.%d+%.%d+")
 
-  if isUpdateAvailable == nil then
-    -- information still empty, so determine its status
-    if prefs.latestVersion then
-      local major, minor, revision, build = prefs.latestVersion:match("v(%d+)%.(%d+)%.(%d+)%.(%d+)")
+    -- Normalize to four components
+    if version and not version:match("^v%d+%.%d+%.%d+%.%d+$") then
+      version = version .. ".0"
+    end
+    local url = string.match(body, "https?://%S+")
+
+    return version, url
+  end
+
+  local function checkIfUpdateAvailable()
+    local result = false
+
+    if latestVersion then
+      -- valid information regarding the latest released version has been retrieved from server
+      Log.logDebug("System", string.format(
+        "Update Check: latest version '%s' retrieved from %s", latestVersion, versionFileFoundUrl))
+      Log.logDebug("System", string.format(
+        "Update Check: latest version at %s", latestVersionUrl))
+      local major, minor, revision, build = latestVersion:match("v(%d+)%.(%d+)%.(%d+)%.(%d+)")
       if major and minor and revision then
         -- we have a valid version number from the URL
         local pluginVersion = Info.VERSION
@@ -404,14 +452,70 @@ function FocusPointPrefs.isUpdateAvailable()
           end
         end
       else
-        Log.logWarn("Utils", "Update check failed, no valid combination of major, minor and revision number")
+        Log.logWarn("System", "Update check failed, no valid combination of major, minor and revision number")
       end
-    else
-      Log.logWarn("Utils", "Update check failed, unable to retrieve version info from website")
     end
-    isUpdateAvailable = result
+    return result
   end
-  return isUpdateAvailable
+
+  -- Need to execute this as a collaborative task
+  Log.logInfo("System", "Update Check: started")
+
+  LrTasks.startAsyncTask( function()
+    local body, url
+
+    -- By default, if an error occurs, it is assumed that there is no update available
+    isUpdateAvailable   = false
+    versionFileFoundUrl = nil
+    latestVersion       = nil
+    latestVersionUrl    = nil
+
+    -- Read the contents of the 'latest version' file
+    body, url = getVersionFile(branchVersionFile, branchVersionFileLegacy)
+    versionFileFoundUrl = url
+    if not body and branch ~= "master" then
+      -- Branch no longer available.
+      -- Try the public release on master instead.
+      body, url = getVersionFile(masterVersionFile, masterVersionFileLegacy)
+      versionFileFoundUrl = url
+    end
+
+    if not body then
+      -- for some reason (e.g. no access to GitHub) there is no valid information available
+      Log.logWarn("System", "Update Check: finished. Unable to retrieve version information.")
+      return
+    end
+
+    -- Parse the retrieved version information
+    latestVersion, latestVersionUrl = parseVersionInfo(body)
+    if latestVersion then
+      -- Perform the actual update check
+      isUpdateAvailable = checkIfUpdateAvailable()
+    else
+      Log.logWarn("System", "Update Check: invalid version information in Version.txt")
+    end
+
+    -- Log end of check and result
+    local resultOfCheck = "No update available"
+    if isUpdateAvailable then
+      resultOfCheck = "Update to version " .. latestVersion .. " available"
+    end
+    Log.logInfo("System", "Update Check: finished. " .. resultOfCheck)
+  end)
+
+end
+
+--[[----------------------------------------------------------------------------
+  public boolean, string latestVersion
+  isUpdateAvailable()
+
+  Checks whether an updated version of the plug-in is available
+  Returns
+  - true if so, otherwise false
+  - the version number of the latest plug-in release as a string eg. 'v3.1.3'
+------------------------------------------------------------------------------]]
+function FocusPointPrefs.isUpdateAvailable()
+  return isUpdateAvailable, latestVersion
 end
 
 --[[----------------------------------------------------------------------------
@@ -422,10 +526,9 @@ end
   For a public release, returns ./releases/latest
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getReleaseURL()
-  local prefs = LrPrefs.prefsForPlugin( nil )
-  if prefs.latestVersionUrl then
+  if latestVersionUrl then
     -- link to release from version.txt file
-    return prefs.latestVersionUrl
+    return latestVersionUrl
   else
     local pluginVersion = Info.VERSION
     if tonumber(pluginVersion.build) >= preReleaseBuildNumbers then
@@ -446,15 +549,36 @@ end
   This creates the bottom section of the dialogue box on the plugin settings page.
   This section contains the plugin-specific settings that the user can modify.
 ------------------------------------------------------------------------------]]
-function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
+function FocusPointPrefs.genSectionsForBottomOfDialog( f )
   local prefs = LrPrefs.prefsForPlugin( nil )
 
   -- Set the defaults
   FocusPointPrefs.InitializePrefs(prefs)
 
+  -- Helper to link a setting to user manual explanation for quick help
+  local function clickForHelp(url, text)
+    local info = "[?]"
+    if url then
+      if not text then text = info end
+      return
+        f:static_text {
+          title = text,
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function()
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(url)
+            end)
+          end,
+        }
+      else
+        return LrView.kIgnoredView
+      end
+  end
+
   -- Check for updates
   local updateMessage
-  if FocusPointPrefs.isUpdateAvailable() then
+  if prefs.checkForUpdates and FocusPointPrefs.isUpdateAvailable() then
     updateMessage =
       f:row {
         f:static_text {title = "Update available!", text_color=LrColor("red")},
@@ -494,7 +618,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         },
         f:static_text {
           title = 'Select "Auto" for same display scale factor as on Windows OS (Display Settings -> Scale)'
-        }
+        },
+        f:spacer { fill_horizontal = 1 },
+        clickForHelp( urlHelpOnScreenScaling ),
       },
     }
   end
@@ -514,8 +640,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Enable controls to straighten a photo (mouse and keyboard)'
+          title = "Enable controls to straighten a photo (mouse and keyboard)"
         },
+        clickForHelp( urlHelpOnStraightenControls ),
       }
     end
     local function taggingControlsSetting()
@@ -533,8 +660,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Enable controls for flagging, rating and coloring a photo (mouse and keyboard)'
+          title = "Enable controls for flagging, rating and coloring a photo (mouse and keyboard)"
         },
+        clickForHelp( urlHelpOnTaggingControls ),
       }
     end
     local function keyboardLayoutSetting()
@@ -549,8 +677,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           items = KeyboardLayout.buildDropdownItems(),
         },
         f:static_text {
-            title = 'Keyboard layout. Required to process shortcuts 0..9 for rating and coloring'
+            title = "Keyboard layout. Required to process shortcuts 0..9 for rating and coloring"
         },
+        clickForHelp( urlHelpOnKeyboardLayout ),
       }
     end
     local function displayModeSetting()
@@ -572,16 +701,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           f:static_text {
             title = "Display mode. For details on the available modes, please refer to"
           },
-          f:static_text {
-            title = "Whats's new?",
-            text_color = LrColor(0, 0.25, 1),
-            immediate = true,
-            mouse_down = function(_view)
-              LrTasks.startAsyncTask(function()
-                LrHttp.openUrlInBrowser(FocusPointPrefs.urldisplayModes)
-              end)
-            end,
-          },
+          clickForHelp( urlHelpOnDisplayMode ),
         }
     end
     local function previewGenerationSettings()
@@ -601,7 +721,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             },
           },
           f:static_text {
-            title = 'Preview Image: Use Export Image if no preview becomes available within'
+            title = "Preview Image: Use Export Image if no preview becomes available within"
           },
           f:edit_field {
             value = bind("previewTimeout"),
@@ -611,8 +731,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             precision = 1,
           },
           f:static_text {
-            title = 'seconds',
+            title = "seconds",
           },
+          clickForHelp( urlHelpOnPerformanceControl ),
         },
         f:row {
           bind_to_object = prefs,
@@ -627,7 +748,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             },
           },
           f:static_text {
-            title = 'Preview Image: Show progress notification after '
+            title = "Preview Image: Show progress notification after "
           },
           f:edit_field {
             value = bind("previewProgressDelay"),
@@ -637,7 +758,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             precision = 1,
           },
           f:static_text {
-            title = 'seconds',
+            title = "seconds",
           },
         },
       }
@@ -646,83 +767,78 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
     return {
       title = "User Interface",
 
-      f:column {
-        --------------------------------------------------------------------------
-        -- Second Screen
-        --------------------------------------------------------------------------
-        f:row {
-          bind_to_object = prefs,
-          spacing = f:control_spacing(),
-
-          f:popup_menu {
-            title = "secondScreenMode",
-            value = bind("secondScreenMode"),
-            width_in_chars = dropDownWidth,
-            items = {
-              { title = "On", value = true },
-              { title = "Off", value = false },
-            },
-          },
-
-          f:static_text {
-            title = "Second Screen. Fixed aspect ratio of photo view:"
-          },
-
-          f:popup_menu {
-            title = "previewAspectRatio",
-            value = bind("previewAspectRatio"),
-            items = {
-              { title = "1 x 1", value = 1.0 },
-              { title = "4 x 3", value = 1.3333 },
-              { title = "3 x 2", value = 1.5 },
-              { title = "16 x 9", value = 1.7778 },
-            },
-          },
-
-          f:static_text {
-            title = "See"
-          },
-
-          f:static_text {
-            title = "What's new?",
-            text_color = LrColor(0, 0.25, 1),
-            immediate = true,
-            mouse_down = function(_view)
-              LrTasks.startAsyncTask(function()
-                LrHttp.openUrlInBrowser(FocusPointPrefs.urlSecondScreenMode)
-              end)
-            end,
-          },
-        },
-      },
-
       --------------------------------------------------------------------------
-      -- Second Screen sub-mode
+      -- Second Screen
       --------------------------------------------------------------------------
       f:row {
-        bind_to_object = prefs,
 
-        enabled = bind("secondScreenMode"),
+        f:column {
+          spacing = 6,
 
-        -- Align with the "S" in "Second Screen"
-        f:spacer { width = 76 },
+          ----------------------------------------------------------------------
+          -- Main row
+          ----------------------------------------------------------------------
+          f:row {
+            bind_to_object = prefs,
+            spacing = f:control_spacing(),
 
-        f:radio_button {
-          title = "Interactive",
-          value = bind("secondScreenBehavior"),
-          checked_value = "Interactive",
+            f:popup_menu {
+              title = "secondScreenMode",
+              value = bind("secondScreenMode"),
+              width_in_chars = dropDownWidth,
+              items = {
+                { title = "On", value = true },
+                { title = "Off", value = false },
+              },
+            },
+
+            f:static_text {
+              title = "Second Screen. Fixed aspect ratio of photo view:"
+            },
+
+            f:popup_menu {
+              title = "previewAspectRatio",
+              value = bind("previewAspectRatio"),
+              items = {
+                { title = "1 x 1",  value = 1.0    },
+                { title = "4 x 3",  value = 1.3333 },
+                { title = "3 x 2",  value = 1.5    },
+                { title = "16 x 9", value = 1.7778 },
+              },
+            },
+          },
+
+          ----------------------------------------------------------------------
+          -- Second Screen sub-mode
+          ----------------------------------------------------------------------
+          f:row {
+            bind_to_object = prefs,
+            enabled = bind("secondScreenMode"),
+
+            -- Align with the "S" in "Second Screen"
+            f:spacer { width = 76 },
+
+            f:radio_button {
+              title = "Interactive",
+              value = bind("secondScreenBehavior"),
+              checked_value = "Interactive",
+            },
+
+            f:spacer { width = 8 },
+
+            f:radio_button {
+              title = "Follow Lightroom",
+              value = bind("secondScreenBehavior"),
+              checked_value = "Follow",
+              enabled = WIN_ENV,
+            },
+          },
+
         },
 
-        f:spacer { width = 8 },
-
-        f:radio_button {
-          title = "Follow Lightroom",
-          value = bind("secondScreenBehavior"),
-          checked_value = "Follow",
-          enabled = WIN_ENV
-        },
+        f:spacer { fill_horizontal = 1 },
+        clickForHelp(urlHelpOnSecondScreenMode),
       },
-
 
       f:row {
         bind_to_object = prefs,
@@ -741,8 +857,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Size of plugin window'
-        }
+          title = "Size of plugin window"
+        },
+        clickForHelp( urlHelpOnPluginWindowScaling ),
       },
       f:row {
         bind_to_object = prefs,
@@ -758,8 +875,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-            title = 'Appearance of text input field for keyboard shortcuts'
+            title = "Appearance of text input field for keyboard shortcuts"
         },
+        clickForHelp( urlHelpOnKeyboardInput ),
       },
       f:row {
         bind_to_object = prefs,
@@ -774,7 +892,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           },
         },
         f:static_text {
-            title = 'Truncate or wrap strings after'
+            title = "Truncate or wrap strings after"
         },
         f:edit_field {
           value = bind("truncateLimit"),
@@ -784,8 +902,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           precision = 0,
         },
         f:static_text {
-          title = 'characters',
+          title = "characters",
         },
+        clickForHelp( urlHelpOnTruncateLongText ),
       },
       straightenControlsSetting(), -- empty for LR5
       taggingControlsSetting(),    -- empty for LR5
@@ -812,8 +931,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Color for in-focus points',
+          title = "Color for in-focus points",
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnViewingOptions ),
       },
       f:row {
         bind_to_object = prefs,
@@ -842,7 +963,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Logging level",
-          value = bind('loggingLevel'),
+          value = bind("loggingLevel"),
           width_in_chars = dropDownWidth,
           items = {
             { title = "Auto",  value = "AUTO"  },
@@ -857,9 +978,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         f:static_text {
           title = 'Level of information to be logged (Recommended: "Auto")'
         },
+        f:spacer{fill_horizontal = 1},
         f:static_text {
-          title = 'Plugin log:',
-          alignment = 'right',
+          title = "Plugin log:",
+          alignment = "right",
           fill_horizontal = 1,
         },
         f:push_button {
@@ -873,6 +995,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             end
           end,
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnLoggingLevel ),
       },
     }
   end
@@ -895,8 +1019,10 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Overwrite existing crop angle setting',
+          title = "Overwrite existing crop angle setting",
         },
+        f:spacer{fill_horizontal = 1},
+        clickForHelp( urlHelpOnStraighteningOptions ),
       },
       f:row {
         bind_to_object = prefs,
@@ -911,7 +1037,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           },
         },
         f:static_text {
-          title = 'Apply straightening only for angles between'
+          title = "Apply straightening only for angles between"
         },
         f:edit_field {
           value = bind("straightenLimitLow"),
@@ -921,7 +1047,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           precision = 1,
         },
         f:static_text {
-          title = 'and',
+          title = "and",
         },
         f:edit_field {
           value = bind("straightenLimitHigh"),
@@ -931,7 +1057,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           precision = 1,
         },
         f:static_text {
-          title = 'degrees (in any direction)',
+          title = "degrees (in any direction)",
         },
       },
       f:row {
@@ -947,7 +1073,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           },
         },
         f:static_text {
-          title = 'Apply calibration offset of'
+          title = "Apply calibration offset of"
         },
         f:edit_field {
           value = bind("straightenBias"),
@@ -957,7 +1083,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           precision = 2,
         },
         f:static_text {
-          title = 'degrees to roll angle',
+          title = "degrees to roll angle",
         },
       },
       f:row {
@@ -965,7 +1091,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
         spacing = f:control_spacing(),
         f:popup_menu {
           title = "Straighten Summary Condition",
-          value = bind('straightenSummaryCondition'),
+          value = bind("straightenSummaryCondition"),
           width_in_chars = dropDownWidth,
           items = {
             { title = "Always", value = "ALWAYS" },
@@ -976,7 +1102,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           }
         },
         f:static_text {
-          title = 'Condition to open the summary dialog when straightening is complete'
+          title = "Condition to open the summary dialog when straightening is complete"
         },
       },
     }
@@ -989,8 +1115,8 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
       spacing = f:control_spacing(),
       f:row {
         f:checkbox {
-          title = 'Display message when updates are available',
-          value = bind('checkForUpdates')
+          title = "Check for updates",
+          value = bind("checkForUpdates")
         },
         f:spacer{fill_horizontal = 1},
         updateMessage,
@@ -1013,13 +1139,13 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           title = "Buy me a coffee on Ko-fi.com!",
           text_color = LrColor("blue"),
           immediate = true,
-          mouse_down = function(_view)
+          mouse_down = function()
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlKofi) end)
           end,
         },
         f:spacer{fill_horizontal = 1},
         f:checkbox {
-          title = 'I have already donated. Hide Ko-fi icon and link from the plugin window.',
+          title = "I have already donated. Hide Ko-fi icon and link from the plugin window.",
           value = bind("hideKofiControl")
         },
       },
@@ -1035,11 +1161,11 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'ImageMagick Studio LLC'
+            title = "ImageMagick Studio LLC"
           },
           f:spacer{ height = 5 },
           f:static_text {
-            title = 'This plugin uses ImageMagick mogrify'
+            title = "This plugin uses ImageMagick mogrify"
           }
         },
         f:column {
@@ -1047,7 +1173,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://imagemagick.org/index.php",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://imagemagick.org/index.php")
               end)
@@ -1062,7 +1188,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'ExifTool'
+            title = "ExifTool"
           },
           f:spacer{ height = 5 },
           f:static_text {
@@ -1074,7 +1200,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://exiftool.org/",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://exiftool.org/")
               end)
@@ -1089,7 +1215,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
           fill_horizontal = 1,
           f:static_text {
             font = "<system/bold>",
-            title = 'John R. Ellis'
+            title = "John R. Ellis"
           },
           f:spacer{ height = 5 },
           f:static_text {
@@ -1101,7 +1227,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f, _p )
             title = "https://johnrellis.com/lightroom/allplugins.htm",
             text_color = LrColor(0, 0.25, 1),
             immediate = true,
-            mouse_down = function(_view)
+            mouse_down = function()
               LrTasks.startAsyncTask(function()
                 LrHttp.openUrlInBrowser("https://johnrellis.com/lightroom/allplugins.htm")
               end)

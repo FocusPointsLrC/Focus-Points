@@ -24,8 +24,4 @@ local FocusPointPrefs = require 'FocusPointPrefs'
 -- To avoid nil pointer errors in case of "dirty" update installation (copy new over old files)
 FocusPointPrefs.InitializePrefs(LrPrefs.prefsForPlugin(nil))
 
--- Getting the latest released version number requires an async HTTP call
--- that must not be performed in INFO section so it's done here
-FocusPointPrefs.retrieveVersionOfLatestRelease()
-
 return FocusPointsInitialize

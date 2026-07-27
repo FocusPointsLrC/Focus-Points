@@ -109,7 +109,7 @@ end
 
   Creates the view container for the entire dialog.
   ----------------------------------------------------------------------------]]
-function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput, displayModeSelector)
+function FocusPointDialog.createDialog(photoView, infoView, kbdShortcutInput, whatsNewFAQ, displayModeSelector)
   local prefs = LrPrefs.prefsForPlugin( nil )
   local f = LrView.osFactory()
 
@@ -143,6 +143,8 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
           f:spacer {},
           f:column { kbdShortcutInput },
           f:spacer { fill_horizontal = 1 },
+          f:column { whatsNewFAQ },
+          f:spacer { fill_horizontal = 1 },
           f:column { displayModeSelector },
           f:spacer { width = 8}
         },
@@ -154,30 +156,6 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
       },
     },
   }
-
---[[
-
-  return f:view {
-    f:row {
-      f:column {
-        f:spacer {},
-        kbdShortcutInput,
-        f:row {
-            f:column{ kbdShortcutInput },
-            f:spacer{ fill_horizontal = 1 },
-            f:column{ displayModeSelector },
-        },
-        previewPanel(),
-      },
-      f:column {
-        fill_vertical = 1,
-        infoView,
-      },
-    },
-  }
---]]
-
-
 end
 
 return FocusPointDialog

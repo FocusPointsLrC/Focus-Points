@@ -479,9 +479,9 @@ end
 ------------------------------------------------------------------------------]]
 function createOverlayViews(fpTable, photoDisplayWidth, photoDisplayHeight)
 
-local viewsTable = {
-  place = "overlapping"
-}
+  local viewsTable = {
+    place = "overlapping"
+  }
 
   if fpTable then
 
@@ -519,8 +519,7 @@ local viewsTable = {
       end
     end
   end
---  return LrView.osFactory():view(viewsTable)
-   return viewsTable
+  return viewsTable
 end
 
 --[[----------------------------------------------------------------------------
