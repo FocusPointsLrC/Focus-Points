@@ -1227,10 +1227,12 @@ You can use [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotke
 
 2. Open the script file [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotkey.ahk) in a text editor. 
 
-3. To define different shortcut keys, replace `NumpadMult`, `NumpadDiv`, `^NumPad -` with the keys you want to use.<br><br>
+3. To define different shortcut keys:
+   * Replace `NumpadMult`, `NumpadDiv`, `^NumPad -` with the keys you want to use.
+   * See [Hotkeys](https://www.autohotkey.com/docs/v2/Hotkeys.htm) and [List of Keys](https://www.autohotkey.com/docs/v2/KeyList.htm) for hotkey syntax.<br><br>
 
-    See [Hotkeys](https://www.autohotkey.com/docs/v2/Hotkeys.htm) and [List of Keys](https://www.autohotkey.com/docs/v2/KeyList.htm) for hotkey syntax.<br><br>
-  For example, if you want to assign the plugin functions to `Win-F`, `Win-M`, and `Win-S` you have to replace `NumpadMult` by `#f`, `NumpadDiv` by `#m` and `^NumPad -` by `#s`. If you prefer a `Ctrl-Shift` combination instead of `Win` the hotkey names are `^+f`´, `^+m` and `^+s`.<br>Save your changes to the file. 
+    **Example:**<br>
+    If you want to assign the plugin functions to `Win-F`, `Win-M`, and `Win-S` you have to replace `NumpadMult` by `#f`, `NumpadDiv` by `#m` and `^NumPad -` by `#s`. If you prefer a `Ctrl-Shift` combination instead of `Win` the hotkey names are `^+f`´, `^+m` and `^+s`.<br>Save your changes to the file. 
 
 4. Double-click `FocusPointsHotkey.ahk` to run the script. In case you didn't introduce any errors, a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray indicates that the script is active.
 
