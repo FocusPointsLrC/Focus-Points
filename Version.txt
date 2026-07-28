@@ -1,2 +1,2 @@
-﻿v4.0.0.9010
-https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v4_pre1
+﻿v4.0.0.9020
+https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v4_pre2
