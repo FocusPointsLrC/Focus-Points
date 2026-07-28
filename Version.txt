@@ -1,4 +1,4 @@
-﻿v3.4.1.0
+﻿v3.4.0.0
 https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.4.1
 
 --[[
