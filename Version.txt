@@ -2,7 +2,7 @@
 https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v4_pre2
 
 --[[
-  Original work Â© Whizzbang Inc
+  Original work Â© Whizzbang Inc.
   Ongoing maintenance and modifications Â© 2026 Karsten Gieselmann
 
   Licensed under the Apache License, Version 2.0 (the "License");
