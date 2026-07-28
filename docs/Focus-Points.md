@@ -1180,50 +1180,72 @@ Face detection for an image exported from Apple Photos:
 
 ## How to use a keyboard shortcut to run the plugin
 
-Although the plugin supports multi-image operation by selecting multiple images in Lightroom before launching the plugin, it can be tedious to navigate Lightroom's menu structure each time you want to use the plugin. How much more convenient would it be to launch the plugin with the press of a button?
+Although the plugin supports multi-image operation by selecting multiple images in Lightroom before launching the plugin, it can be tedious to navigate Lightroom's menu structure each time you want to use the plugin. Launching the plugin with a single key press is much more convenient. 
 
-Unfortunately, there is no solution to this problem *within* Lightroom. Plugins like [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) or [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) are limited to assigning custom shortcuts to commands that are part of the predefined, static portion of Lightroom's menus. They do not support assigning shortcuts to commands (menu items) that are part of the menus that Lightroom dynamically creates and maintains based on user-defined additions to Lightroom (e.g. _Plug-in Extras_, _Edit in_, _Export with Preset_). The Focus Points plugin is one such user-defined extension.
+Unfortunately, Lightroom itself does not provide a way to assign keyboard shortcuts to these commands.
+
+Plugins such as [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) and [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) can assign shortcuts only to commands that belong to Lightroom's built-in menus. Commands that Lightroom creates dynamically — such as entries under _Plug-in Extras_, _Edit in_, _Export with Preset_ — cannot be assigned shortcuts. Focus Point Viewer falls into this category.
 
 However, at the system level, there are ways to automate the startup of the plugin.
 
 ### Windows
 
-On Windows, you can use the free [AutoHotkey](https://www.autohotkey.com/) utility together with a small script to assign the command _File → Plug-in Extras → Show Focus Point_ to a key. The same applies to _Show Metadata_.
+On Windows, you can use the free [AutoHotkey](https://www.autohotkey.com/) utility together with a small script to assign the command _File → Plug-in Extras → Show Focus Point_ to a key. The same applies to _Show Metadata_ and _Straighten Images_.
 
-The plugin comes with a ready-to-run, compiled Autohotkey script that assigns:<br>
+The plugin comes with a ready-to-run, compiled AutoHotkey script that defines the following shortcuts:<br>
 \-  `NumPad *` as a shortcut for `Show Focus Point`<br>
 \-  `NumPad /` as a shortcut for `Show Metadata`<br>
 \-`^NumPad -` as a shortcut for `Straighten Images`
 
-The **FocusPointsHotkey.exe** file (for the English UI) can be found in the `ahk` folder of the focuspoints.lrplugin file. If you use the German language UI in Lightroom, use FocusPointsHotkey_de.exe instead.
+The AutoHotkey script mimics a user selecting menu items in order to run a plugin function. This is why it depends on the Lightroom version — LR5/6 have different window titles to LrC — and, of course, the user interface language. For example, the menu item _File -> Plug-in Extras_ has a different name in the German or French versions.
 
-Note: If you are using a perpetual licence version of Lightroom Classic (Lightroom 5 or 6), rather than the subscription version, then you need to select **FocusPointsHotkey_LR.exe** (or FocusPointsHotkey_LR_de for German UI) from the `ahk` folder. Separate versions are necessary because the application window title that triggers the keyboard shortcut can differ between LR5/6 and LrC.     
+The plugin package currently contains the following scripts to support different Lightroom versions:
 
-To activate the two shortcuts, run the executable file and also drag it to your Windows `Startup` folder, so that the shortcuts are automatically available each time you start Windows. A green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray indicates that the script is active.
+| Script               | Version       |
+|----------------------|---------------| 
+| FocusPointsHotkey    | LrC (English) |                      
+| FocusPointsHotkey_de | LrC (German)  |
+| FocusPointsHotkey_fr | LrC (French)  |
+| FocusPointsHotkey_LR | LR5/6         |
 
+These scripts can be found in the `ahk` subfolder of the focuspoints.lrplugin folder.  
+There is a precompiled executable (`.exe`) for each script, as well as the corresponding `.ahk` source file. You can use the source files as a starting point to create your own custom shortcuts if you do not like the predefined keys. 
+
+#### Activate the predefined keyboard shortcuts:
+
+1. Go to the `focuspoints.lrplugin\ahk` folder.
+2. Choose the script that matches your Lightroom version and language.
+3. Double-click the corresponding executable. An active script is indicated by a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray.
+4. Drag the executable to your Windows `Startup` folder, to make the shortcuts available each time you start Windows.
 -----
 
-You can use [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotkey.ahk) (or the corresponding .ahk file for your setup) as a starting point to **create your own shortcuts**:
+#### Create your own custom keyboard shortcuts:
 
-1. Download AutoHotKeys V2 from https://www.autohotkey.com/ and install it on your system.
+You can use [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotkey.ahk) (or the corresponding .ahk file for your setup) as a starting point to create your own custom shortcuts:
+
+1. Download AutoHotkey v2 from https://www.autohotkey.com/ and install it on your system.
 
 2. Open the script file [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotkey.ahk) in a text editor. 
 
-3. To define different shortcut keys, you have to replace `NumpadMult` and `NumpadDiv` by whatever suits you.<br> See [Hotkeys](https://www.autohotkey.com/docs/v2/Hotkeys.htm) and [List of Keys](https://www.autohotkey.com/docs/v2/KeyList.htm) for hotkey syntax.<br>  E.g. if you want to assign the two plugin functions to `Win-F` and `Win-M` you have to replace `NumpadMult` by `#f` and `NumpadDiv` by `#m`. If you prefer a `Ctrl-Shift` combination instead of `Win` the hotkey names are `^+f` and `^+m`.<br>Save your changes to the file.
+3. To define different shortcut keys, replace `NumpadMult`, `NumpadDiv`, `^NumPad -` with the keys you want to use.<br><br>
+
+    See [Hotkeys](https://www.autohotkey.com/docs/v2/Hotkeys.htm) and [List of Keys](https://www.autohotkey.com/docs/v2/KeyList.htm) for hotkey syntax.<br><br>
+  For example, if you want to assign the plugin functions to `Win-F`, `Win-M`, and `Win-S` you have to replace `NumpadMult` by `#f`, `NumpadDiv` by `#m` and `^NumPad -` by `#s`. If you prefer a `Ctrl-Shift` combination instead of `Win` the hotkey names are `^+f`´, `^+m` and `^+s`.<br>Save your changes to the file. 
 
 4. Double-click `FocusPointsHotkey.ahk` to run the script. In case you didn't introduce any errors, a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray indicates that the script is active.
 
 5. To make the shortcuts available permanently, place `FocusPointsHotkey.ahk` in your Windows `Startup` folder.<br>
 
 
-Please note:
+Note:
 * Redefining keyboard shortcuts overrides the existing meaning of the corresponding keys in Lightroom. For example, if you set `^f` (Ctrl-F) as the keyboard shortcut for the plugin, it will override the 'Find' command in the 'Library' module. 
 
 
-* The `MenuSelect` command used in the script uses the _exact names_ of the menu items to identify the command to be run. In cases where these names change from one version of Lightroom to the next (either intentionally or accidentally), the script will need to be adjusted to work.<br>
-For example, in LrC 14.5 (German UI) the relevant menu item `Zusatzmoduloptionen` suddenly appears as `Plug-in-Extras` (probably a translation error). The script (both .ahk and .exe) has been adapted accordingly. However, if Adobe reverts this change in LrC 14.6 or LrC 15, the script will also need adapting. 
-<br>
+* The `MenuSelect` command used in the script uses the _exact names_ of the menu items to identify the command to be run. If these menu names change in a future Lightroom release, the script must be updated accordingly.
 
+For example, in LrC 14.5 (German UI), the menu item `Zusatzmoduloptionen` was renamed to `Plug-in-Extras`, causing the script to stop working until it was updated.
+
+<br>
 
 -----
 
