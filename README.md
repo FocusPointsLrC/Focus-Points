@@ -106,7 +106,7 @@ Availability depends on camera support for roll-angle metadata. See the [compati
 
 <br>
 
-## Contributing
+## Contributing and Support
 
 Bug reports and feature requests are always welcome. If you discover a camera that is not yet supported or notice incorrect autofocus information, please open a GitHub Issue or start a GitHub Discussion.
 
@@ -114,7 +114,10 @@ Camera support has grown over many years thanks to photographs and metadata prov
 
 Every contribution helps improve support for future releases.
 
+If you don't have a GitHub account and don't want to create one, you can email me at [focuspoints.plugin@gmail.com](mailto:focuspoints.plugin@gmail.com).
+
 <br>
+
 
 ## Enjoying Focus Points?
 
