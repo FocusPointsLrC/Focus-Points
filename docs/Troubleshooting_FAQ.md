@@ -4,8 +4,6 @@
 
 This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages summarize whether the plugin was successful in detecting and visualising focus points. These messages can be success messages (green), warnings (orange) or error messages (red).
 
-## Focus Point Viewer ##
-
 * [No focus points recorded](#no-focus-points-recorded)
 * [Manual focus, no AF points recorded](#manual-focus-no-AF-points-recorded)
 * [Focus point recorded in manual focus mode](#focus-point-recorded-in-manual-focus-mode)
@@ -15,9 +13,6 @@ This document explains the various Focus Point Viewer messages displayed at the 
 * [Camera maker not supported](#camera-maker-not-supported)
 * [No camera-specific metadata found](#no-camera-specific-metadata-found)
 * [Severe error encountered](#severe-error-encountered)
-
-
-## Focus Point Viewer
 
 
 ### "No focus points recorded"
