@@ -3,10 +3,6 @@
 
 # Frequently Asked Questions (FAQ)
 
-Version 4 is the largest update since the project was revived. It fundamentally changes how Focus Point Viewer integrates with Lightroom. You can now keep the viewer open while continuing to work in Lightroom, choose between multiple rendering methods depending on your workflow, and benefit from significantly faster image display.
-
-These new capabilities also introduce new interactions between the plugin and Lightroom. As a result, you may occasionally notice behavior that differs from what you would normally expect from a native Lightroom feature. In most cases, this is due to limitations of the Lightroom SDK rather than the plugin itself.
-
 This FAQ explains the most common questions about Focus Point Viewer in Second Screen mode, the reasons behind certain behaviors, and the available workarounds where applicable.
 
 
@@ -36,6 +32,17 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view-on-macos)
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)  
+
+### Camera Support
+
+* [The plugin doesn't seem to work Is my camera supported](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+
+### File Type Support
+
+
+
+
+
 
 ### General
 
@@ -154,6 +161,17 @@ _This is normal macOS behavior when any application is active and you click in t
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
 <br>
+
+
+#### The plugin doesn't seem to work. Is my camera not supported?
+
+
+
+### File Type Support
+
+
+
+
 
 #### How can I set up a hotkey to open Focus Points Viewer? 
 
