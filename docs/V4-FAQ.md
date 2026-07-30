@@ -3,11 +3,24 @@
 
 # Frequently Asked Questions (FAQ)
 
-This FAQ explains the most common questions about Focus Point Viewer in Second Screen mode, the reasons behind certain behaviors, and the available workarounds where applicable.
+This FAQ explains the most common questions about Focus Point Viewer, the reasons behind certain behaviors, and the available workarounds where applicable.
 
 
 
 ## Browse by topic
+
+### Camera Support
+
+* [Is my camera supported?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+
+### File Type Support
+
+* [Does Focus Point Viewer only work with RAW files?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+
+### Keyboard Shortcuts
+
+* [Using a keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
+* [Using keyboard shortcuts to operate Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
 
 ### Display modes
 
@@ -32,10 +45,26 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view-on-macos)
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)  
+ 
 
-### Camera Support
+<br>
 
-* [The plugin doesn't seem to work Is my camera supported](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+## Q&A
+
+<br>
+
+#### The plugin doesn't seem to work. Is my camera not supported?
+
+There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](docs/Compatibility.md).
+
+The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point. [↗](Focus-Points.md#principle-of-operation)
+
+The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](docs/Compatibility.md) has separate sections.
+
+There are also a number of specific reasons why Focus Points Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem [↗](Troubleshooting_FAQ.md).
+
+
+<img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
 
 ### File Type Support
 
@@ -43,18 +72,13 @@ This FAQ explains the most common questions about Focus Point Viewer in Second S
 
 
 
+#### How can I set up a hotkey to open Focus Points Viewer? 
 
-### General
+There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin). 
 
 
 
-* [Keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer) 
 
-<br>
-
-## Q&A
-
-<br>
 
 
 #### Why does `Direct View` display gray artifacts around the AF corner markings on Windows? Is my GPU the cause?
@@ -161,18 +185,3 @@ _This is normal macOS behavior when any application is active and you click in t
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
 <br>
-
-
-#### The plugin doesn't seem to work. Is my camera not supported?
-
-
-
-### File Type Support
-
-
-
-
-
-#### How can I set up a hotkey to open Focus Points Viewer? 
-
-There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin). 
