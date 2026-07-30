@@ -45,6 +45,10 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view-on-macos)
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)  
+
+### User Interface
+
+* [Plugin window exceeds screen dimensions](#the-plugin-window-exceeds-the-dimensions-of-my-screen-how-can-this-be-avoided)
  
 ### Camera related
 
@@ -187,6 +191,12 @@ _This is normal macOS behavior when any application is active and you click in t
 #### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
 
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
+
+<br>
+
+#### The plugin window exceeds the dimensions of my screen. How can this be avoided?
+
+to be added
 
 <br>
 
