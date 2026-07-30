@@ -11,7 +11,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 ### Camera Support
 
-* [Is my camera supported?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+* [Is my camera supported?](#the-plugin-doesnt-seem-to-work-is-my-camera-not-supported)
 
 ### File Type Support
 
@@ -55,11 +55,11 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 #### The plugin doesn't seem to work. Is my camera not supported?
 
-There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](docs/Compatibility.md).
+There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](Compatibility.md).
 
 The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point. [↗](Focus-Points.md#principle-of-operation)
 
-The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](docs/Compatibility.md) has separate sections.
+The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](Compatibility.md) has separate sections.
 
 There are also a number of specific reasons why Focus Points Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem [↗](Troubleshooting_FAQ.md).
 
