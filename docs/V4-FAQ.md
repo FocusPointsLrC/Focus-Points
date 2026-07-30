@@ -75,10 +75,7 @@ There are also a number of specific reasons why Focus Points Viewer does not see
 
 In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera [↗](Focus-Points.md#principle-of-operation).
 
-Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata.
-
-
-
+Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information [↗](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files).
 
 <br>
 
@@ -86,10 +83,7 @@ Converting RAW files to DNG format inside Lightroom does not necessarily retain 
 
 There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin). 
 
-
-
-
-
+<br>
 
 #### Why does `Direct View` display gray artifacts around the AF corner markings on Windows? Is my GPU the cause?
 
