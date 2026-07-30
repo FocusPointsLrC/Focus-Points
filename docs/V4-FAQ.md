@@ -13,9 +13,9 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 * [Is my camera supported?](#the-plugin-doesnt-seem-to-work-is-my-camera-not-supported)
 
-### File Type Support
+### File Types
 
-* [Does Focus Point Viewer only work with RAW files?](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)
+* [Supported file types](#is-the-plugin-only-compatible-with-raw-images)
 
 ### Keyboard Shortcuts
 
@@ -46,6 +46,9 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)  
  
+### Camera related
+
+* [Fuji DNG files](#why-does-focus-points-viewer-not-display-focus-points-for-fuji-dng-files)
 
 <br>
 
@@ -57,7 +60,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](Compatibility.md).
 
-The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point. [↗](Focus-Points.md#principle-of-operation)
+The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point [↗](Focus-Points.md#principle-of-operation).
 
 The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](Compatibility.md) has separate sections.
 
@@ -66,11 +69,18 @@ There are also a number of specific reasons why Focus Points Viewer does not see
 
 <img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
 
-### File Type Support
+<br>
+
+#### Is the plugin only compatible with RAW images?
+
+In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera [↗](Focus-Points.md#principle-of-operation).
+
+Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata.
 
 
 
 
+<br>
 
 #### How can I set up a hotkey to open Focus Points Viewer? 
 
@@ -185,3 +195,9 @@ _This is normal macOS behavior when any application is active and you click in t
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
 <br>
+
+#### Why doesn't the Focus Points Viewer display focus points for Fuji DNG files?
+
+The autofocus point information (x/y coordinates) recorded by Fujifilm cameras relates to the size of the preview image inside the RAF file, not the original RAW image size. The size of the preview image is stored in the tags `ExifImageHeight` and `ExifImageWidth`. 
+
+Neither the standalone Adobe DNG Converter nor the Lightroom integration retains these tags when converting RAF to DNG. In fact, the converter creates custom-sized preview images and embeds them in the DNG file. Consequently, the DNG file in Lightroom contains all the AF information (e.g. the positions of the autofocus point, face and subject detection), but this cannot be linked to the photo because the plugin does not know what the original preview image size was.
