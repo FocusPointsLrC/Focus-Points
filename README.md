@@ -50,7 +50,7 @@ The documentation is organized by purpose.
 | 📘&nbsp;[**User&nbsp;Manual**](docs/Focus-Points.md)                                      | Complete feature documentation and camera-specific information.<br>Learn how Focus Points works, how to interpret the information displayed by the plugin and how to get the best results with your camera.<br>**If you are new to Focus Points, it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera.**
 | 🚀&nbsp;[**V4 Quick Setup Guide**](docs/V4-Quick-Setup-Guide.md)                     | Get started in minutes. Recommended settings, display modes, and the fastest way to configure Focus Points for your workflow.
 | ❓&nbsp;[**FAQ**](docs/V4-FAQ.md)                                                          | Answers to common questions about installation, supported cameras, performance, and everyday usage.
-| 🔧&nbsp;[**Troubleshooting&nbsp;Guide**](docs/Troubleshooting_FAQ.md)                     | Solutions to common installation, configuration and operational issues and camera-specific issues.
+| ⚠️&nbsp;[**Messages and Warnings**](docs/Troubleshooting_FAQ.md)                     | Understand status messages, warnings, and analysis results.
 | 📝&nbsp;[**Release&nbsp;Notes**](https://github.com/FocusPointsLrC/Focus-Points/releases) | Latest versions with new features, bug fixes and compatibility changes  
 | 💬&nbsp;[**Discussions**](https://github.com/FocusPointsLrC/Focus-Points/discussions)     | Questions, ideas and feedback from the community. 
 
