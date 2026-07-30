@@ -1,4 +1,4 @@
-# Compatibility
+  # Compatibility
 
 ## Cameras that support display of autofocus points
 
