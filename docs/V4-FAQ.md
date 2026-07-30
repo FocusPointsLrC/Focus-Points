@@ -52,7 +52,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
  
 ### Camera related
 
-* [Fuji DNG files](#why-does-focus-points-viewer-not-display-focus-points-for-fuji-dng-files)
+* [Fuji DNG files](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files)
 
 <br>
 
