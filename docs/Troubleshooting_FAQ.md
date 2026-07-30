@@ -1,6 +1,8 @@
 ## ⚠️ Important update for users of V3.4 and V4 PRE 1<br><br>[CRITICAL: Update check fails to detect available updates in V3.4 and V4 PRE 1](https://github.com/FocusPointsLrC/Focus-Points/issues/405)
 
-# Troubleshooting / FAQ
+# Troubleshooting
+
+This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages summarize whether the plugin was successful in detecting and visualising focus points. These messages can be success messages (green), warnings (orange) or error messages (red).
 
 ## Focus Point Viewer ##
 
@@ -13,10 +15,6 @@
 * [Camera maker not supported](#camera-maker-not-supported)
 * [No camera-specific metadata found](#no-camera-specific-metadata-found)
 * [Severe error encountered](#severe-error-encountered)
-
-## General
-
-* [Plugin window exceeds screen dimensions](#Plugin-window-exceeds-screen-dimensions)
 
 
 ## Focus Point Viewer
@@ -134,10 +132,3 @@ Example error:
 The log file reveals what the problem is (artificially induced to provoke this error message ;)
 
 <img src="images/Troubleshooting 9.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
-
-
-## General 
-
-### Plugin window exceeds screen dimensions
-
-to be added
