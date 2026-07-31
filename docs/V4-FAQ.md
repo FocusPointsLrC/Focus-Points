@@ -259,12 +259,13 @@ On macOS, Focus Point Viewer uses `Direct View` which is the fastet way to displ
 On Windows, you can now also select the 'Direct View' option, but the presentation [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly) in this mode is limited. [↗](V4-New-Features.md#sup5sup-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)      
 If visual appearance is more important than speed in your workflow, the right choice for you is `Preview Image`.  See [How to reduce long wait times when opening the plugin window on Windows](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation what you can do to improve speed.
 
-
 <br>
 
 #### Does the display mode affect how long it takes to open the plugin window?
 
 Yes, it does. The various display modes offered in V4 differ in terms of both the appearance of the markings and performance.. `Direct View` renders the displayed image entirely in memory and therefore provides the fastest display. [↗](V4-New-Features.md#2-display-modes)
+
+<br>
 
 #### Why does `Preview Image` sometimes revert to Export?
 
