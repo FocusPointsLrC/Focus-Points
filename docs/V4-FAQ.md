@@ -8,7 +8,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 
 
-## Browse by topic
+## Browse by category
 
 ### Camera Support
 
@@ -31,13 +31,13 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 * [Using a keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
 * [Using keyboard shortcuts to operate Focus Point Viewer](#im-used-to-working-in-lightroom-using-keyboard-shortcuts-does-focus-points-viewer-support-this-way-of-working)
 
-### Display modes
+### Display Modes
 
 * [`Direct View`: gray artifacts around corner markers (Windows)](#why-does-direct-view-display-gray-artifacts-around-the-af-corner-markings-on-windows-is-my-gpu-the-cause)
 
 * [`Preview Image` / `Export Image`: why unavailable on macOS?](#why-are-the-preview-image-and-export-image-display-modes-unavailable-on-macos)
 
-### Second Screen mode
+### Second Screen Mode
 
 * [Window switches back to the primary screen (macOS)](#how-can-i-stop-focus-point-viewer-from-switching-back-to-the-primary-screen-on-macos)
 
@@ -59,7 +59,15 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 * [Plugin window exceeds screen dimensions](#the-plugin-window-exceeds-the-dimensions-of-my-screen-how-can-this-be-avoided)
  
-### Camera related
+### Performance
+
+* [Wait times when opening the plugin window on Windows](#is-there-anything-i-can-do-to-reduce-how-long-it-takes-to-open-the-plugin-window)
+
+* [Impact of display modes on performance](#does-the-display-mode-affect-how-long-it-takes-to-open-the-plugin-window)
+
+* [Why does Preview Image sometimes fall back to Export?](#why-does-preview-image-sometimes-revert-to-export)
+
+### Known Camera Limitations
 
 * [Fuji DNG files](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files)
 
@@ -73,11 +81,11 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](Compatibility.md).
 
-The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point [↗](Focus-Points.md#principle-of-operation).
+The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point. [↗](Focus-Points.md#principle-of-operation)
 
 The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](Compatibility.md) has separate sections.
 
-There are also a number of specific reasons why Focus Points Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem [↗](Troubleshooting_FAQ.md).
+There are also a number of specific reasons why Focus Points Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem. [↗](Troubleshooting_FAQ.md)
 
 
 <img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
@@ -92,7 +100,7 @@ The installation of Focus Point Viewer follows the same procedure as most third 
 
 #### Is there anything I need to do after installation, or can I start using it right away?
 
-V3.4 works well with its default settings. There are only few options you may want to adjust before using the plugin. [↗](V4-Quick-Setup-Guide.md#v3x-quick-setup-guide)
+V3.4 works well with its default settings. There are only a few options you may want to adjust before using the plugin. [↗](V4-Quick-Setup-Guide.md#v3x-quick-setup-guide)
 
 V4 introduces the Second Screen and Display modes. To use these features effectively, you must adapt their settings to your intended workflow. [↗](V4-Quick-Setup-Guide.md#v4-quick-setup-guide)
 
@@ -100,15 +108,15 @@ V4 introduces the Second Screen and Display modes. To use these features effecti
 
 #### Is the plugin only compatible with RAW images?
 
-In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera [↗](Focus-Points.md#principle-of-operation).
+In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera. [↗](Focus-Points.md#principle-of-operation)
 
-Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information [↗](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files).
+Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files)
 
 <br>
 
 #### How can I set up a hotkey to open Focus Points Viewer? 
 
-There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin). 
+There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin) 
 
 #### I'm used to working in Lightroom using keyboard shortcuts. Does Focus Points Viewer support this way of working?
 
@@ -195,19 +203,19 @@ Apart from an explicit choice of `Export Image`, Focus Point Viewer can choose t
 1. In `Develop` module  
 Lightroom cannot always generate or update previews quickly enough while you are working in `Develop` module. (that's also why Lightroom's `Build Previews` command is not accessible in `Develop`)
 2. If a `Preview Image` timeout has been specified  
-  In order to reduce long opening times of Focus Point Viewer (which is basically waiting for a preview to become available), you can specify a timeout after which Focus Point Viewer no longer waits for a preview but uses `Export` instead. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows).
+  In order to reduce long opening times of Focus Point Viewer (which is basically waiting for a preview to become available), you can specify a timeout after which Focus Point Viewer no longer waits for a preview but uses `Export` instead. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
 <br>
 
 #### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow Lightroom` mode?
 
-Observed on Windows.
+Observed on Windows only.
 
 When using the left and right arrow keys to navigate in filmstrip view while the Focus Points Viewer is open in 'Follow' mode, the arrow keys may stop working after some time. 
 
 The Ctrl+Left Arrow and Ctrl+Right Arrow keys continue to work and perform the same function.
 
-_Sending Lightroom to the background and then back to the foreground will resolve the issue._
+_Switching to another application and then back to Lightroom restores normal behavior._
 
 <br>
 
@@ -225,7 +233,42 @@ The Focus Point Viewer keeps a fixed layout so it does not resize when switching
 
 #### The plugin window exceeds the dimensions of my screen. How can this be avoided?
 
-to be added
+If you are experiencing this problem, it is highly likely that you are using Windows and have set a scale factor in the Display settings. A typical example would be a screen with a high resolution but a relatively small area, such as a laptop with a 4K display.
+
+Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
+
+<br>
+
+#### Is there anything I can do to reduce how long it takes to open the plugin window?
+
+In general, the time taken to open Focus Point Viewer generally depends on the following factors:
+- The hardware used (CPU/GPU and disk speed).
+- Lightroom performance.
+- The size of the image.
+- The number of focus points in the photo (in some cases).
+
+For a given setup, the display mode used by Focus Point Viewer can make a difference.<br>
+
+**V3.x:**<br>
+On macOS, Focus Point Viewer uses `Direct View` which is the fastet way to display an image.<br> 
+On Windows, `Preview Image` is used since `Direct View` is limited by the Lightroom SDK. `Preview Image` requires a preview of the photo, which can have a significant impact. See [How to reduce long wait times when opening the plugin window on Windows](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation what you can do to improve speed. 
+
+**V4:**<br>
+V4 provides extended support for Display Modes. [↗](V4-New-Features.md#2-display-modes)  
+On macOS, Focus Point Viewer uses `Direct View` which is the fastet way to display an image.<br>
+On Windows, you can now also select the 'Direct View' option, but the presentation [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly) in this mode is limited. [↗](V4-New-Features.md#sup5sup-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)      
+If visual appearance is more important than speed in your workflow, the right choice for you is `Preview Image`.  See [How to reduce long wait times when opening the plugin window on Windows](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation what you can do to improve speed.
+
+
+<br>
+
+#### Does the display mode affect how long it takes to open the plugin window?
+
+Yes, it does. The various display modes offered in V4 differ in terms of both the appearance of the markings and performance.. `Direct View` renders the displayed image entirely in memory and therefore provides the fastest display. [↗](V4-New-Features.md#2-display-modes)
+
+#### Why does `Preview Image` sometimes revert to Export?
+
+`Preview Image` fallback can be configured in the plugin settings to reduce the time it takes to open the plugin window. The waiting time for a preview to become available in Lightroom is limited to a certain threshold, after which the image will be created by Export. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
 <br>
 
