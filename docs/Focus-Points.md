@@ -1,7 +1,8 @@
 ## ⚠️ Important update for users of V3.4 and V4 PRE 1<br><br>[CRITICAL: Update check fails to detect available updates in V3.4 and V4 PRE 1](https://github.com/FocusPointsLrC/Focus-Points/issues/405)
 
+<br>
 
-# User Manual (V3.4)
+# User Manual
 
 ## Content
 
