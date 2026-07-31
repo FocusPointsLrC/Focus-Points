@@ -1,13 +1,65 @@
 ## ⚠️ Important update for users of V3.4 and V4 PRE 1<br><br>[CRITICAL: Update check fails to detect available updates in V3.4 and V4 PRE 1](https://github.com/FocusPointsLrC/Focus-Points/issues/405)
 
 
+# Quick Setup Guide
+
+### [Getting started with V3.x](#v3x-quick-setup-guide)
+
+### [Getting started with V4](#v4-quick-setup-guide)
+
+---
+
+# V3.x Quick Setup Guide
+
+The plugin is easy to use in V3.x and does not require any specific settings to be configured. The default settings are usually a good starting point.
+
+There are a few settings that can affect how the plugin works. However, none of these need to be changed before the first use — this is purely optional. 
+
+## Setup on Windows
+
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br><br>
+1. Optional: Load the AutoHotkey script to use a keyboard shortcut to run the plugin [↗](Focus-Points.md#windows)<br><br>
+1. Configure plugin settings:<br>
+   Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><br><img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
+ 
+   1. Optional: Set your prefered plugin window size. 
+      1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window [↗](Focus-Points.md#screen-scaling).
+      2. While the `Screen Scaling` setting can be used to normalize the plugin window size, the `Size of plugin window` setting can be used to define its dimensions. There are six options to choose from, ranging from 3XL to S. These correspond to 90% (3XL) to 40% (S) of the screen area used by Lightroom [↗](Focus-Points.md#size-of-plugin-window).<br><br>
+   1. Optional: `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
+      1. If you want to use Focus Points Viewer in your image culling process, you can use these controls to tag images. If you don't, you can set it to `Off`, which will make the control bar look less cluttered.
+      2. If you also want to use, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout.  [↗](Focus-Points.md#keyboard-layout)<br><br> 
+   1. Optional: `Preview Image` performance settings [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
+      On Windows, the time to open Focus Points Viewer largely depends on whether a preview of the selected photo is available in Lightroom. If a preview is available, it can be obtained instantly. Otherwise, it can take several seconds for the plugin window to appear. <br>
+   You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br><br>
+
+2. You're done!<br> 
+   **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey `NumPad *` (if configured in step 2) or by selecting `File → Plug-in Extras → Show Focus Point`.
+
+<br>
+
+## Setup on macOS
+
+The macOS version has fewer settings than the Windows version. The plugin does not depend on an OS display scaling factor. It uses the `Direct View` display mode, there is no need to handle `Preview Images` [↗](V4-New-Features.md#2-display-modes).
+
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)
+2. Optional: Assign a shortcut to run the plugin [↗](Focus-Points.md#macos)
+3. Configure plugin settings:<br>
+   Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><br><img src="images/Quick%20Setup%20V3x%20MAC.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
+
+   1. Optional: `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
+      1. If you want to use Focus Points Viewer in your image culling process, you can use these controls to tag images. If you don't, you can set it to `Off`, which will make the control bar look less cluttered.
+      2. If you also want to use, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout.  [↗](Focus-Points.md#keyboard-layout)<br><br>  
+
+4. You're done!<br> 
+   **You're ready to use Focus Point Viewer.** You can start it either by pressing the hotkey you configured in step 2 or by selecting `File → Plug-in Extras → Show Focus Point`.
+
+
 # V4 Quick Setup Guide
 
-This document describes the basic steps for setting up the plugin in Second Screen mode.
+This section describes the basic steps for setting up the plugin in Second Screen mode.
 
 Some steps are specific to the operating system (OS) you are running.   
 To keep things simple, there are separate sections for **[Windows](#setup-on-windows)** and **[macOS](#setup-on-macos)**.
-
 
 ## Setup on Windows
 

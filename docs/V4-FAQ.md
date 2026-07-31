@@ -13,6 +13,14 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 * [Is my camera supported?](#the-plugin-doesnt-seem-to-work-is-my-camera-not-supported)
 
+### Installation
+
+* [Installing the Lightroom plugin](#i-have-never-worked-with-lightroom-plugins-what-do-i-need-to-install-focus-point-viewer)
+
+### Setup
+
+* [Settings to be made before running Focus Points Viewer](#is-there-anything-i-need-to-do-after-installation-or-can-i-start-using-it-right-away)
+
 ### File Types
 
 * [Supported file types](#is-the-plugin-only-compatible-with-raw-images)
@@ -72,6 +80,18 @@ There are also a number of specific reasons why Focus Points Viewer does not see
 
 
 <img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
+
+<br>
+
+#### I have never worked with Lightroom plugins. What do I need to install Focus Point Viewer?
+
+The installation of Focus Point Viewer follows the same procedure as most third party plugins. The User Manual covers a [compact description](Focus-Points.md#212-compact-instructions) for users that are familiar with that procedure, as well as [detailed description](Focus-Points.md#213-detailed-instructions) for users that have no practical experience with installing plugins.
+
+<br>
+
+#### Is there anything I need to do after installation, or can I start using it right away?
+
+
 
 <br>
 
