@@ -29,7 +29,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 ### Keyboard Shortcuts
 
 * [Using a keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
-* [Using keyboard shortcuts to operate Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
+* [Using keyboard shortcuts to operate Focus Point Viewer](#im-used-to-working-in-lightroom-using-keyboard-shortcuts-does-focus-points-viewer-support-this-way-of-working)
 
 ### Display modes
 
@@ -109,6 +109,12 @@ Converting RAW files to DNG format inside Lightroom does not necessarily retain 
 #### How can I set up a hotkey to open Focus Points Viewer? 
 
 There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin). 
+
+#### I'm used to working in Lightroom using keyboard shortcuts. Does Focus Points Viewer support this way of working?
+
+To simplify operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, meaning you can operate the plugin entirely with the keyboard and never need to touch the mouse. [↗](Focus-Points.md#keyboard-shortcuts)
+
+Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts-) 
 
 <br>
 
