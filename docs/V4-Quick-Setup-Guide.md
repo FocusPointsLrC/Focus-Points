@@ -16,6 +16,9 @@
 
 Focus Point Viewer works well with its default settings. This guide only covers the few options you may want to adjust before using the plugin.
 
+Some steps are specific to the operating system (OS) you are running.   
+To keep things simple, there are separate sections for **[Windows](#setup-on-windows)** and **[macOS](#setup-on-macos)**.
+
 <br>
 
 ## Setup on Windows

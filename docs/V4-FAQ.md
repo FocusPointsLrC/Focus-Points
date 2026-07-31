@@ -92,7 +92,9 @@ The installation of Focus Point Viewer follows the same procedure as most third 
 
 #### Is there anything I need to do after installation, or can I start using it right away?
 
+V3.4 works well with its default settings. There are only few options you may want to adjust before using the plugin. [↗](V4-Quick-Setup-Guide.md#v3x-quick-setup-guide)
 
+V4 introduces the Second Screen and Display modes. To use these features effectively, you must adapt their settings to your intended workflow. [↗](V4-Quick-Setup-Guide.md#v4-quick-setup-guide)
 
 <br>
 
