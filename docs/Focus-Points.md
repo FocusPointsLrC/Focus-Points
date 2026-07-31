@@ -401,8 +401,6 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Check Log                                   | `L`                |
 | Close                                       | `C `               |
 
-<br>
-
 
 #### IMPORTANT Technical Note on keyboard shortcuts: 
 
