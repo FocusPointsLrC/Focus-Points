@@ -9,9 +9,13 @@
 
 ---
 
+<br>
+
 # V3.x Quick Setup Guide
 
 Focus Point Viewer works well with its default settings. This guide only covers the few options you may want to adjust before using the plugin.
+
+<br>
 
 ## Setup on Windows
 
@@ -53,6 +57,7 @@ The macOS version has fewer settings than the Windows version. The plugin does n
 4. **That's it! You're ready to use Focus Point Viewer.**<br> 
    You can start it either by pressing the hotkey you configured in step 2 or by selecting `File → Plug-in Extras → Show Focus Point`.
 
+<br>
 
 # V4 Quick Setup Guide
 
