@@ -5,8 +5,6 @@
 
 ## Content
 
-### [Troubleshooting / FAQ](Troubleshooting_FAQ.md#troubleshooting--faq)
-
 ### [Scope and Limitations](#1-scope-and-limitations)
 
 ### [Overview and Basic Operation](#2-overview-and-basic-operation)
@@ -23,6 +21,8 @@
 ### [Display of Focus Points](#3-display-of-focus-points)
 
 * Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fuji](#34-fuji), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Pentax](#38-pentax), [Ricoh](#39-ricoh), [Apple](#310-apple)
+
+### [Status Messages and Warnings](Troubleshooting_FAQ.md#status-messages-and-warnings)
 
 ### [Special Topics](#4-special-topics)
 
@@ -258,7 +258,7 @@ The first line of text in the `Focus Information` section contains a message sum
 |  Type   | Message                                                                                                         |
 |:-------:|-----------------------------------------------------------------------------------------------------------------|
 | Success | Focus points detected                                                                                           |
-| Warning | [No focus points recorded](./Troubleshooting_FAQ.md#no-focus-points-recorded)                            |
+| Warning | [No focus points recorded](./Troubleshooting_FAQ.md#no-focus-points-recorded)                                   |
 | Warning | [Focus point recorded in manual focus mode](./Troubleshooting_FAQ.md#focus-point-recorded-in-manual-focus-mode) |
 | Warning | [Manual focus, no AF points recorded](Troubleshooting_FAQ.md#manual-focus-no-AF-points-recorded)                |
 |  Error  | [Focus info missing from file](Troubleshooting_FAQ.md#focus-info-missing-from-file)                             |
@@ -389,7 +389,11 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Assign a color label and go to next photo   | `Shift`+`6`-`9`    |
 | **Straighten**                              | &nbsp;             |
 | Straighten image                            | `S`                |
-| Reset crop (Undo straightening)             | `R`               |
+| Reset crop (Undo straightening)             | `R`                |
+| **Screen Modes (V4 only)**                  | &nbsp;             |
+| Direct View                                 | `D`                |
+| Preview Image                               | `V`                |
+| Export Image                                | `E`                | 
 | **Miscelleanous**                           | &nbsp;             |
 | Open User Manual                            | `M`                |
 | Open Troubleshooting Information (Help)     | `?`, `H`           |
