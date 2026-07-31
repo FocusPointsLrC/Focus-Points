@@ -404,7 +404,7 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 <br>
 
 
-**IMPORTANT Technical Note:**
+#### IMPORTANT Technical Note on keyboard shortcuts: 
 
 The Lightroom SDK does not support the native handling of keyboard events in modal dialogs, so the plugin uses a "trick" to implement keyboard shortcuts. This approach has certain limitations, which are described here for a better understanding.
 
