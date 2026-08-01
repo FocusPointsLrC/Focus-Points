@@ -236,7 +236,7 @@ Voting is easy — simply sign in to the Adobe Community using your Adobe creden
 
 **Status:** The respective [bug report](https://community.adobe.com/bug-reports-674/p-sdk-floating-dialogs-always-in-back-never-in-front-in-screen-mode-full-screen-on-windows-664457) is still under discussion at Adobe Community. The discussion suggests that the "always in front" behavior is limited to Lightroom screen modes (Windows -> Screen Mode) `Normal` and `Full Screen with Menubar`.    
 
-**Workaround:** Use the Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` to bring Lightroom to the front until a different photo is selected. It is not possible to switch back and forth between Lightroom and the plugin. Even when using the task manager to switch to a different application, the plugin window will still cover it.
+**Workaround:** Use the Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` to bring Lightroom to the front until a different photo is selected. It is not possible to switch back and forth between Lightroom and the plugin. When switching to a different application via the Task Manager, the plugin window will still cover it.
 
 <br>
 
