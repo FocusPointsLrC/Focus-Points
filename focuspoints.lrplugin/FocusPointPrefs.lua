@@ -25,6 +25,8 @@
 ------------------------------------------------------------------------------]]
 local FocusPointPrefs = {}
 
+-- WIN_ENV = false -- for testing purposes only !!
+
 -- Imported LR namespaces
 local LrApplication   = import  'LrApplication'
 local LrColor         = import  'LrColor'
@@ -156,7 +158,8 @@ function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
   if not prefs.screenScaling                  then prefs.screenScaling              = 0 end
   if not prefs.pluginWindowScaling            then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
-  if     prefs.secondScreenMode        == nil then prefs.secondScreenMode           = false     end
+  if     prefs.secondScreenMode        == nil then prefs.secondScreenMode           = true      end
+  if not prefs.secondScreenBehavior           then prefs.secondScreenBehavior       = FocusPointPrefs.secondScreenBehaviorInteractive end
   if not prefs.previewAspectRatio             then prefs.previewAspectRatio         = 3/2       end
   if     prefs.truncateLongText        == nil then prefs.truncateLongText           = true      end
   if not prefs.truncateLimit                  then prefs.truncateLimit              = 32        end
@@ -191,18 +194,8 @@ function FocusPointPrefs.InitializePrefs(prefs)
     end
   end
 
-  -- OS dependent initialization: secondScreenBehavior
-  -- required as long as not all sub-modes can be supported on both WIN and MAC
-  if not prefs.secondScreenBehavior then
-    if WIN_ENV then
-      prefs.secondScreenBehavior = prefs.secondScreenBehaviorFollow
-    else
-      prefs.secondScreenBehavior = prefs.secondScreenBehaviorInteractive
-    end
-  end
-
   -- Just to be safe - there's no choice for MAC until Mogrify support is implemented on macOS)
-  if MAC_ENV then
+  if not WIN_ENV then
     prefs.displayMode = FocusPointPrefs.displayModeDirect
   end
 
