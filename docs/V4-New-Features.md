@@ -72,7 +72,7 @@ In Second Screen mode, the window keeps a fixed layout so it does not resize whe
 
 Note: The Second Screen window remembers its last position and size. When changing the display size (S / M / L / XL / XXL), the dialog content may temporarily occupy less space than the current window size. This can result in additional empty margins on the right or bottom of the window. These can be removed by simply resizing the window manually once. The adjusted size will again be remembered automatically.
 
-**Tip:** When the Second Screen option is disabled (the default setting), the plugin continues to operate in Single Screen mode as before.
+**Tip:** When the Second Screen option is disabled, the plugin continues to operate in Single Screen mode as before.
 
 <br>
 
