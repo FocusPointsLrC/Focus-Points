@@ -200,13 +200,13 @@ _A workaround is available on Windows for this limitation of the Lightroom SDK._
 
 #### Why is Focus Point Viewer always in front on Windows?
 
-When running Lightroom in screen mode `Normal` or `Full Screen with Menubar`, Focus Point Viewer is always in front of all other open windows. While this is usually not a problem, it can be annoying if you want to temporarily send the window to the background.
+When running Lightroom in screen mode `Normal` or `Full Screen with Menubar`, Focus Point Viewer is always in front of all other open windows. This can be annoying if you are using Lightroom and the plugin in interactive mode on the same screen and want to switch between them.
 
-Use Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` to be able to switch between the two windows.
+By using Lightroom screen mode `Full Screen` and Focus Point Viewer `Interactive` you can at least bring Lightroom to the front until a different photo is selected.
 
 **See also:** [Known Limitations 4)](V4-New-Features.md#4-focus-point-viewer-is-always-in-front-in-second-screen-mode-on-windows) for background information.
 
-_A limited workaround for Windows exists. macOS is not affected._ 
+_There is a very limited workaround for Windows, macOS is not affected._ 
 
 <br>
 
