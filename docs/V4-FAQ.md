@@ -20,7 +20,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 ### Setup
 
-* [Settings to be made before running Focus Points Viewer](#is-there-anything-i-need-to-do-after-installation-or-can-i-start-using-it-right-away)
+* [Settings to be made before running Focus Point Viewer](#is-there-anything-i-need-to-do-after-installation-or-can-i-start-using-it-right-away)
 
 ### File Types
 
@@ -28,8 +28,8 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 ### Keyboard Shortcuts
 
-* [Using a keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-points-viewer)
-* [Using keyboard shortcuts to operate Focus Point Viewer](#im-used-to-working-in-lightroom-using-keyboard-shortcuts-does-focus-points-viewer-support-this-way-of-working)
+* [Using a keyboard shortcut to open Focus Point Viewer](#how-can-i-set-up-a-hotkey-to-open-focus-point-viewer)
+* [Using keyboard shortcuts to operate Focus Point Viewer](#im-used-to-working-in-lightroom-using-keyboard-shortcuts-does-focus-point-viewer-support-this-way-of-working)
 
 ### Display Modes
 
@@ -53,7 +53,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 * [Double-click required in Grid view (macOS)](#why-do-i-have-to-click-twice-to-open-a-photo-in-focus-point-viewer-from-grid-view-while-a-single-click-is-enough-in-filmstrip-view-on-macos)
   
-* [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-points-viewer-window-when-i-change-its-size-in-second-screen-mode)  
+* [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-point-viewer-window-when-i-change-its-size-in-second-screen-mode)  
 
 ### User Interface
 
@@ -69,7 +69,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 ### Known Camera Limitations
 
-* [Fuji DNG files](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files)
+* [Fuji DNG files](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
 
 <br>
 
@@ -79,22 +79,25 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 
 #### The plugin doesn't seem to work. Is my camera not supported?
 
-There are various reasons why the plugin might not seem to work with your photos. A good starting point is to check the [compatibility list](Compatibility.md).
+There are various reasons why the plugin might not seem to work with your photos. A good place to start is to check the [compatibility list](Compatibility.md). The plugin supports all camera models released by Canon, Nikon, Sony, Fujifilm, Olympus/OM, Panasonic and Pentax within the last 10 years, as well as significantly older models.
 
 The autofocus display requires certain metadata to be available as part of the image file. If the camera does not record this metadata, the plugin will not be able to display a focus point. [↗](Focus-Points.md#principle-of-operation)
 
 The same applies to straightening images. Please note that this is independent of the ability to display focus points. For instance, a camera may record AF metadata but not roll angle information. This is why the [compatibility list](Compatibility.md) has separate sections.
 
-There are also a number of specific reasons why Focus Points Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem. [↗](Troubleshooting_FAQ.md)
-
+There are also a number of specific reasons why Focus Point Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem. [↗](Troubleshooting_FAQ.md)
 
 <img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
+
+_If your camera manufacturer is supported and your camera is less than 10 years old, it is most likely that your camera model is supported._
 
 <br>
 
 #### I have never worked with Lightroom plugins. What do I need to install Focus Point Viewer?
 
 The installation of Focus Point Viewer follows the same procedure as most third party plugins. The User Manual covers a [compact description](Focus-Points.md#212-compact-instructions) for users that are familiar with that procedure, as well as [detailed description](Focus-Points.md#213-detailed-instructions) for users that have no practical experience with installing plugins.
+
+_Although plugin installation may seem complicated at first, it's not difficult if you follow the instructions._  
 
 <br>
 
@@ -104,25 +107,35 @@ V3.4 works well with its default settings. There are only a few options you may 
 
 V4 introduces the Second Screen and Display modes. To use these features effectively, you must adapt their settings to your intended workflow. [↗](V4-Quick-Setup-Guide.md#v4-quick-setup-guide)
 
+_If you're feeling impatient, you can skip the V3.4 documentation and get started right away. For V4, it is recommended that you at least skim the Quick Start Guide._ 
+
 <br>
 
 #### Is the plugin only compatible with RAW images?
 
 In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera. [↗](Focus-Points.md#principle-of-operation)
 
-Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-points-viewer-display-focus-points-for-fuji-dng-files)
+Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
+
+_In any case, the plugin is compatible with all JPG and RAW files straight out of camera._
 
 <br>
 
-#### How can I set up a hotkey to open Focus Points Viewer? 
+#### How can I set up a hotkey to open Focus Point Viewer? 
 
-There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin) 
+Yes. There are different ways to do this on Windows and macOS. [↗](Focus-Points.md#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
 
-#### I'm used to working in Lightroom using keyboard shortcuts. Does Focus Points Viewer support this way of working?
+_You can setup custom keyboard shortcuts to run Focus Point Viewer, Metadata Viewer and Straighten Images on both Windows and macOS._ 
+
+<br>
+
+#### I'm used to working in Lightroom using keyboard shortcuts. Does Focus Point Viewer support this way of working?
 
 To simplify operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, meaning you can operate the plugin entirely with the keyboard and never need to touch the mouse. [↗](Focus-Points.md#keyboard-shortcuts)
 
-Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts-) 
+Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts-)
+
+_The Focus Point Viewer features can be controlled entirely using the keyboard._
 
 <br>
 
@@ -181,6 +194,7 @@ A workaround has been implemented using an AutoHotkey script. While this is acce
 
 **See also:** [Known Limitations 3)](V4-New-Features.md#3-keyboard-shortcuts-do-not-work-immediately-after-opening-focus-point-viewer-in-interactive-mode-on-windows) for background information, how to install the available workaround, and instructions on how to support the Adobe bug report.
 
+_A workaround is available on Windows for this limitation of the Lightroom SDK._
 
 <br>
 
@@ -211,7 +225,7 @@ Lightroom cannot always generate or update previews quickly enough while you are
 
 Observed on Windows only.
 
-When using the left and right arrow keys to navigate in filmstrip view while the Focus Points Viewer is open in 'Follow' mode, the arrow keys may stop working after some time. 
+When using the left and right arrow keys to navigate in filmstrip view while the Focus Point Viewer is open in 'Follow' mode, the arrow keys may stop working after some time. 
 
 The Ctrl+Left Arrow and Ctrl+Right Arrow keys continue to work and perform the same function.
 
@@ -225,7 +239,7 @@ _This is normal macOS behavior when any application is active and you click in t
   
 <br>
 
-#### Why do empty margins appear on the right or bottom of the Focus Points Viewer window when I change its size in 'Second Screen' mode?  
+#### Why do empty margins appear on the right or bottom of the Focus Point Viewer window when I change its size in 'Second Screen' mode?  
 
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
@@ -273,7 +287,7 @@ Yes, it does. The various display modes offered in V4 differ in terms of both th
 
 <br>
 
-#### Why doesn't the Focus Points Viewer display focus points for Fuji DNG files?
+#### Why doesn't the Focus Point Viewer display focus points for Fuji DNG files?
 
 The autofocus point information (x/y coordinates) recorded by Fujifilm cameras relates to the size of the preview image inside the RAF file, not the original RAW image size. The size of the preview image is stored in the tags `ExifImageHeight` and `ExifImageWidth`. 
 
