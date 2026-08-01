@@ -219,6 +219,8 @@ Lightroom cannot always generate or update previews quickly enough while you are
 2. If a `Preview Image` timeout has been specified  
   In order to reduce long opening times of Focus Point Viewer (which is basically waiting for a preview to become available), you can specify a timeout after which Focus Point Viewer no longer waits for a preview but uses `Export` instead. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
+_The plugin can decide to use 'Export Image' based on the situation, if this display mode is to be preferred over 'Preview Image'._
+
 <br>
 
 #### Why do the Left and Right Arrow keys sometimes stop working in Lightroom when Focus Point Viewer is running in `Follow Lightroom` mode?
@@ -243,6 +245,8 @@ _This is normal macOS behavior when any application is active and you click in t
 
 The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
+_The Focus Point Viewer cannot remember the last window position used and automatically resize to fit the displayed contents at the same time._
+
 <br>
 
 #### The plugin window exceeds the dimensions of my screen. How can this be avoided?
@@ -250,6 +254,8 @@ The Focus Point Viewer keeps a fixed layout so it does not resize when switching
 If you are experiencing this problem, it is highly likely that you are using Windows and have set a scale factor in the Display settings. A typical example would be a screen with a high resolution but a relatively small area, such as a laptop with a 4K display.
 
 Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
+
+_This can happen in Windows, but the plugin provides a setting that can be used to correct it._
 
 <br>
 
@@ -273,17 +279,23 @@ On macOS, Focus Point Viewer uses `Direct View` which is the fastet way to displ
 On Windows, you can now also select the 'Direct View' option, but the presentation [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly) in this mode is limited. [↗](V4-New-Features.md#sup5sup-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)      
 If visual appearance is more important than speed in your workflow, the right choice for you is `Preview Image`.  See [How to reduce long wait times when opening the plugin window on Windows](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation what you can do to improve speed.
 
+_If you're not using an outdated setup, the plugin can open a photo in between 0.5 and 1 second, unless a preview is not yet available in Lightroom._ 
+
 <br>
 
 #### Does the display mode affect how long it takes to open the plugin window?
 
 Yes, it does. The various display modes offered in V4 differ in terms of both the appearance of the markings and performance.. `Direct View` renders the displayed image entirely in memory and therefore provides the fastest display. [↗](V4-New-Features.md#2-display-modes)
 
+_`Direct View` is the fastest display mode and is therefore the recommended choice for workflows where speed is important._
+
 <br>
 
 #### Why does `Preview Image` sometimes revert to Export?
 
 `Preview Image` fallback can be configured in the plugin settings to reduce the time it takes to open the plugin window. The waiting time for a preview to become available in Lightroom is limited to a certain threshold, after which the image will be created by Export. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
+
+_The plugin can decide to use 'Export Image' based on the situation, if this display mode is to be preferred over 'Preview Image'._
 
 <br>
 
@@ -292,3 +304,6 @@ Yes, it does. The various display modes offered in V4 differ in terms of both th
 The autofocus point information (x/y coordinates) recorded by Fujifilm cameras relates to the size of the preview image inside the RAF file, not the original RAW image size. The size of the preview image is stored in the tags `ExifImageHeight` and `ExifImageWidth`. 
 
 Neither the standalone Adobe DNG Converter nor the Lightroom integration retains these tags when converting RAF to DNG. In fact, the converter creates custom-sized preview images and embeds them in the DNG file. Consequently, the DNG file in Lightroom contains all the AF information (e.g. the positions of the autofocus point, face and subject detection), but this cannot be linked to the photo because the plugin does not know what the original preview image size was.
+
+_Creating a DNG file from a RAF file involves generating new preview images, which typically differ in dimension from the original embedded preview image. Since the original preview dimensions have been lost, the plugin can no longer link the autofocus information to the original photo._
+`
