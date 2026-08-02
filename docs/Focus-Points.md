@@ -64,25 +64,29 @@ To understand how to use this plugin and how to interpret the results, **it is r
 
 ### Principle of operation
 
-The plugin uses [ExifTool](https://exiftool.org/) to retrieve metadata from the image file. Autofocus related information is extracted from the metadata and processed to detect and visualize focus points, faces and subjects. For this to work, the plugin needs an image file that contains camera manufacturer specific metadata information (_makernotes_) as written by the camera to each JPG or RAW file.<br>
-The plugin will not be able to show focus points for image files that do not contain makernotes.<br>
+The plugin uses [ExifTool](https://exiftool.org/) to retrieve metadata from image files. Autofocus related information is extracted from the metadata and processed to detect and visualize focus points, faces and subjects. For this to work, the plugin needs an image file that contains camera manufacturer specific metadata information (_makernotes_), written by the camera to each JPG or RAW file. The plugin will not be able to show focus points for image files that do not contain makernotes data.
 
 <u>Note:</u> ExifTool is part of the plugin package and does not need to be installed separately.
 
-Because the plugin works inside Lightroom, it is important to understand that Lightroom **does not read** makernotes information when importing files. When the plugin is run on a selected photo, it calls ExifTool to process the underlying image file on disk. When Lightroom exports a photo as JPG or TIFF to pass to an external application for editing, it creates a new image file without the makernotes metadata. The re-imported result from that application will not have this information, which is essential for the plugin to work.
+As the plugin operates within Lightroom, it is important to note that Lightroom does not read the maker notes information when importing files. More precisely, this information is not visible or accessible in Lightroom, except in a few cases. 
+
+When the plugin is run on a selected photo, it uses ExifTool to process the underlying image file. When Lightroom exports a photo as a JPEG or TIFF file to be edited in an external application, a new image file is created that lacks the maker notes data. Therefore, any image re-imported from that application will lack this essential information for the plugin to work.
 
 **Examples of when focus points are not displayed:**
-- Original image edited in Photoshop and returned as PSD or TIF
-- Original image transferred as TIFF/JPG to a 3rd party editor (_Photo → Edit In_) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
-- Photos exported to disk
+- Photo edited in Photoshop and returned as PSD or TIF
+- Photo transferred as TIFF/JPG to a 3rd party editor (_Photo → Edit In_) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
+- DNG files created by Lightroom's Photo Merge (HDR, Panorama)
+- Photos exported to disk that have been re-imported in Lightroom
 - Smart Preview but the original image file is not present 
 
-For external applications launched from within Lightroom that take a RAW file as input (typically invoked from the 'Plug-in Extras' menu), the plugin may work on the resulting file imported into Lightroom if the application leaves the original file's makernotes intact. This is because in this case Lightroom does not physically pass on the file to the external application but only the name of the image file.
+For external applications launched from within Lightroom that use a RAW file as input (typically invoked from the 'Plug-in Extras' menu), the plugin may work on the file that is imported into Lightroom if the application leaves the original file's makernotes intact. This is because, in this case, Lightroom only passes on the name of the image file, not the file itself. 
 
-**Examples, for which focus point display may work on image files created based on original files:**
+<span id="supported-dng-files"></span>
+**Examples, for which focus point display may work on image files created based on original RAW files:**
 
+- DNG files converted from RAW by Adobe's DNG Converter (standalone app, or inside Lightroom)
 - DNG files created by DxO PhotoLab, Luminar Neo, Topaz Photo AI
-- DNG files created by LrC Enhance, e.g. AI Denoise (prior to LrC 14.4)
+- DNG files created by Lightroom's Enhance feature, e.g. AI Denoise (prior to LrC 14.4)
 
 Note that this may depend on the specific camera make/model.<br> 
 E.g. for Fuji DNG files the plugin will not be able to display focus points.
@@ -90,8 +94,8 @@ E.g. for Fuji DNG files the plugin will not be able to display focus points.
 
 **Cases where the Focus Points plugin may not be able to display meaningful information:**
 
-* <u>Focus and Pan</u>: The shot was taken by focusing on the main subject and then panning the camera to get the desired composition. The focus point recorded by the camera does not `move` with the focused subject during recomposition, but maintains its original position.
-* <u>Back button Focus</u>: This is similar to Focus and Pan because the underlying principle is the same. In addition, the camera may not even record a focus point (depending on the make/model).
+* <u>Focus and Pan, Recompose</u>: The shot was taken by focusing on the main subject and then panning the camera to get the desired composition. The focus point recorded by the camera does not `move` with the focused subject during recomposition, but maintains its original position.
+* <u>Back button Focus</u>: This is similar to Recompose because the underlying principle is the same. In addition, the camera may not even record a focus point (depending on the make/model).
 
 <br>
 
