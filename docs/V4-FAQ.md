@@ -17,6 +17,7 @@ This FAQ explains the most common questions about Focus Point Viewer, the reason
 ### Installation
 
 * [Installing the Lightroom plugin](#i-have-never-worked-with-lightroom-plugins-what-do-i-need-to-install-focus-point-viewer)
+* [Windows security alerts during download or installation](#why-am-i-getting-a-security-alert-by-windows-defender-and-virustotal) 
 
 ### Setup
 
@@ -98,6 +99,21 @@ _If your camera manufacturer is supported and your camera is less than 10 years 
 The installation of Focus Point Viewer follows the same procedure as most third party plugins. The User Manual covers a [compact description](Focus-Points.md#212-compact-instructions) for users that are familiar with that procedure, as well as [detailed description](Focus-Points.md#213-detailed-instructions) for users that have no practical experience with installing plugins.
 
 _Although plugin installation may seem complicated at first, it's not difficult if you follow the instructions._  
+
+<br>
+
+#### Why am I getting a security alert by Windows Defender and VirusTotal?
+
+Security software such as Windows Defender or VirusTotal may flag an alert that the plugin contains potentially dangerous files. All known incidents relating to these alerts involve the precompiled AutoHotkey script executables intended to run the plugin via a keyboard shortcut, without the need to install the AutoHotkey utility. It is a widely known issue that the Ahk2Exe compiler can trigger virus protection alarms, and this has been brought to the attention of the developers. [↗](https://github.com/AutoHotkey/Ahk2Exe/issues/119)
+
+In the past, MalwareBytes also blocked the plugin site on GitHub for the same reason. This block has been removed by MalwareBytes upon request. [↗ ](https://forums.malwarebytes.com/topic/334869-focus-points-plugin-for-lightroom-classic-website-blocked-after-new-release/)
+
+If you're still suspicious and want to be absolutely sure, delete the `.exe` files from the directory `focuspoints.lrplugin\ahk` and use AutoHotkey instead to run the `.ahk` script files, if you want to use a keyboard shortcut to run the plugin. [↗](Focus-Points.md#create-your-own-custom-keyboard-shortcuts) 
+
+_The plugin package is safe and does not contain any infected or dangerous files._ 
+
+ 
+
 
 <br>
 
