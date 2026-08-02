@@ -115,9 +115,11 @@ _If you're feeling impatient, you can skip the V3.4 documentation and get starte
 
 In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera. [↗](Focus-Points.md#principle-of-operation)
 
-Converting RAW files to DNG format inside Lightroom does not necessarily retain all metadata. For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
+DNG files created or converted from RAW can still contain relevant metadata. However, this depends on the individual application used to create the DNG file. [↗](Focus-Points.md#supported-dng-files)
 
-_In any case, the plugin is compatible with all JPG and RAW files straight out of camera._
+For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
+
+_The plugin is compatible with all JPG and RAW files straight out of camera. It is also likely to work with DNG files but this depends on the camera model and the application._
 
 <br>
 
