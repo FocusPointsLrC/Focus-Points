@@ -1226,6 +1226,7 @@ There is a precompiled executable (`.exe`) for each script, as well as the corre
 2. Choose the script that matches your Lightroom version and language.
 3. Double-click the corresponding executable. An active script is indicated by a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray.
 4. Drag the executable to your Windows `Startup` folder, to make the shortcuts available each time you start Windows.
+
 -----
 
 #### Create your own custom keyboard shortcuts:
