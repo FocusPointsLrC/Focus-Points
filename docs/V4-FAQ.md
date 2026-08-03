@@ -4,7 +4,7 @@
 
 # Frequently Asked Questions (FAQ)
 
-Got a question? Chances are you'll find the answer here.
+**Got a question? Chances are you'll find the answer here.**
 
 This FAQ answers common questions about Focus Point Viewer, explains certain behaviors, and describes available workarounds where applicable.
 
