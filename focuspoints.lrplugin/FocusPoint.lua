@@ -80,6 +80,7 @@ local function showFocusPoint()
     local clicked = false
     local straightenBusy = false
     local undoCrops = {}
+    local undoTransforms = {}
     local prefs = LrPrefs.prefsForPlugin( nil )
 
     local function closeDialog(view, response)
@@ -506,6 +507,24 @@ local function showFocusPoint()
       end
     end
 
+    local function checkFAQ()
+      local f = LrView.osFactory()
+
+      return f:row {
+        spacing = 0,
+        f:static_text {
+          title = "Got a question? Check the FAQ " .. utfLinkSymbol,
+          text_color = LrColor(0, 0.25, 1),
+          immediate = true,
+          mouse_down = function()
+            LrTasks.startAsyncTask(function()
+              LrHttp.openUrlInBrowser(FocusPointPrefs.urlFAQ)
+            end)
+          end,
+        },
+      }
+    end
+
     local function navigationControls()
       local f = LrView.osFactory()
       return f:row {
@@ -672,10 +691,22 @@ local function showFocusPoint()
       end
 
       -- Retrieve crop information from Develop settings
-      props.crop             = Crop.ofPhoto(photo)
-      props.cropAngle        = props.crop.a
-      props.cropAngleText    = string.format("Crop: %s%s", formatAngle(props.cropAngle), utfDegree)
-      props.cropAngleTooltip = "Angle of current crop"
+      props.crop              = Crop.ofPhoto(photo)
+      props.cropAngle         = props.crop.a
+      props.cropAngleText     = string.format("Crop: %s%s", formatAngle(props.cropAngle), utfDegree)
+      props.cropAngleTooltip  = "Angle of current crop"
+
+      -- Retrieve Transform information from Develop settings
+      props.hasTransform = Straighten.hasTransform(targetPhoto)
+      if props.hasTransform then
+        props.transformSettings = Straighten.getTransformSettings(targetPhoto)
+        props.transformText     = "T"
+        props.transformTooltip  = "Photo has Transform settings applied"
+      else
+        props.transformSettings = nil
+        props.transformText     = ""
+        props.transformTooltip  = ""
+      end
 
       -- Retrieve RollAngle information from metadata, normalize and create text controls
       -- Note: props.rollAngle is same as -straightenAngle used in the code handling batch mode straightening!
@@ -699,10 +730,12 @@ local function showFocusPoint()
       -- previously saved crop state rather than applying a new correction.
       if props.rollAngleAction == rollAngleReset then
         -- key is localIdentifier (integer), not the photo object itself
-        if undoCrops[targetPhoto.localIdentifier] then
+
+        -- undo Straightening by restoring previous Crop setting
+        if undoCrops[targetPhoto.localIdentifier] and undoCrops[targetPhoto.localIdentifier].a ~= 0 then
           -- existing crop has been saved by preceding 'Straighten' action
           catalog:withWriteAccessDo("Undo Straighten Images", function()
-            Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Reset Crop")
+            Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Restore Crop")
           end)
           -- Remove the table entry to avoid it growing over time
           undoCrops[targetPhoto.localIdentifier] = nil
@@ -712,36 +745,71 @@ local function showFocusPoint()
             LrDialogs.message("Straightening could not be undone")
           end
         end
+
+        -- undo Straightening by restoring previous Transform settings
+        if undoTransforms[targetPhoto.localIdentifier] then
+          -- existing crop has been saved by preceding 'Straighten' action
+          catalog:withWriteAccessDo("Undo Straighten Images", function()
+            Straighten.applyTransformSettings(
+              targetPhoto, undoTransforms[targetPhoto.localIdentifier],"Restore Transform settings")
+          end)
+          -- Remove the table entry to avoid it growing over time
+          undoTransforms[targetPhoto.localIdentifier] = nil
+        end
+
         return true
       end
 
-      -- Retrieve existing crop angle of photo
-      local settings = targetPhoto:getDevelopSettings()
-      local photoTransformed = Straighten.hasTransform(settings)
+      -- Check whether Transform operations have been applied to this photo
+      local photoTransformed = Straighten.hasTransform(targetPhoto)
 
       if Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
         LrDialogs.message(
           "Straightening not applied",
-          "Photo has been already straightened")
+          "The photo has already been straightened")
         return false
       end
 
       if photoTransformed then
-        LrDialogs.message(
-          "Straightening not applied",
-          "Transform operations have been applied to this photo.\n\n" ..
-          "Hint: You can 'Straighten' only images that have not been changed using 'Transform'"
-        )
-        return false
+        if not prefs.overwriteTransform then
+          LrDialogs.message(
+            "Straightening not applied",
+            "Transform settings have already been applied to this photo.\n\n" ..
+            "Enable 'Overwrite existing Transform settings' if you want Focus Points to reset them automatically."
+          )
+          return false
+        end
+        if prefs.overwriteTransformWarning then
+          if LrDialogs.confirm(
+            "Overwrite existing Transform settings?",
+            "Existing Transform settings will be reset before straightening.",
+            "Overwrite",
+            "Cancel"
+          ) == "cancel" then
+            return false
+          end
+        end
       end
 
-      if props.cropAngle ~= 0 and not prefs.overwriteCropAngle then
-        LrDialogs.message(
-          "Straightening not applied",
-          "A non-zero crop angle exists for this photo.\n\n" ..
-          "Hint: To overwrite an existing crop angle, go to 'Straightening' options on the plugin's settings page."
-        )
-        return false
+      if props.cropAngle ~= 0 then
+        if not prefs.overwriteCropAngle then
+          LrDialogs.message(
+            "Straightening not applied",
+            "A non-zero crop angle exists for this photo.\n\n" ..
+            "Enable 'Overwrite existing crop angle' if you want Focus Points to reset this automatically."
+          )
+          return false
+        end
+        if prefs.overwriteCropAngleWarning then
+          if LrDialogs.confirm(
+            "Overwrite existing crop angle setting?",
+            "Existing crop angle will be reset before straightening.",
+            "Overwrite",
+            "Cancel"
+          ) == "cancel" then
+            return false
+          end
+        end
       end
 
       if prefs.straightenLimits and
@@ -750,7 +818,7 @@ local function showFocusPoint()
         LrDialogs.message(
           "Straightening not applied",
           "Roll angle exceeds user-defined limits.\n\n" ..
-          "Hint: To set the limits, go to 'Straightening' options on the plugin's settings page."
+          "To adjust the limits, go to the 'Straightening' options on the plugin's settings page."
         )
         return false
       end
@@ -759,17 +827,32 @@ local function showFocusPoint()
       -- so that Reset can restore the exact previous crop later
       undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
 
-      if props.cropAngle ~= 0 then
-        -- Reset existing crop before "overwriting" crop angle
-        catalog:withWriteAccessDo("Straighten Images", function()
+      -- Preserve the original Transform settings so Reset can use this later
+      undoTransforms[targetPhoto.localIdentifier] = undoTransforms[targetPhoto.localIdentifier] or props.transformSettings
+
+      -- Reset existing Transform settings and crop angle before straightening
+      catalog:withWriteAccessDo("Straighten Images", function()
+        if props.cropAngle ~= 0 then
           Crop.photoReset(targetPhoto, "Reset Crop")
-        end)
-      end
+        end
+        if photoTransformed then
+          local settings = {}
+          settings.PerspectiveVertical   = 0
+          settings.PerspectiveHorizontal = 0
+          settings.PerspectiveRotate     = 0
+          settings.PerspectiveAspect     = 0
+          settings.PerspectiveScale      = 0
+          settings.PerspectiveX          = 0
+          settings.PerspectiveY          = 0
+          settings.PerspectiveUpright    = 0
+          targetPhoto:applyDevelopSettings (settings, "Reset Transform settings")
+        end
+      end)
 
       if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
         return true
       else
-        LrDialogs.message("Straightening could not be applied", "An internal error occured")
+        LrDialogs.message("Straightening could not be applied", "An internal error occurred")
       end
 
       return false
@@ -809,6 +892,12 @@ local function showFocusPoint()
           margin = 0,
           title   = LrView.bind {key = "cropAngleText",    object = props},
           tooltip = LrView.bind {key = "cropAngleTooltip", object = props},
+          text_color = status[condition].color,
+        },
+        f:static_text {
+          margin = 0,
+          title   = LrView.bind {key = "transformText",    object = props},
+          tooltip = LrView.bind {key = "transformTooltip", object = props},
           text_color = status[condition].color,
         },
         f:spacer { width = 5 },  -- space before the button
@@ -906,7 +995,8 @@ local function showFocusPoint()
 
       userResponse = LrDialogs.presentModalDialog {
         title = GlobalDefs.appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
-        contents = FocusPointDialog.createDialog(targetPhoto, photoView, infoView, kbdShortcutInput),
+        contents = FocusPointDialog.createDialog(
+                     photoView, infoView, kbdShortcutInput, checkFAQ()),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
         actionVerb = "Close",
@@ -975,7 +1065,7 @@ local function showFocusPoint()
         skipMainWindow = true
       end
 
-      -- a fatal error has occured for the current image: ask user whether to "Exit" the plugin
+      -- a fatal error has occurred for the current image: ask user whether to "Exit" the plugin
       -- or "Continue" with the next image in multi-image mode (which means repeat in single-image mode)
       if errorMsg then
         local action = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
@@ -989,7 +1079,7 @@ local function showFocusPoint()
       end
 
       if skipMainWindow then
-        -- A fatal error has occured for the current image, "Exit" the plugin operation or
+        -- A fatal error has occurred for the current image, "Exit" the plugin operation or
         -- "Continue" with the next image as per last user response
         if userResponse == "previous" then
           previousPhoto()

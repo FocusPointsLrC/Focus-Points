@@ -93,9 +93,17 @@ end
 
   Creates the view container for the entire dialog except the accessory view.
 ------------------------------------------------------------------------------]]
-function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutInput)
+function FocusPointDialog.createDialog(photoView, infoView, kbdShortcutInput, checkFAQ)
   local f = LrView.osFactory()
 
+  local function previewPanel()
+    -- Preview area has the same dimensions as the photo
+    return f:row {
+      f:spacer {}, photoView, f:spacer {},
+    }
+  end
+
+--[[
   return f:view {
     f:column {
        f:row {
@@ -107,6 +115,26 @@ function FocusPointDialog.createDialog(_photo, photoView, infoView, kbdShortcutI
        }
     }
   }
+--]]
+  return f:view {
+    f:row {
+      f:column {
+        f:row {
+          f:spacer {},
+          f:column { kbdShortcutInput },
+          f:spacer { fill_horizontal = 1 },
+          f:column { checkFAQ },
+          f:spacer { width = 8}
+        },
+        previewPanel(),
+      },
+      f:column {
+        fill_vertical = 1,
+        infoView
+      },
+    },
+  }
+
 end
 
 return FocusPointDialog

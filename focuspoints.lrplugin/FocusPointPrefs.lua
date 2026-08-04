@@ -25,6 +25,8 @@
 ------------------------------------------------------------------------------]]
 local FocusPointPrefs = {}
 
+-- WIN_ENV = false -- for testing purposes only !!
+
 -- Imported LR namespaces
 local LrApplication   = import  'LrApplication'
 local LrColor         = import  'LrColor'
@@ -94,6 +96,7 @@ local latestVersionUrl
 FocusPointPrefs.urlUserManual       = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
 FocusPointPrefs.urlTroubleShooting  = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
 FocusPointPrefs.urlkbdShortcuts     = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
+FocusPointPrefs.urlFAQ              = "https://focuspointslrc.github.io/Focus-Points/docs/V4-FAQ.html"
 -- URL definitions for clickForHelp
 local urlHelpOnScreenScaling        = FocusPointPrefs.urlUserManual  .. "#screen-scaling"
 local urlHelpOnStraightenControls   = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-straightening"
@@ -141,30 +144,33 @@ local bind = LrView.bind
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
-  if not prefs.screenScaling                  then prefs.screenScaling              = 0 end
-  if not prefs.pluginWindowScaling            then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
-  if     prefs.truncateLongText        == nil then prefs.truncateLongText           = true      end
-  if not prefs.truncateLimit                  then prefs.truncateLimit              = 32        end
-  if     prefs.hideKofiControl         == nil then prefs.hideKofiControl            = false     end
-  if not prefs.focusBoxSize                   then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
-  if not prefs.focusBoxColor                  then prefs.focusBoxColor              = "red"     end
-  if     prefs.straightenControls      == nil then prefs.straightenControls         = true      end
-  if     prefs.taggingControls         == nil then prefs.taggingControls            = true      end
-  if     prefs.keyboardLayout          == nil then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
-  if not prefs.loggingLevel                   then prefs.loggingLevel               = "AUTO"    end
-  if     prefs.overwriteCropAngle      == nil then prefs.overwriteCropAngle         = false     end
-  if     prefs.straightenLimits        == nil then prefs.straightenLimits           = false     end
-  if not prefs.straightenLimitLow             then prefs.straightenLimitLow         = -0        end
-  if not prefs.straightenLimitHigh            then prefs.straightenLimitHigh        =  45       end
-  if not prefs.straightenSummaryCondition     then prefs.straightenSummaryCondition = "SKIPPED" end
-  if     prefs.straightenApplyBias     == nil then prefs.straightenApplyBias        = false     end
-  if not prefs.straightenBias                 then prefs.straightenBias             = 0.0       end
-  if     prefs.checkForUpdates         == nil then prefs.checkForUpdates            = true      end
-  if     prefs.keyboardInput           == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
-  if     prefs.previewFallback         == nil then prefs.previewFallback            = true      end
-  if not prefs.previewTimeout                 then prefs.previewTimeout             = 0.5       end
-  if     prefs.previewShowProgress     == nil then prefs.previewShowProgress        = true      end
-  if not prefs.previewProgressDelay           then prefs.previewProgressDelay       = 0.5       end
+  if not prefs.screenScaling                    then prefs.screenScaling              = 0 end
+  if not prefs.pluginWindowScaling              then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
+  if     prefs.truncateLongText          == nil then prefs.truncateLongText           = true      end
+  if not prefs.truncateLimit                    then prefs.truncateLimit              = 32        end
+  if     prefs.hideKofiControl           == nil then prefs.hideKofiControl            = false     end
+  if not prefs.focusBoxSize                     then prefs.focusBoxSize               = FocusPointPrefs.focusBoxSize[FocusPointPrefs.initfocusBoxSize] end
+  if not prefs.focusBoxColor                    then prefs.focusBoxColor              = "red"     end
+  if     prefs.straightenControls        == nil then prefs.straightenControls         = true      end
+  if     prefs.taggingControls           == nil then prefs.taggingControls            = true      end
+  if     prefs.keyboardLayout            == nil then prefs.keyboardLayout             = KeyboardLayout.autoDetectLayout end
+  if not prefs.loggingLevel                     then prefs.loggingLevel               = "AUTO"    end
+  if     prefs.overwriteCropAngle        == nil then prefs.overwriteCropAngle         = false     end
+  if     prefs.overwriteCropAngleWarning == nil then prefs.overwriteCropAngleWarning  = false     end
+  if     prefs.overwriteTransform        == nil then prefs.overwriteTransform         = false     end
+  if     prefs.overwriteTransformWarning == nil then prefs.overwriteTransformWarning  = false     end
+  if     prefs.straightenLimits          == nil then prefs.straightenLimits           = false     end
+  if not prefs.straightenLimitLow               then prefs.straightenLimitLow         = -0        end
+  if not prefs.straightenLimitHigh              then prefs.straightenLimitHigh        =  45       end
+  if not prefs.straightenSummaryCondition       then prefs.straightenSummaryCondition = "SKIPPED" end
+  if     prefs.straightenApplyBias       == nil then prefs.straightenApplyBias        = false     end
+  if not prefs.straightenBias                   then prefs.straightenBias             = 0.0       end
+  if     prefs.checkForUpdates           == nil then prefs.checkForUpdates            = true      end
+  if     prefs.keyboardInput             == nil then prefs.keyboardInput              = FocusPointPrefs.kbdInputRegular end
+  if     prefs.previewFallback           == nil then prefs.previewFallback            = true      end
+  if not prefs.previewTimeout                   then prefs.previewTimeout             = 0.5       end
+  if     prefs.previewShowProgress       == nil then prefs.previewShowProgress        = true      end
+  if not prefs.previewProgressDelay             then prefs.previewProgressDelay       = 0.5       end
 
   -- To avoid dirt effects from V4 display mode setting
   if WIN_ENV then
@@ -889,10 +895,38 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           }
         },
         f:static_text {
-          title = "Overwrite existing crop angle setting",
+          title = "Overwrite existing crop angle setting ",
+        },
+        f:row {
+          f:checkbox {
+            title = "Display warning",
+            value = bind("overwriteCropAngleWarning"),
+          },
         },
         f:spacer{fill_horizontal = 1},
         clickForHelp( urlHelpOnStraighteningOptions ),
+      },
+      f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+        f:popup_menu {
+          title = "overwriteTransform",
+          value = bind("overwriteTransform"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title = "On", value = true },
+            { title = "Off", value = false },
+          }
+        },
+        f:static_text {
+          title = "Overwrite existing Transform settings",
+        },
+        f:row {
+          f:checkbox {
+            title = "Display warning",
+            value = bind("overwriteTransformWarning")
+          },
+        },
       },
       f:row {
         bind_to_object = prefs,
