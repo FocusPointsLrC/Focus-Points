@@ -823,7 +823,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               title = "Follow Lightroom",
               value = bind("secondScreenBehavior"),
               checked_value = "Follow",
-              enabled = WIN_ENV,
+--            enabled = WIN_ENV,
             },
           },
 
