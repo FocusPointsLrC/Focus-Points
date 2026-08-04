@@ -607,7 +607,7 @@ local function showFocusPoint()
       return f:row {
         spacing = 0,
         f:static_text {
-          title = "What's new?",
+          title = "What's new? " .. utfLinkSymbol,
           text_color = LrColor(0, 0.25, 1),
           immediate = true,
           mouse_down = function(_view)
@@ -618,7 +618,7 @@ local function showFocusPoint()
         },
         f:spacer { width = 16 },
         f:static_text {
-          title = "FAQ",
+          title = "Need help? " .. utfLinkSymbol,
           text_color = LrColor(0, 0.25, 1),
           immediate = true,
           mouse_down = function(_view)
@@ -651,7 +651,7 @@ local function showFocusPoint()
           bind_to_object = prefs,
           value = bind("displayMode"),
           checked_value = FocusPointPrefs.displayModeDirect,
---        action = displayModeAction,
+          action = displayModeAction,
         },
 
         f:spacer { width = 8 },
@@ -664,7 +664,7 @@ local function showFocusPoint()
           checked_value = FocusPointPrefs.displayModePreview,
           enabled = WIN_ENV,   -- @TODO: remove platform condition once ImageMagick is working on Mac as well
 --        enabled = MAC_ENV,   -- to test test MAC behaviour on WIN
---        action = displayModeAction
+          action = displayModeAction
         },
 
         f:spacer { width = 8 },
@@ -677,7 +677,7 @@ local function showFocusPoint()
           checked_value = FocusPointPrefs.displayModeExport,
           enabled = WIN_ENV,   -- @TODO: remove platform condition once ImageMagick is working on Mac as well
 --        enabled = MAC_ENV,   -- to test test MAC behaviour on WIN
---        action = displayModeAction
+          action = displayModeAction
         },
       }
     end
@@ -1083,7 +1083,7 @@ local function showFocusPoint()
       userResponse = LrDialogs.presentModalDialog {
         title = appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
         contents = FocusPointDialog.createDialog(
-                     photoView, infoView, kbdShortcutInput, LrView.kIgnoredView, displayModeSelector()),
+                     photoView, infoView, kbdShortcutInput, whatsNewFAQ(), displayModeSelector()),
         accessoryView = controlPanel,
         save_frame = "FocusPointsModalDialogFrame",
         actionVerb = "Close",
