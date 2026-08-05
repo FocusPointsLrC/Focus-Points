@@ -33,7 +33,11 @@ Whether you're trying to understand why a photograph is perfectly sharp, why it 
 
 ## Lightroom Versions
 
-Focus Points is [compatible with Lightroom Classic](docs/Focus-Points.md#1-scope-and-limitations), LR5.7 and LR6 perpetual licenses and LrC subscriptions.
+Focus Points is compatible with Lightroom Classic, LR5.7<sup>1</sup> and LR6 perpetual licenses and LrC subscriptions.
+
+Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based on the Lightroom SDK, which is only available in Lightroom Classic.
+
+<sup>1</sup> LR5.7 does not support tagging photos within the plugin UI or straightening images by applying compensation for camera roll angle, since the required functionality is not supported by LR SDK 5.x. 
 
 <br>
 
@@ -43,7 +47,7 @@ Focus Points supports cameras from
 
 **Canon • Nikon • Sony • Fuji • Olympus / OM System • Panasonic • Pentax • Ricoh • Apple**
 
-Support depends on the information recorded by each camera model. Please refer to the [compatibility list](docs/Compatibility.md) to check if your camera is supported.
+The [level of support](https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#1-scope-and-limitations) depends on the information recorded by each camera model. Please refer to the [compatibility list](docs/Compatibility.md) to check if your camera is supported.
 
 <br>
 

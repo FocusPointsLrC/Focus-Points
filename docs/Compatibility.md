@@ -1,6 +1,9 @@
   # Compatibility
 
-## 
+## Lightroom versions
+
+* Lightroom Classic (LrC subscription)
+* Lightroom 5.7 and 6.x perpetual licenses
 
 ## Cameras that support display of autofocus points
 
