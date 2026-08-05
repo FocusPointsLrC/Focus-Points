@@ -189,7 +189,7 @@ local function straightenImages()
     -- Retrieve existing crop angle of photo
     local settings = photo:getDevelopSettings()
     local cropAngle = settings.CropAngle or 0
-    local photoTransformed = Straighten.hasTransform(settings)
+    local photoTransformed = Straighten.hasTransform(photo)
 
     -- Retrieve RollAngle information from metadata, normalize and apply correction
     local cameraRollAngle, status, message = Straighten.getRollAngleCW(photo)
@@ -227,7 +227,7 @@ local function straightenImages()
         break
       end
 
-      if photoTransformed then
+      if photoTransformed and not prefs.overwriteTransform then
         Log.logInfo("Straighten", fileInfo .. rollInfo .. straightenInfo ..
           " not applied (Transform applied already)")
         stats.skipped = stats.skipped + 1
@@ -256,6 +256,16 @@ local function straightenImages()
           Crop.photoReset(photo)
         end)
       end
+
+      -- Reset existing Transform settings and crop angle before straightening
+      catalog:withWriteAccessDo("Straighten Images", function()
+        if cropAngle ~= 0 then
+          Crop.photoReset(photo)
+        end
+        if photoTransformed then
+          Straighten.resetTransformSettings(photo)
+        end
+      end)
 
       -- All validation checks passed; apply the straightening correction
       if Straighten.straightenImage(photo, straightenAngle) then

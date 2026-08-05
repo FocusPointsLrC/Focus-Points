@@ -298,7 +298,7 @@ local function showFocusPoint()
     local function straightenAndRefresh(view)
       if straightenBusy then return else straightenBusy = true end
       LrTasks.startAsyncTask(function()
-        local success = straightenControlHandler()
+        local success = straightenControlHandler(targetPhoto)
         straightenBusy = false
         if success then
           closeDialog(view, "refresh")
@@ -697,10 +697,9 @@ local function showFocusPoint()
       props.cropAngleTooltip  = "Angle of current crop"
 
       -- Retrieve Transform information from Develop settings
-      props.hasTransform = Straighten.hasTransform(targetPhoto)
-      if props.hasTransform then
-        props.transformSettings = Straighten.getTransformSettings(targetPhoto)
-        props.transformText     = "T"
+      if Straighten.hasTransform(photo) then
+        props.transformSettings = Straighten.getTransformSettings(photo)
+        props.transformText     = "Transform"
         props.transformTooltip  = "Photo has Transform settings applied"
       else
         props.transformSettings = nil
@@ -724,44 +723,64 @@ local function showFocusPoint()
       end
     end
 
-    function straightenControlHandler()
+    function straightenControlHandler(photo)
 
-      -- Reset bypasses the normal validation rules because it restores a
-      -- previously saved crop state rather than applying a new correction.
+      --[[
+        Handle 'Reset':
+        Resets the result of a previous 'Straighten' action by either
+        - restoring the previous Crop and Transform settings if the photo was straightened in the same session, or
+        - reverting the Straighten Angle if the photo was straightened in a previous session
+      --]]
+
       if props.rollAngleAction == rollAngleReset then
-        -- key is localIdentifier (integer), not the photo object itself
 
-        -- undo Straightening by restoring previous Crop setting
-        if undoCrops[targetPhoto.localIdentifier] and undoCrops[targetPhoto.localIdentifier].a ~= 0 then
-          -- existing crop has been saved by preceding 'Straighten' action
-          catalog:withWriteAccessDo("Undo Straighten Images", function()
-            Crop.apply(undoCrops[targetPhoto.localIdentifier], targetPhoto, "Restore Crop")
-          end)
-          -- Remove the table entry to avoid it growing over time
-          undoCrops[targetPhoto.localIdentifier] = nil
-        else
-          -- if no crop is available we just revert the roll angle correction
-          if not Straighten.straightenImage(targetPhoto, props.rollAngle, "Undo Roll Angle Correction") then
+        local restored = false
+        catalog:withWriteAccessDo("Undo Straighten Images", function()
+
+          -- Restore previous Transform settings
+          if undoTransforms[photo.localIdentifier] then
+            -- original Transform settings were saved by the preceding Straighten operation
+            Straighten.applyTransformSettings(
+              photo, undoTransforms[photo.localIdentifier],"Restore Transform settings")
+
+            -- Remove the table entry to avoid it growing over time
+            undoTransforms[photo.localIdentifier] = nil
+
+            restored = true
+          end
+
+          -- Restore previous Crop setting
+          if undoCrops[photo.localIdentifier] then
+            -- original crop was saved by the preceding Straighten operation
+              Crop.apply(undoCrops[photo.localIdentifier], photo, "Restore Crop")
+
+            -- Remove the table entry to avoid it growing over time
+            undoCrops[photo.localIdentifier] = nil
+
+            restored = true
+          end
+        end)
+
+        -- If neither Crop nor Transform settings were available we just revert the roll angle correction
+        if not restored then
+          if not Straighten.straightenImage(photo, props.rollAngle, "Undo Roll Angle Correction") then
             LrDialogs.message("Straightening could not be undone")
           end
-        end
-
-        -- undo Straightening by restoring previous Transform settings
-        if undoTransforms[targetPhoto.localIdentifier] then
-          -- existing crop has been saved by preceding 'Straighten' action
-          catalog:withWriteAccessDo("Undo Straighten Images", function()
-            Straighten.applyTransformSettings(
-              targetPhoto, undoTransforms[targetPhoto.localIdentifier],"Restore Transform settings")
-          end)
-          -- Remove the table entry to avoid it growing over time
-          undoTransforms[targetPhoto.localIdentifier] = nil
+          return true
         end
 
         return true
       end
 
+      --[[
+        Handle 'Straighten':
+        1. Check if all conditions given by the settings in 'Straightening Options' are met.
+        2. Save current Crop and Transform settings for later Reset in the same session.
+        3. Reset current Crop and Transform settings and apply the Straighten Angle.
+      --]]
+
       -- Check whether Transform operations have been applied to this photo
-      local photoTransformed = Straighten.hasTransform(targetPhoto)
+      local photoTransformed = Straighten.hasTransform(photo)
 
       if Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
         LrDialogs.message(
@@ -802,8 +821,8 @@ local function showFocusPoint()
         end
         if prefs.overwriteCropAngleWarning then
           if LrDialogs.confirm(
-            "Overwrite existing crop angle setting?",
-            "Existing crop angle will be reset before straightening.",
+            "Overwrite existing Crop Angle setting?",
+            "Existing Crop Angle setting will be reset before straightening.",
             "Overwrite",
             "Cancel"
           ) == "cancel" then
@@ -825,31 +844,22 @@ local function showFocusPoint()
 
       -- Preserve the original crop the first time Straighten is applied
       -- so that Reset can restore the exact previous crop later
-      undoCrops[targetPhoto.localIdentifier] = undoCrops[targetPhoto.localIdentifier] or props.crop
+      undoCrops[photo.localIdentifier] = undoCrops[photo.localIdentifier] or props.crop
 
       -- Preserve the original Transform settings so Reset can use this later
-      undoTransforms[targetPhoto.localIdentifier] = undoTransforms[targetPhoto.localIdentifier] or props.transformSettings
+      undoTransforms[photo.localIdentifier] = undoTransforms[photo.localIdentifier] or props.transformSettings
 
       -- Reset existing Transform settings and crop angle before straightening
       catalog:withWriteAccessDo("Straighten Images", function()
         if props.cropAngle ~= 0 then
-          Crop.photoReset(targetPhoto, "Reset Crop")
+          Crop.photoReset(photo, "Reset Crop")
         end
         if photoTransformed then
-          local settings = {}
-          settings.PerspectiveVertical   = 0
-          settings.PerspectiveHorizontal = 0
-          settings.PerspectiveRotate     = 0
-          settings.PerspectiveAspect     = 0
-          settings.PerspectiveScale      = 0
-          settings.PerspectiveX          = 0
-          settings.PerspectiveY          = 0
-          settings.PerspectiveUpright    = 0
-          targetPhoto:applyDevelopSettings (settings, "Reset Transform settings")
+          Straighten.resetTransformSettings(photo,"Reset Transform settings")
         end
       end)
 
-      if Straighten.straightenImage(targetPhoto, -props.rollAngle) then
+      if Straighten.straightenImage(photo, -props.rollAngle) then
         return true
       else
         LrDialogs.message("Straightening could not be applied", "An internal error occurred")
@@ -974,6 +984,7 @@ local function showFocusPoint()
     end
 
     local function setFileName(photo)
+      if not photo then return end
       local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
       local fileName = Utils.getPhotoFileName(photo)
       local tooltip

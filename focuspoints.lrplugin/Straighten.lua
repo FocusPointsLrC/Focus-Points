@@ -205,7 +205,7 @@ end
 
 --[[----------------------------------------------------------------------------
   public table
-  applyTransformSettings(LrPhoto photo, table settings)
+  applyTransformSettings(LrPhoto photo, table settings, string title)
 
   Apply Transform settings to the photo
 ------------------------------------------------------------------------------]]
@@ -225,6 +225,27 @@ function Straighten.applyTransformSettings(photo, settings, title)
 
 end
 
+--[[----------------------------------------------------------------------------
+  public table
+  resetTransformSettings(LrPhoto photo, string title)
+
+  Reset Transform settings of a photo
+------------------------------------------------------------------------------]]
+function Straighten.resetTransformSettings(photo, title)
+  local transformSettings = {}
+
+  transformSettings.PerspectiveUpright    = 0
+  transformSettings.PerspectiveVertical   = 0
+  transformSettings.PerspectiveHorizontal = 0
+  transformSettings.PerspectiveRotate     = 0
+  transformSettings.PerspectiveAspect     = 0
+  transformSettings.PerspectiveScale      = 0
+  transformSettings.PerspectiveX          = 0
+  transformSettings.PerspectiveY          = 0
+
+  photo:applyDevelopSettings(transformSettings, title)
+
+end
 
 
 
