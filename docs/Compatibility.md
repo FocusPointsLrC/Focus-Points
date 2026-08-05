@@ -5,6 +5,8 @@
 * Lightroom Classic (LrC subscription)
 * Lightroom 5.7 and 6.x perpetual licenses
 
+<br>
+
 ## Cameras that support display of autofocus points
 
 * Canon

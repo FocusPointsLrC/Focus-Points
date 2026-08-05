@@ -37,7 +37,7 @@ Focus Points is compatible with Lightroom Classic, LR5.7<sup>1</sup> and LR6 per
 
 Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based on the Lightroom SDK, which is only available in Lightroom Classic.
 
-<sup>1</sup> LR5.7 does not support tagging photos within the plugin UI or straightening images by applying compensation for camera roll angle, since the required functionality is not supported by LR SDK 5.x. 
+<sup>1</sup> LR5.7 does not support tagging photos within the plugin UI or straightening images by applying compensation for camera roll angle, since the required functionality is not supported by Lightroom SDK 5.x. 
 
 <br>
 
