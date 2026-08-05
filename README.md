@@ -31,6 +31,12 @@ Whether you're trying to understand why a photograph is perfectly sharp, why it 
   
 <br>
 
+## Lightroom Versions
+
+Focus Points is [compatible with Lightroom Classic](docs/Focus-Points.md#1-scope-and-limitations), LR5.7 and LR6 perpetual licenses and LrC subscriptions.
+
+<br>
+
 ## Supported Cameras
 
 Focus Points supports cameras from

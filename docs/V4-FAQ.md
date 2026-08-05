@@ -12,8 +12,9 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 
 ## Browse by category
 
-### Camera Support
+### Compatibility
 
+* [Lightroom versions](#does-the-plugin-work-with-lightroom-perpetual-licenses-lr5-and-lr6)
 * [Is my camera supported?](#the-plugin-doesnt-seem-to-work-is-my-camera-not-supported)
 
 ### Installation
@@ -77,6 +78,14 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 <br>
 
 ## Q&A
+
+<br>
+
+#### Does the plugin work with Lightroom perpetual licenses LR5 and LR6?
+
+Focus Points is compatible with Lightroom Classic – LR5.7 and LR6 perpetual licenses and LrC subscriptions. [↗](docs/Focus-Points.md#1-scope-and-limitations)
+
+Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based on the Lightroom SDK, which is only available in Lightroom Classic.
 
 <br>
 
