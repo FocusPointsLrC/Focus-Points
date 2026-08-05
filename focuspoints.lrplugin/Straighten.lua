@@ -164,11 +164,12 @@ end
 
 --[[----------------------------------------------------------------------------
   public boolean
-  hasTransform(table settings)
+  hasTransform(LrPhoto photo)
 
   Returns whether an Upright or Transform operation has been performed on the photo
 ------------------------------------------------------------------------------]]
-function Straighten.hasTransform(settings)
+function Straighten.hasTransform(photo)
+  local settings = photo:getDevelopSettings()
   return
     (settings.PerspectiveUpright    or 0) ~=   0 or
     (settings.PerspectiveVertical   or 0) ~=   0 or
@@ -179,6 +180,74 @@ function Straighten.hasTransform(settings)
     (settings.PerspectiveX          or 0) ~=   0 or
     (settings.PerspectiveY          or 0) ~=   0
 end
+
+--[[----------------------------------------------------------------------------
+  public table
+  getTransformSettings(LrPhoto photo)
+
+  Get Transform settings for the photo
+------------------------------------------------------------------------------]]
+function Straighten.getTransformSettings(photo)
+  local settings = photo:getDevelopSettings()
+  local transformSettings = {}
+
+  transformSettings.PerspectiveUpright    = settings.PerspectiveUpright
+  transformSettings.PerspectiveVertical   = settings.PerspectiveVertical
+  transformSettings.PerspectiveHorizontal = settings.PerspectiveHorizontal
+  transformSettings.PerspectiveRotate     = settings.PerspectiveRotate
+  transformSettings.PerspectiveAspect     = settings.PerspectiveAspect
+  transformSettings.PerspectiveScale      = settings.PerspectiveScale
+  transformSettings.PerspectiveX          = settings.PerspectiveX
+  transformSettings.PerspectiveY          = settings.PerspectiveY
+
+  return transformSettings
+end
+
+--[[----------------------------------------------------------------------------
+  public table
+  applyTransformSettings(LrPhoto photo, table settings, string title)
+
+  Apply Transform settings to the photo
+------------------------------------------------------------------------------]]
+function Straighten.applyTransformSettings(photo, settings, title)
+  local transformSettings = {}
+
+  transformSettings.PerspectiveUpright    = settings.PerspectiveUpright
+  transformSettings.PerspectiveVertical   = settings.PerspectiveVertical
+  transformSettings.PerspectiveHorizontal = settings.PerspectiveHorizontal
+  transformSettings.PerspectiveRotate     = settings.PerspectiveRotate
+  transformSettings.PerspectiveAspect     = settings.PerspectiveAspect
+  transformSettings.PerspectiveScale      = settings.PerspectiveScale
+  transformSettings.PerspectiveX          = settings.PerspectiveX
+  transformSettings.PerspectiveY          = settings.PerspectiveY
+
+  photo:applyDevelopSettings(transformSettings, title)
+
+end
+
+--[[----------------------------------------------------------------------------
+  public table
+  resetTransformSettings(LrPhoto photo, string title)
+
+  Reset Transform settings of a photo
+------------------------------------------------------------------------------]]
+function Straighten.resetTransformSettings(photo, title)
+  local transformSettings = {}
+
+  transformSettings.PerspectiveUpright    = 0
+  transformSettings.PerspectiveVertical   = 0
+  transformSettings.PerspectiveHorizontal = 0
+  transformSettings.PerspectiveRotate     = 0
+  transformSettings.PerspectiveAspect     = 0
+  transformSettings.PerspectiveScale      = 0
+  transformSettings.PerspectiveX          = 0
+  transformSettings.PerspectiveY          = 0
+
+  photo:applyDevelopSettings(transformSettings, title)
+
+end
+
+
 
 
 return Straighten
