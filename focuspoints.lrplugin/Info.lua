@@ -62,8 +62,8 @@ return {
       major      = 4,
       minor      = 0,
       revision   = 0,
-      build      = 9031,
-      display    = "4 PRE 3a",
+      build      = 9040,
+      display    = "4 PRE 4",
       -- custom additions:
       channel    = "prerelease",
       branch     = "v4",

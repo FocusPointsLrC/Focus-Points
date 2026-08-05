@@ -997,8 +997,8 @@ local function showFocusPoint()
         end
         if prefs.overwriteCropAngleWarning then
           if LrDialogs.confirm(
-            "Overwrite existing crop angle setting?",
-            "Existing crop angle will be reset before straightening.",
+            "Overwrite existing Crop Angle setting?",
+            "Existing Crop Angle setting will be reset before straightening.",
             "Overwrite",
             "Cancel"
           ) == "cancel" then
@@ -1184,7 +1184,6 @@ local function showFocusPoint()
         contents = FocusPointDialog.createDialog(
                      photoView, infoView, kbdShortcutInput, whatsNewFAQ(), displayModeSelector()),
         accessoryView = controlPanel,
-        save_frame = "FocusPointsModalDialogFrame",
         actionVerb = "Close",
         cancelVerb = "< exclude >",
       }

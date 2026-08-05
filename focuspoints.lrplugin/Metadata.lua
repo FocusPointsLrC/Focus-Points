@@ -51,7 +51,7 @@ local createParts, splitForColumns
 ------------------------------------------------------------------------------]]
 local function showMetadata()
 
-  LrFunctionContext.callWithContext("showDialog", function(_context)
+  LrFunctionContext.callWithContext("showDialog", function()
 
     local catalog = LrApplication.activeCatalog()
     local targetPhoto = catalog:getTargetPhoto()
@@ -73,9 +73,9 @@ local function showMetadata()
     Log.logInfo("Metadata", string.rep("=", 72))
     Log.logInfo("Metadata", "Image: " .. targetPhoto:getRawMetadata("path"))
 
-    LrTasks.startAsyncTask(function(_context)
+    LrTasks.startAsyncTask(function()
 
-      LrFunctionContext.callWithContext("function", function(_dialogContext)
+      LrFunctionContext.callWithContext("function", function()
         local column1, column2, column3, column1Length, column2Length, column3Length, numLines
 
 
