@@ -59,6 +59,13 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-point-viewer-window-when-i-change-its-size-in-second-screen-mode)  
 
+### Straightening Images
+
+* My Camera is not supported
+* The result is not good
+* 
+
+
 ### User Interface
 
 * [Plugin window exceeds screen dimensions](#the-plugin-window-exceeds-the-dimensions-of-my-screen-how-can-this-be-avoided)
