@@ -63,7 +63,7 @@
 
 <br>
 
-## Cameras that support straightening images
+## Cameras that support Straighten Images
 
 The Straightening function relies on the presence of the `RollAngle` tag in the metadata. Therefore, its application is currently limited to:
 

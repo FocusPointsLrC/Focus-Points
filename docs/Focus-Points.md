@@ -33,7 +33,7 @@
 ### [Compatibility](Compatibility.md)
 
 * [Cameras that support display of autofocus points](Compatibility.md#cameras-that-support-display-of-autofocus-points)
-* [Cameras that support straightening images](Compatibility.md#cameras-that-support-straightening-images)
+* [Cameras that support Straighten Images](Compatibility.md#cameras-that-support-straighten-images)
 * [Features not supported in earlier versions of Lightroom](Compatibility.md#features-not-supported-in-earlier-versions-of-lightroom)
 
 <br>
@@ -46,7 +46,7 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Visualize faces and subjects detected by the camera <sup>3,5</sup>
 - Tagging (flagging, rating and coloring) of photos within the plugin UI <sup>7</sup>
 - Display and search (EXIF) metadata of the selected image 
-- Straightening images by applying compensation for camera roll angle<sup>3,6,7</sup>
+- Straighten Images by applying compensation for camera roll angle<sup>3,6,7</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
 <sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple.<br>
@@ -182,7 +182,7 @@ Develop module:<br>
 
 ### User Interface
 
-The user interface is divided into three main areas. On the left is the Photo View (1), which shows visualized focus points and detected elements. On the right is the Info View (2+3), a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating,  flagging and straightening images and are located at the bottom of the window (4+5+6).
+The user interface is divided into three main areas. On the left is the Photo View (1), which shows visualized focus points and detected elements. On the right is the Info View (2+3), a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating,  flagging and straighten images and are located at the bottom of the window (4+5+6).
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
@@ -335,7 +335,7 @@ The keyboard layout in use can be configured in the plugin preferences, under th
 
 ### Straightening Control
 
-V3.4 enables you to level the image currently displayed in the Focus Point window. You have visual control of the result and the option to undo. This is the interactive version of the ['Straightening Images'](#24-straighten-images) batch process. The same options and restrictions apply.
+You can level the image currently displayed in the Focus Point Viewer. You can immediately review the result and undo the operation if necessary. This is the interactive counterpart of the batch ['Straighten Images'](#24-straighten-images) function. The same options and restrictions apply.
 
 **How the Straighten Control Works**
 
@@ -347,18 +347,18 @@ V3.4 enables you to level the image currently displayed in the Focus Point windo
 
 3. If the camera was tilted by x° when the image was captured, applying a Crop Angle of −x° compensates for that tilt and displays the image as if the camera had been held level. 
 
-4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the `Straighten` button rotates the image by the opposite of the Roll Angle, resulting in a level image.
+4. When Roll Angle and Crop Angle do not balance each other, the values are shown in red. In this state, the `Straighten` button rotates the image by the opposite of the Roll Angle, resulting in a level image.
 
 5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the `Straighten` button changes to `Reset`. Clicking `Reset` restores the crop settings that were in effect before the image was straightened.<br><br>
 
 
-**Example: Straighten a photo which has not been taken level**  
+**Example: Straighten a photo that was not taken level**  
 
 The user opens a photo in the Focus Point Viewer. The red text displayed in the 'Straighten' control indicates that the roll and crop angles are not balanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
 
 <img src="images/Straighten Control 1.jpg" alt="Straighten Control 1" style="width: 1000px;"/>
 
-The result of the straightening process is displayed in a refreshed window. The text now indicates in green color that Roll Angle and Crop Angle are balanced, the image is level:
+The result of the straightening process is displayed in a refreshed window. The text is now displayed in green, indicating that Roll Angle and Crop Angle are balanced. The image is now level:
 
 <img src="images/Straighten Control 2.jpg" alt="Straighten Control 2" style="width: 1000px;"/>
 
@@ -368,30 +368,30 @@ The performed edits are recorded in Lightroom's History panel:
 
 <img src="images/Straighten Control 3.jpg" alt="Straighten Control 3" style="width: 600px;"/><br><br>
 
-**Example: Straighten a photo with 'Upright Level' setting already applied**  
+**Example: Straighten a photo with `Upright Level` setting already applied**  
 
-Lightroom provides various options for 'straightening' a photo. To automatically straighten a photo with respect to a horizontal tilt, apply the 'Upright Level' option. This can be done either individually or during import. 
+Lightroom provides various options for 'straightening' a photo. To automatically straighten a photo with respect to a horizontal tilt, apply the `Upright Level` option. This can be done either individually or during import. 
 
 While this works quite well for photos with clear reference points representing the horizon, it can produce unexpected results for photos lacking these.
 
-The 'Upright Level' tool has been used for this photo of a bird on a pole, attempting to straighten it: 
+The `Upright Level` tool was applied to this photo of a bird on a pole, attempting to straighten it: 
 
 <img src="images/Straighten Control 4.jpg" alt="Straighten Control 4" style="width: 1000px;"/>
 
-The text 'Transform' right next to the Crop angle indicates that Transform settings have been applied to this photo. A Transform setting can be one of the 6 Upright tools, or any of the individual Transform settings below: 
+The text `Transform` right next to the `Crop` angle indicates that `Transform` settings have been applied to this photo. A `Transform` setting can be one of the six Upright tools, or any of the individual `Transform` settings below: 
 
 <img src="images/Straighten Control 9.jpg" alt="Straighten Control 9"/>
 
-Clearly, the 'Upright Level' result is not satisfactory. The tool used the fence wire as a reference, even though it is not one.  
-Could the Straighten tool in Focus Point Viewer do a better job?
+Clearly, the `Upright Level` result is not satisfactory. The tool used the fence wire as a reference, even though it is not one.  
+Can Focus Point Viewer's Straighten tool do a better job?
 
 <img src="images/Straighten Control 5.jpg" alt="Straighten Control 5" style="width: 1000px;"/>
 
-After pressing the `Straighten` button, a warning will appear asking you to confirm whether you want to discard and overwrite the existing Transform settings. These settings will not be permanently deleted, but can be restored via the `Reset` button if desired.  
+After pressing the `Straighten` button, a warning will appear asking you to confirm whether you want to overwrite the existing `Transform` settings. These settings will not be permanently deleted, but can be restored via the `Reset` button if desired.  
 
 <img src="images/Straighten Control 6.jpg" alt="Straighten Control 6" style="width: 1000px;"/>
 
-Applying a roll angle compensation to straighten this image indeed gives a much better result compared to using Lightroom's Upright tool. The History panel provides a detailed list of the steps taken to straighten the image, and allows you to undo this change by selecting `Reset`. 
+Applying a roll angle compensation to straighten this image gives a much better result compared to using Lightroom's Upright tool. The History panel provides a detailed list of the steps taken to straighten the image, and allows you to undo this change by selecting `Reset`. 
 
 <img src="images/Straighten Control 7.jpg" alt="Straighten Control 7"/><br><br>
 
@@ -463,7 +463,7 @@ You can configure the size of the text input field, including the labeling, in t
 
 ### Got a question? Check the FAQ!
 
-If you have a question or encounter an issue while working with Focus Point Viewer, you can access the Frequently Asked Questions (FAQs) to find an answer with a single click.
+If you have a question or encounter an issue while working with Focus Point Viewer, you can access the [Frequently Asked Questions (FAQs)](V4-FAQ.md) to find an answer with a single click.
 
 ### Buy me a coffee
 Several of you have asked how you can show your appreciation for the work I have done to significantly improve the plugin over the past year and months. If you care about this issue, you can now show your [support via Ko-fi](https://ko-fi.com/focuspoints)*. Simply click the link next to the coffee cup.
@@ -518,7 +518,7 @@ The pitch angle is 4.1°, which means that it's height was approximately 50m * s
 
 ## 2.4 Straighten Images
 
-To straighten a selection of photos in batch mode, run
+To straighten a selection of photos in **batch mode**, run
 
 Library Module:<br>
 `Library → Plug-in Extras → Straighten Images`
@@ -526,29 +526,29 @@ Library Module:<br>
 Develop Module:<br>
 `File → Plug-in Extras → Straighten Images`
 
-This function reads the camera roll angle from the metadata of selected photos one by one and applies compensation by rotating them accordingly.
+This function reads the camera's roll angle from the metadata of selected photos one by one and applies the corresponding crop rotation to compensate for the camera's tilt.
 
-Manually straightening individual images is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature is useful for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the scenes captured lack clear reference points to help you (or the Transform tool) straighten the images.
+Manually straightening individual images is not difficult, and Lightroom also supports automatic straightening using the `Transform` tool. However, Straighten Images is particularly useful for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the scene lacks clear horizontal or vertical reference lines for you—or Lightroom's `Upright` tool—to use when straightening the image.
 
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras, that record this information](Compatibility.md#cameras-that-support-straightening-images).
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras that record this information](Compatibility.md#cameras-that-support-straightening-images).
 
-The Straighten Images feature is not available for LR5, since version 5.x of the Lightroom SDK does not yet support the required functionality.
+**Note:** The Straighten Images feature is not available for LR5, since version 5.x of the Lightroom SDK does not yet support the required functionality.
 
 
 ### Example
 
-The photo has a roll angle of 2.5°. Applying a crop angle of -2.5° compensates for the tilt. Please note that a non-zero crop angle will change the crop of the photo. Straightening the photo will result in the corners being lost.
+The photo has a roll angle of 2.5°. Applying a crop angle of −2.5° compensates for the tilt. Please note that a non-zero crop angle will change the crop of the photo. Straightening the photo will result in the corners being lost.
 
-Using the 'Straighten Images' tool produces the same result as entering the roll angle compensation manually in Lightroom's 'Crop & Straighten' tool. You can then modify or even revert the compensation as desired.
+Using the Straighten Images tool produces the same result as entering the roll angle compensation manually in Lightroom's 'Crop & Straighten' tool. You can then modify or even revert the compensation as desired.
 
 <img src="images/Straighten%201.jpg" alt="User Interface" style="width: 1000px;"/>
 
 
 ### Operation
 
-To use the Straighten Images plugin, select the photos you want to straighten and open Plug-in Extras > Straighten Images.
+To use Straighten Images, select the photos you want to straighten and open Plug-in Extras > Straighten Images.
 
-The plugin then processes all the selected photos, retrieving 'RollAngle' information from their metadata if available, and applies the relevant correction by adjusting the crop angle of each photo. The standard progress bar in the top-left corner of Lightroom shows the progress of the operation. You can interrupt the process by clicking the 'x' icon to the right of the progress bar.
+The plugin then processes all the selected photos, retrieving `RollAngle` information from their metadata if available, and applies the relevant correction by adjusting the crop angle of each photo. The standard progress bar in the top-left corner of Lightroom shows the progress of the operation. You can interrupt the process by clicking the 'x' icon to the right of the progress bar.
 
 <img src="images/Straighten%202.jpg" alt="User Interface" style="width: 1000px;"/>
 
@@ -556,7 +556,7 @@ By default, the plugin notifies you of successful completion of the process with
 
 <img src="images/Straighten%203.jpg" alt="User Interface" style="width: 1000px;"/>
 
-If any of the selected photos cannot be straightened, a dialog box will provide a summary. You can configure the conditions that trigger this window.
+If any of the selected photos cannot be straightened, a dialog will provide a summary. You can configure the conditions that trigger this window.
 
 <img src="images/Straighten%204.jpg" alt="User Interface" style="width: 1000px;"/>
 
@@ -567,7 +567,7 @@ If you require more detailed information, you can access it by clicking 'See det
 
 ### Customization
 
-Various options allow you to customize and fine-tune the process of straightening images:
+Various options allow you to customize and fine-tune the process of Straighten Images:
 
 <img src="images/Straighten%206.jpg" alt="User Interface"/>
 
@@ -576,7 +576,7 @@ For a detailed explanation of these settings, see [Straightening Options](#strai
 
 ### Keyboard Shortcut
 
-The FocusPointsHotkey script files and precompiled executables have been extented by a third keyboard shortcut `Ctrl NumpadSub`.
+The FocusPointsHotkey script files and precompiled executables have been extended by a third keyboard shortcut `Ctrl NumpadSub`.
 
 
 ### General Remarks
@@ -586,16 +586,16 @@ The quality of the result of straightening depends essentially on two factors:
 - Precision of roll angle measurement by the camera
 - Accuracy of the camera's level gauge adjustment
 
-The benefits of straightening photos of man-made structures can be limited. In such cases, great precision is often desired, as well as compensation for vertical tilt.
+The benefits of straightening photos of man-made structures can be limited. In such cases, accurate leveling is often required, as well as compensation for vertical tilt.
 
 Conversely, the Straighten Images feature is extremely useful for genres such as nature, wildlife, sports and action photography. It is not uncommon to find that there is no clear reference information to help you straighten images manually. This feature is also useful for burst shoots, such as photographing birds in flight, when it is easy to tilt the camera while tracking your subject.
 
-The plugin generally produces better and more reliable level correction results than Lightroom's Auto Transform feature. This is because it responds directly to horizontal camera imbalance. Auto Transform looks for straight lines in a photo and uses them as a reference point to straighten the image. However, if there are structures in an image that are not actually straight, the result will be incorrect.
+The plugin generally produces better and more reliable level correction results than Lightroom's `Upright` tool. This is because it responds directly to horizontal camera imbalance. `Upright` looks for straight lines in a photo and uses them as a reference point to straighten the image. However, if there are structures in an image that are not actually straight, the result will be incorrect.
 
-Lightroom Auto Transform ('Level'):
+Lightroom `Upright Level`:
 <img src="images/Straighten%207.jpg" alt="User Interface" style="width: 1000px;"/>
 
-This plugin's Straighten Image function:
+Focus Point Viewer's Straighten Images function:
 <img src="images/Straighten%208.jpg" alt="User Interface" style="width: 1000px;"/>
 
 <br>
@@ -630,7 +630,7 @@ This setting allows you to customize the size of the plugin window. You can choo
 
 In the Focus Point dialog, this setting corresponds to 90% (3XL) to 40% (S), in increments of 10%, of the size of the Lightroom application window used to display the photo. Please note that the text pane to the right of the photo and the bottom row of user controls are not included in this percentage.
 
-In the Metadata Viewer, this setting determines the height of the dialog box. The width is determined by the header line, which includes the two filter entry fields and the hint text. 
+In the Metadata Viewer, this setting determines the height of the dialog. The width is determined by the header line, which includes the two filter entry fields and the hint text. 
 
 <u>Note</u>: Windows users already had the option to adjust the size of the focus points window using the screen scaling option specific to Windows. This setting remains as it is.
 
@@ -707,19 +707,19 @@ The logging mechanism provides a fine-grained hierarchy of levels at which infor
 
 ### Straightening Options
 
-These settings control the process of [Straightening Images](#24-Straighten-images):
+These settings control how [Straighten Images](#24-Straighten-images) operates:
 
 <img src="images/Settings%20-%20Straightening%20Options.jpg" alt="User Interface"/>
 
 **_Overwrite existing crop angle setting_**. Default setting: `Off`<br>
 Roll angle compensation will be applied, even if the photo has already been rotated using Lightroom's Crop & Straighten tool. The straightening angle replaces the rotation (crop) angle rather than being added to it. If `Display warning` is selected, a dialogue box will appear in interactive mode to confirm the overwrite.
 
-**_Overwrite existing Transform settings_**. Default setting: `Off`<br>
-Roll angle compensation will be applied, even if the photo has Transform settings, such as Upright, applied. If `Display warning` is selected, a dialogue box will appear in interactive mode to confirm the overwrite.
+**_Overwrite existing `Transform` settings_**. Default setting: `Off`<br>
+Roll angle compensation will be applied, even if the photo has `Transform` settings, such as `Upright`, applied. If `Display warning` is selected, a dialogue box will appear in interactive mode to confirm the overwrite.
 
 **_Apply straightening only for angles between x and y_**. Default setting: `Off`<br>
 Roll angle compensation will only be applied for angles within the range of x to y degrees.  
-You can use this option to define a deadband to prevent small, often invisible, corrections from triggering Lightroom cropping. You can also set an upper limit for straightening angles. For example, if a photo has been taken with the camera tilted 25° horizontally, this is likely to be a deliberate creative choice rather than an unintended tilt. The lower and upper limits apply to both camera directions. (In Lightroom's Crop & Straighten tool, positive values rotate the image clockwise and negative values rotate it counterclockwise).
+You can use this option to define a threshold to prevent small, often invisible, corrections from triggering Lightroom cropping. You can also set an upper limit for straightening angles. For example, if a photo has been taken with the camera tilted 25° horizontally, this is likely to be a deliberate creative choice rather than an unintended tilt. The lower and upper limits apply to both camera directions. (In Lightroom's Crop & Straighten tool, positive values rotate the image clockwise and negative values rotate it counterclockwise).
   
 Example:  
 Applying straightening only for angles between 0.2° and 10° means that no straightening (and cropping) will occur for angles between -0.2° and 0.2°, or for angles outside the range of -10° to 10°.  
@@ -728,7 +728,7 @@ Applying straightening only for angles between 0.2° and 10° means that no stra
 If you are straightening photos captured using an improperly calibrated level gauge, you can specify a calibration offset in degrees here. This offset will be added to the roll angle compensation to compensate for the incorrect calibration of the level gauge. 
 
 **_Condition to open the summary dialog when straightening is complete_**. Default setting: `Skipped Images`<br>
-Specify the least critical condition that will trigger the summary window to open at the end of the straightening process. The dropdown list shows the available conditions in ascending order of criticality.
+Select the minimum severity level that opens the summary dialog at the end of the straightening process. The dropdown list shows the available conditions in ascending order of criticality.
 
 Example:  
 The default setting, 'Skipped Images', will trigger the summary to show for skipped images, as well as warnings and errors that occurred during the process. Selecting the 'Errors' setting will only show the summary for errors that occurred, but not for warnings or skipped images.
