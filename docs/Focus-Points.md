@@ -158,8 +158,12 @@ Select the plug-in and click `Reload plug-in` (only applies if Lightroom is open
 
 
 Once the plugin has been installed, choose one or more photos and select:
-* `Library → Plug-in Extras → Show Focus Point`, or  
-* `File → Plug-in Extras → Show Focus Point`
+
+Library module:<br>
+`Library → Plug-in Extras → Show Focus Point`
+
+Develop module:<br>
+`File → Plug-in Extras → Show Focus Point`
 
 See [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin) to learn how to invoke the plugin using a hotkey.
 
@@ -473,8 +477,11 @@ Payments are processed securely via PayPal or credit/debit card, and no account 
 
 The Metadata Viewer enables you to interactively explore all the information recorded by the camera when the picture was taken. This goes far beyond what Lightroom or even the Focus Point Viewer covers. In short, it contains all the information that ExifTool knows.
 
-* `Library → Plug-in Extras → Show Metadata`, or
-* `File → Plug-in Extras → Show Metadata`
+Library Module:<br>
+`Library → Plug-in Extras → Show Metadata`
+
+Develop Module:<br>
+`File → Plug-in Extras → Show Metadata`
 
 Metadata can be filtered by group, key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
 
@@ -513,8 +520,11 @@ The pitch angle is 4.1°, which means that it's height was approximately 50m * s
 
 To straighten a selection of photos in batch mode, run
 
-* `Library → Plug-in Extras → Straighten Images` or
-* `File → Plug-in Extras → Straighten Images`
+Library Module:<br>
+`Library → Plug-in Extras → Straighten Images`
+
+Develop Module:<br>
+`File → Plug-in Extras → Straighten Images`
 
 This function reads the camera roll angle from the metadata of selected photos one by one and applies compensation by rotating them accordingly.
 
