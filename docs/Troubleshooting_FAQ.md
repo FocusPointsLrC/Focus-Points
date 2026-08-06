@@ -7,7 +7,7 @@
 This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages summarize whether the plugin was successful in detecting and visualising focus points. These messages can be success messages (green), warnings (orange) or error messages (red).
 
 * [No focus points recorded](#no-focus-points-recorded)
-* [Manual focus, no AF points recorded](#manual-focus-no-AF-points-recorded)
+* [Manual focus, no AF points recorded](#manual-focus-no-af-points-recorded)
 * [Focus point recorded in manual focus mode](#focus-point-recorded-in-manual-focus-mode)
 * [Focus info missing from file](#focus-info-missing-from-file)
 * [Focus points outside cropped image area](#focus-points-outside-cropped-image-area)
@@ -60,7 +60,7 @@ The plugin requires the metadata of original, out-of-camera JPGs or RAW files in
 Lightroom does not retain or even read makernotes when importing files. Therefore, if a separate file is created from the original image (e.g. by exporting to another application such as Photoshop), this information will not be present in the file and the plugin will not have the necessary inputs to work.
 
 
-For more details and concrete examples, see [Scope and Limitations](Focus-Points.md#scope-and-limitations).  
+For more details and concrete examples, see [Scope and Limitations](Focus-Points.md#1-scope-and-limitations).  
 
 For example, this image was imported into Lightroom as a RAW file and then edited in Photoshop. The re-imported TIFF file is missing the makernotes and focus information, so the plugin does not have the data it needs to work.
 

@@ -15,7 +15,7 @@
    - [User Interface](#user-interface), [User Messages](#user-messages), [Plugin Status](#plugin-status), [Keyboard Shortcuts](#keyboard-shortcuts) 
 *  [Metadata Viewer](#23-metadata-viewer)
 *  [Straighten Images](#24-straighten-images)
-   - [Operation](#operation), [Customization](#Customization), [Keyboard Shortcut](#keyboard-shortcut), [General Remarks](#general-remarks) 
+   - [Operation](#operation), [Customization](#customization), [Keyboard Shortcut](#keyboard-shortcut), [General Remarks](#general-remarks) 
 *  [Configuration and Settings](#25-configuration-and-settings)
    - [Screen Scaling](#screen-scaling), [User Interface](#user-interface-settings), [Viewing Options](#viewing-options), [Logging](#logging), [Straightening Options](#straightening-options), [Update Check](#update-check)
 
@@ -265,17 +265,20 @@ Example: DoF in this capture is only ~2 cm, so with the chosen aperture of f/1.8
 
 The first line of text in the `Focus Information` section contains a message summarizing whether the plugin was successful in its task to detect and visualize focus points. This can be a success message (in green letters), a warning (orange) or an error message (red):
 
-|  Type   | Message                                                                                                         |
-|:-------:|-----------------------------------------------------------------------------------------------------------------|
-| Success | Focus points detected                                                                                           |
-| Warning | [No focus points recorded](./Troubleshooting_FAQ.md#no-focus-points-recorded)                                   |
-| Warning | [Focus point recorded in manual focus mode](./Troubleshooting_FAQ.md#focus-point-recorded-in-manual-focus-mode) |
-| Warning | [Manual focus, no AF points recorded](Troubleshooting_FAQ.md#manual-focus-no-AF-points-recorded)                |
-|  Error  | [Focus info missing from file](Troubleshooting_FAQ.md#focus-info-missing-from-file)                             |
-|  Error  | [Camera model not supported](Troubleshooting_FAQ.md#camera-model-not-supported)                                 |
-|  Error  | [Camera maker not supported](Troubleshooting_FAQ.md#camera-maker-not-supported)                                 |
-|  Error  | [No camera-specific metadata found](Troubleshooting_FAQ.md#no-camera-specific-metadata-found)                   |
-|  Error  | [Severe error encountered](Troubleshooting_FAQ.md#severe-error-encountered)                                     |
+|  Type   | Message                                                                                                       |
+|:-------:|---------------------------------------------------------------------------------------------------------------|
+| Success | Focus points detected                                                                                         |
+| Warning | [No focus points recorded](Troubleshooting_FAQ.md#no-focus-points-recorded)                                   |
+| Warning | [Focus point recorded in manual focus mode](Troubleshooting_FAQ.md#focus-point-recorded-in-manual-focus-mode) |
+| Warning | [Manual focus, no AF points recorded](Troubleshooting_FAQ.md#manual-focus-no-af-points-recorded)              |
+|  Error  | [Focus info missing from file](Troubleshooting_FAQ.md#focus-info-missing-from-file)                           |
+|  Error  | [Camera model not supported](Troubleshooting_FAQ.md#camera-model-not-supported)                               |
+|  Error  | [Camera maker not supported](Troubleshooting_FAQ.md#camera-maker-not-supported)                               |
+|  Error  | [No camera-specific metadata found](Troubleshooting_FAQ.md#no-camera-specific-metadata-found)                 |
+|  Error  | [Severe error encountered](Troubleshooting_FAQ.md#severe-error-encountered)                                   |
+
+
+
 
 Click on the message to learn what it means and how to deal with it in case of an error or warning.
 
@@ -458,7 +461,7 @@ On macOS, clicking on any control (such as a button, link or tagging icon) remov
 
 By default, the input field is visible to indicate when it has lost focus. To continue working with keyboard shortcuts, you need to click the field again.
 
-You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
+You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard-shortcuts).
 
 
 ### Got a question? Check the FAQ!
@@ -530,7 +533,7 @@ This function reads the camera's roll angle from the metadata of selected photos
 
 Manually straightening individual images is not difficult, and Lightroom also supports automatic straightening using the `Transform` tool. However, Straighten Images is particularly useful for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the scene lacks clear horizontal or vertical reference lines for you—or Lightroom's `Upright` tool—to use when straightening the image.
 
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras that record this information](Compatibility.md#cameras-that-support-straightening-images).
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras that record this information](Compatibility.md#cameras-that-support-straighten-images).
 
 **Note:** The Straighten Images feature is not available for LR5, since version 5.x of the Lightroom SDK does not yet support the required functionality.
 
@@ -634,7 +637,7 @@ In the Metadata Viewer, this setting determines the height of the dialog. The wi
 
 <u>Note</u>: Windows users already had the option to adjust the size of the focus points window using the screen scaling option specific to Windows. This setting remains as it is.
 
-<span id="text-input-field-for-keyboard shortcuts"></span>
+<span id="text-input-field-for-keyboard-shortcuts"></span>
 **_Appearance of text input field for keyboard shortcuts_**. Default setting: `Regular`<br>
 To make keyboard shortcuts more transparent and intuitive to use, the text input field that captures them is now visible by default. For a more detailed explanation, see xxx.
 This setting can be used to customize the appearance of the input field:
@@ -707,7 +710,7 @@ The logging mechanism provides a fine-grained hierarchy of levels at which infor
 
 ### Straightening Options
 
-These settings control how [Straighten Images](#24-Straighten-images) operates:
+These settings control how [Straighten Images](#24-straighten-images) operates:
 
 <img src="images/Settings%20-%20Straightening%20Options.jpg" alt="User Interface"/>
 

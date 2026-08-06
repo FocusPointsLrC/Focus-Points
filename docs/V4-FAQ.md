@@ -90,7 +90,7 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 
 #### Does the plugin work with Lightroom perpetual licenses LR5 and LR6?
 
-Focus Points is compatible with Lightroom Classic – LR5.7 and LR6 perpetual licenses and LrC subscriptions. [↗](docs/Focus-Points.md#1-scope-and-limitations)
+Focus Points is compatible with Lightroom Classic – LR5.7 and LR6 perpetual licenses and LrC subscriptions. [↗](Focus-Points.md#1-scope-and-limitations)
 
 Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based on the Lightroom SDK, which is only available in Lightroom Classic.
 
@@ -169,7 +169,7 @@ _You can setup custom keyboard shortcuts to run Focus Point Viewer, Metadata Vie
 
 To simplify operation of the plugin, keyboard shortcuts are supported. These shortcuts can be used to perform all actions associated with the user interface, meaning you can operate the plugin entirely with the keyboard and never need to touch the mouse. [↗](Focus-Points.md#keyboard-shortcuts)
 
-Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts-)
+Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts)
 
 _The Focus Point Viewer features can be controlled entirely using the keyboard._
 
@@ -312,7 +312,7 @@ On Windows, `Preview Image` is used since `Direct View` is limited by the Lightr
 **V4:**<br>
 V4 provides extended support for Display Modes. [↗](V4-New-Features.md#2-display-modes)  
 On macOS, Focus Point Viewer uses `Direct View` which is the fastet way to display an image.<br>
-On Windows, you can now also select the 'Direct View' option, but the presentation [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly) in this mode is limited. [↗](V4-New-Features.md#sup5sup-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)      
+On Windows, you can now also select the 'Direct View' option, but the presentation [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly) in this mode is limited. [↗](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)      
 If visual appearance is more important than speed in your workflow, the right choice for you is `Preview Image`.  See [How to reduce long wait times when opening the plugin window on Windows](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation what you can do to improve speed.
 
 _If you're not using an outdated setup, the plugin can open a photo in between 0.5 and 1 second, unless a preview is not yet available in Lightroom._ 
