@@ -345,10 +345,10 @@ V3.4 enables you to level the image currently displayed in the Focus Point windo
 
 4. When Roll Angle and Crop Angle do not cancel each other, their values are highlighted in red. In this state, the `Straighten` button rotates the image by the opposite of the Roll Angle, resulting in a level image.
 
-5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the `Straighten` button changes to `Reset`. Clicking `Reset` restores the crop settings that were in effect before the image was straightened.
-<br>
+5. When Roll Angle and Crop Angle are balanced, i.e., their values cancel each other, their values are highlighted in green. In this state, the `Straighten` button changes to `Reset`. Clicking `Reset` restores the crop settings that were in effect before the image was straightened.<br><br>
 
-**Example:**  
+
+**Example: Straighten a photo which has not been taken level**  
 
 The user opens a photo in the Focus Point Viewer. The red text displayed in the 'Straighten' control indicates that the roll and crop angles are not balanced. This means that the image was not taken level and the tilt has not been corrected. The `Straighten` button can be used to rotate the image resulting in a level image:
 
@@ -363,9 +363,40 @@ If the result is not satisfactory, it can be undone using the `Reset` button, wh
 The performed edits are recorded in Lightroom's History panel:
 
 <img src="images/Straighten Control 3.jpg" alt="Straighten Control 3" style="width: 600px;"/><br><br>
-For images that cannot be straightened because Roll Angle information is unavailable, the text is displayed in black and the control is disabled. Hovering the mouse pointer over the text displays a tooltip explaining the reason (e.g. unsupported camera model or missing Roll Angle information).
+
+**Example: Straighten a photo with 'Upright Level' setting already applied**  
+
+Lightroom provides various options for 'straightening' a photo. To automatically straighten a photo with respect to a horizontal tilt, apply the 'Upright Level' option. This can be done either individually or during import. 
+
+While this works quite well for photos with clear reference points representing the horizon, it can produce unexpected results for photos lacking these.
+
+The 'Upright Level' tool has been used for this photo of a bird on a pole, attempting to straighten it: 
 
 <img src="images/Straighten Control 4.jpg" alt="Straighten Control 4" style="width: 1000px;"/>
+
+The text 'Transform' right next to the Crop angle indicates that Transform settings have been applied to this photo. A Transform setting can be one of the 6 Upright tools, or any of the individual Transform settings below: 
+
+<img src="images/Straighten Control 9.jpg" alt="Straighten Control 9"/>
+
+Clearly, the 'Upright Level' result is not satisfactory. The tool used the fence wire as a reference, even though it is not one.  
+Could the Straighten tool in Focus Point Viewer do a better job?
+
+<img src="images/Straighten Control 5.jpg" alt="Straighten Control 5" style="width: 1000px;"/>
+
+After pressing the `Straighten` button, a warning will appear asking you to confirm whether you want to discard and overwrite the existing Transform settings. These settings will not be permanently deleted, but can be restored via the `Reset` button if desired.  
+
+<img src="images/Straighten Control 6.jpg" alt="Straighten Control 6" style="width: 1000px;"/>
+
+Applying a roll angle compensation to straighten this image indeed gives a much better result compared to using Lightroom's Upright tool. The History panel provides a detailed list of the steps taken to straighten the image, and allows you to undo this change by selecting `Reset`. 
+
+<img src="images/Straighten Control 7.jpg" alt="Straighten Control 7"/><br><br>
+
+
+**Example: Roll Angle information is not present in metadata**
+
+For images that cannot be straightened because Roll Angle information is unavailable, the text is displayed in black and the control is disabled. Hovering the mouse pointer over the text displays a tooltip explaining the reason (e.g. unsupported camera model or missing Roll Angle information).
+
+<img src="images/Straighten Control 8.jpg" alt="Straighten Control 8" style="width: 1000px;"/>
 <br><br>
 
 ### Keyboard Shortcuts
@@ -671,7 +702,10 @@ These settings control the process of [Straightening Images](#24-Straighten-imag
 <img src="images/Settings%20-%20Straightening%20Options.jpg" alt="User Interface"/>
 
 **_Overwrite existing crop angle setting_**. Default setting: `Off`<br>
-Roll angle compensation will be applied regardless of whether the photo has already been rotated. The straightening angle will replace the existing crop angle, rather than being added to it.
+Roll angle compensation will be applied, even if the photo has already been rotated using Lightroom's Crop & Straighten tool. The straightening angle replaces the rotation (crop) angle rather than being added to it. If `Display warning` is selected, a dialogue box will appear in interactive mode to confirm the overwrite.
+
+**_Overwrite existing Transform settings_**. Default setting: `Off`<br>
+Roll angle compensation will be applied, even if the photo has Transform settings, such as Upright, applied. If `Display warning` is selected, a dialogue box will appear in interactive mode to confirm the overwrite.
 
 **_Apply straightening only for angles between x and y_**. Default setting: `Off`<br>
 Roll angle compensation will only be applied for angles within the range of x to y degrees.  
