@@ -74,7 +74,7 @@ When the plugin is run on a selected photo, it uses ExifTool to process the unde
 
 **Examples of when focus points are not displayed:**
 - Photo edited in Photoshop and returned as PSD or TIF
-- Photo transferred as TIFF/JPG to a 3rd party editor (_Photo → Edit In_) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
+- Photo transferred as TIFF/JPG to a 3rd party editor (`Photo → Edit In`) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
 - DNG files created by Lightroom's Photo Merge (HDR, Panorama)
 - Photos exported to disk that have been re-imported in Lightroom
 - Smart Preview but the original image file is not present 
@@ -171,14 +171,14 @@ If you have never used Lightroom plugins before and are looking for some basic i
 Once the plugin is installed, you can run it with one or more photos selected:
 
 Library module:<br>
-_Library → Plug-in Extras → Focus Point_
+`Library → Plug-in Extras → Focus Point`
 
 Develop module:<br>
-_File → Plug-in Extras → Focus Point_
+`File → Plug-in Extras → Focus Point`
 
 ### User Interface
 
-The user interface is divided into three main areas. On the left is the Photo View, which shows visualized focus points and detected elements. On the right is the Info View, a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating and flagging images are located at the bottom of the window.
+The user interface is divided into three main areas. On the left is the Photo View (1), which shows visualized focus points and detected elements. On the right is the Info View (2+3), a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating,  flagging and straightening images and are located at the bottom of the window (4+5+6).
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
@@ -194,7 +194,8 @@ Click on the following links for more detailed information:
 5. [Flagging Controls](#flagging-controls)
 6.  [Straightening Control](#straightening-control)
 7. [Keyboard Shortcuts](#keyboard-shortcuts)
-8. [Buy me a coffee](#buy-me-a-coffee)
+8. [Check the FAQ](#got-a-question-check-the-faq)
+9. [Buy me a coffee](#buy-me-a-coffee)
 
 
 ### Photo View
@@ -424,7 +425,10 @@ By default, the input field is visible to indicate when it has lost focus. To co
 
 You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard shortcuts).
 
-<br>
+
+### Got a question? Check the FAQ!
+
+If you have a question or encounter an issue while working with Focus Point Viewer, you can access the Frequently Asked Questions (FAQs) to find an answer with a single click.
 
 ### Buy me a coffee
 Several of you have asked how you can show your appreciation for the work I have done to significantly improve the plugin over the past year and months. If you care about this issue, you can now show your [support via Ko-fi](https://ko-fi.com/focuspoints)*. Simply click the link next to the coffee cup.
@@ -438,8 +442,8 @@ Payments are processed securely via PayPal or credit/debit card, and no account 
 
 The Metadata Viewer enables you to interactively explore all the information recorded by the camera when the picture was taken. This goes far beyond what Lightroom or even the Focus Point Viewer covers. In short, it contains all the information that ExifTool knows.
 
-* _Library → Plug-in Extras → Show Metadata_, or
-* _File → Plug-in Extras → Show Metadata_
+* `Library → Plug-in Extras → Show Metadata`, or
+* `File → Plug-in Extras → Show Metadata`
 
 Metadata can be filtered by group, key or value search terms. The filter accepts pattern matching with the well-known "magic characters":
 
@@ -476,18 +480,18 @@ The pitch angle is 4.1°, which means that it's height was approximately 50m * s
 
 ## 2.4 Straighten Images
 
-To straighten a selection of photos, run
+To straighten a selection of photos in batch mode, run
 
-* Library → Plug-in Extras → Straighten Images, or
-* File → Plug-in Extras → Straighten Images
+* `Library → Plug-in Extras → Straighten Images` or
+* `File → Plug-in Extras → Straighten Images`
 
-This function reads the camera roll angle from the metadata of the selected photos, one by one, and applies compensation by rotating the photos accordingly.
+This function reads the camera roll angle from the metadata of selected photos one by one and applies compensation by rotating them accordingly.
 
-Straightening individual images manually is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature can come in handy for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the captured scenes lack clear reference information to help you (or the Transform tool) straighten the images.
+Manually straightening individual images is not difficult, and Lightroom also supports automatic straightening using the Transform tool. However, the Straighten Image feature is useful for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the scenes captured lack clear reference points to help you (or the Transform tool) straighten the images.
 
 As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras, that record this information](Compatibility.md#cameras-that-support-straightening-images).
 
-Straighten Images is not available for LR5, since version 5.x of the Lightroom SDK does not yet supported the  required functionality.
+The Straighten Images feature is not available for LR5, since version 5.x of the Lightroom SDK does not yet support the required functionality.
 
 
 ### Example
@@ -553,13 +557,16 @@ Lightroom Auto Transform ('Level'):
 This plugin's Straighten Image function:
 <img src="images/Straighten%208.jpg" alt="User Interface" style="width: 1000px;"/>
 
+<br>
+
 ## 2.5 Configuration and Settings
 
-Selecting 'Focus Point Viewer' from the list of installed plugins (_Library → File → Plug-in Manager_) opens the plugin's settings page:
+Selecting 'Focus Point Viewer' from the list of installed plugins (`Library → File → Plug-in Manager`) opens the plugin's settings page:
 
 <img src="images/Plugin Options.jpg" alt="Plugin Options" style="width: 750px;"/>
 
-<br>
+The plugin settings are organized into sections. If you are unsure about the meaning of a particular setting or group of settings, click the `[?]` symbol to view its description in this manual. If `[?]` is located near the  border of the settings window, it represents a group of settings; otherwise, it refers to a single setting. 
+
 
 ### Screen Scaling
 
@@ -617,6 +624,12 @@ The predefined options cover a large percentage of the available layouts, and mo
 <img src="images/README KeyboardLayoutSettings.jpg" alt="Screenshot" style="width: 600px;"/>
 <br>
 
+**_Preview Image_**<br>
+These two settings determine how the image displayed by the Focus Point Viewer (i.e. the photo with markings overlaid) is produced on a Windows PC. Generating a preview image can significantly impact the time taken to open the plugin window. Tweaking these settings can optimize the time required for preview generation.
+
+See [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows) for a detailed explanation of the settings and the context in which they are used.
+
+
 ### Viewing Options
 
 <span id="size-of-focus box"></span>
@@ -653,7 +666,7 @@ The logging mechanism provides a fine-grained hierarchy of levels at which infor
 
 ### Straightening Options
 
-These settings control the process of [straightening images](#24-Straighten-images):
+These settings control the process of [Straightening Images](#24-Straighten-images):
 
 <img src="images/Settings%20-%20Straightening%20Options.jpg" alt="User Interface"/>
 
@@ -1199,7 +1212,7 @@ However, at the system level, there are ways to automate the startup of the plug
 
 ### Windows
 
-On Windows, you can use the free [AutoHotkey](https://www.autohotkey.com/) utility together with a small script to assign the command _File → Plug-in Extras → Show Focus Point_ to a key. The same applies to _Show Metadata_ and _Straighten Images_.
+On Windows, you can use the free [AutoHotkey](https://www.autohotkey.com/) utility together with a small script to assign the command `File → Plug-in Extras → Show Focus Point` to a key. The same applies to `Show Metadata` and `Straighten Images`.
 
 The plugin comes with a ready-to-run, compiled AutoHotkey script that defines the following shortcuts:<br>
 \-  `NumPad *` as a shortcut for `Show Focus Point`<br>
@@ -1265,7 +1278,7 @@ For example, in LrC 14.5 (German UI), the menu item `Zusatzmoduloptionen` was re
 
 On macOS, you can use the system-wide feature in 
 
-_System Settings → Keyboard → Keyboard Shortcuts → App Shortcuts_ 
+`System Settings → Keyboard → Keyboard Shortcuts → App Shortcuts` 
 
 to assign your own shortcut to almost any menu item in any app. Here’s how you can do it for a Lightroom plugin to be added:
 
@@ -1277,7 +1290,7 @@ Note: `NumPad *` and `NumPad /` may not work because macOS sometimes treats NumP
 
 **Steps:**
 
-1. Go to _Settings → Keyboard → Keyboard Shortcuts → App Shortcuts_.
+1. Go to `Settings → Keyboard → Keyboard Shortcuts → App Shortcuts`.
 2. Click `+`.
    - Application: `Adobe Lightroom Classic`
    - Menu Title: "&nbsp;&nbsp;&nbsp;Show Focus Point" (with **3 spaces** before the actual text!)
