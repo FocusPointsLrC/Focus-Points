@@ -41,7 +41,7 @@ The independent window supports two different workflows (behaviors):
 
 This feature is particularly useful in a **multi-screen setup**.
 
-For example, Lightroom could be used on one screen while Focus Points is displayed on another <sup>1</sup>. The displayed focus points would automatically update as you change the Lightroom selection.  
+For example, Lightroom could be used on one screen while Focus Points is displayed on another. The displayed focus points would automatically update as you change the Lightroom selection.  
 In this mode, Lightroom remains the active window unless you activate Focus Points Viewer by clicking it <sup>2</sup>.
 
 **Tip:** This mode is ideal for reviewing large numbers of photos while continuing to work in Lightroom.
@@ -171,18 +171,13 @@ A similar fix for limitation 2 on macOS has not yet been considered, because
 <br>
 
 ---
-### <sup>1)</sup> Focus Point Viewer does not remember its position on a secondary monitor on macOS
+### <sup>1)</sup> ~~Focus Point Viewer does not remember its position on a secondary monitor on macOS~~
 
 **Effect:** On macOS, Focus Point Viewer remembers the correct position on the screen when reopening, but not the correct screen. When you drag the plugin window to a secondary screen and select another image, the window reopens on the primary screen.
 
 **Reason:** Inconsistent behavior of the underlying SDK function to open a floating dialog on Windows vs macOS.
 
-**Status:** Adobe has acknowledged the issue and a bug report has been filed.  
-
-**Workaround:** Use Focus Point Viewer alongside Lightroom on the primary screen.
-
-**How you can help:** If this issue affects your workflow, please consider adding your vote to the Adobe bug report. Adobe uses customer feedback to help prioritize bug fixes, and every vote increases the visibility of the report.  
-Voting is easy — simply sign in to the Adobe Community using your Adobe credentials and click the button.
+**Status:** This limitation no longer applies. Adobe has fixed the issue in LrC 15.5 (August 2026 release)  
 
 **Bug Report:** [https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255](https://community.adobe.com/bug-reports-674/p-mac-sdk-floating-dialog-does-not-reopen-on-second-screen-1628255)
 
