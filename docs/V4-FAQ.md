@@ -88,6 +88,10 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 
 <br>
 
+### Compatibility Q&A
+
+<br>
+
 #### Does the plugin work with Lightroom perpetual licenses LR5 and LR6?
 
 Focus Points is compatible with Lightroom Classic – LR5.7 and LR6 perpetual licenses and LrC subscriptions. [↗](Focus-Points.md#1-scope-and-limitations)
@@ -112,6 +116,10 @@ _If your camera manufacturer is supported and your camera is less than 10 years 
 
 <br>
 
+### Installation Q&A
+
+<br>
+
 #### I have never worked with Lightroom plugins. What do I need to install Focus Point Viewer?
 
 The installation of Focus Point Viewer follows the same procedure as most third party plugins. The User Manual covers a [compact description](Focus-Points.md#212-compact-instructions) for users that are familiar with that procedure, as well as [detailed description](Focus-Points.md#213-detailed-instructions) for users that have no practical experience with installing plugins.
@@ -130,8 +138,9 @@ If you're still suspicious and want to be absolutely sure, delete the `.exe` fil
 
 _The plugin package is safe and does not contain any infected or dangerous files._ 
 
- 
+<br>
 
+### Setup Q&A
 
 <br>
 
@@ -145,6 +154,10 @@ _If you're feeling impatient, you can skip the V3.4 documentation and get starte
 
 <br>
 
+### File Types Q&A
+
+<br>
+
 #### Is the plugin only compatible with RAW images?
 
 In general, displaying autofocus points and straightening images works with all image files containing the full set of metadata recorded by the camera. This applies to both RAW and JPG files straight out of the camera. [↗](Focus-Points.md#principle-of-operation)
@@ -154,6 +167,10 @@ DNG files created or converted from RAW can still contain relevant metadata. How
 For instance, DNG converted from Fuji RAF is missing essential information. [↗](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
 
 _The plugin is compatible with all JPG and RAW files straight out of camera. It is also likely to work with DNG files but this depends on the camera model and the application._
+
+<br>
+
+### Keyboard Shortcuts Q&A
 
 <br>
 
@@ -172,6 +189,10 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts)
 
 _The Focus Point Viewer features can be controlled entirely using the keyboard._
+
+<br>
+
+### Display Modes Q&A
 
 <br>
 
@@ -197,6 +218,9 @@ _Support for macOS is planned for a future V4 pre-release._
 
 <br>
 
+### Second Screen Mode Q&A
+
+<br>
 
 #### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
 
@@ -274,7 +298,6 @@ _Switching to another application and then back to Lightroom restores normal beh
 #### Why do I have to click twice to open a photo in Focus Point Viewer from Grid view, while a single click is enough in Filmstrip view on macOS?
 
 _This is normal macOS behavior when any application is active and you click in the grid._   
-  
 <br>
 
 #### Why do empty margins appear on the right or bottom of the Focus Point Viewer window when I change its size in 'Second Screen' mode?  
@@ -285,6 +308,33 @@ _The Focus Point Viewer cannot remember the last window position used and automa
 
 <br>
 
+### Straighten Images Q&A
+
+<br>
+
+#### Why is the `Straighten` button grayed out for all my photos?
+
+The `Straighten Images` function uses the roll angle data from a photo's metadata to apply the correct crop rotation and compensate for camera tilt. 
+
+Not all camera manufacturers record this information when an image is taken. For example, Sony does not. Others only do it in recent camera models. As `Straighten Images` relies on the presence of the `RollAngle` tag in the metadata, it is only compatible with certain [cameras that record this information](Compatibility.md#cameras-that-support-straighten-images).
+
+<br>
+
+#### Why does `Straighen` produce non-optimal results for some images?
+
+The quality of the result of aplying `Straighten` essentially depends on two factors:
+
+- Precision of roll angle measurement by the camera
+- Accuracy of the camera's level gauge adjustment
+
+If either of these two factors is limited, the recorded camera roll angle will not accurately represent the camera's tilt when the photo was taken. Consequently, the outcome of the 'Straighten' function will also be inaccurate. [↗](Compatibility.md#cameras-that-support-straighten-images).
+
+<br>
+
+### User Interface  Q&A
+
+<br>
+
 #### The plugin window exceeds the dimensions of my screen. How can this be avoided?
 
 If you are experiencing this problem, it is highly likely that you are using Windows and have set a scale factor in the Display settings. A typical example would be a screen with a high resolution but a relatively small area, such as a laptop with a 4K display.
@@ -292,6 +342,10 @@ If you are experiencing this problem, it is highly likely that you are using Win
 Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
 
 _This can happen in Windows, but the plugin provides a setting that can be used to correct it._
+
+<br>
+
+### Performance  Q&A
 
 <br>
 
@@ -332,6 +386,10 @@ _`Direct View` is the fastest display mode and is therefore the recommended choi
 `Preview Image` fallback can be configured in the plugin settings to reduce the time it takes to open the plugin window. The waiting time for a preview to become available in Lightroom is limited to a certain threshold, after which the image will be created by Export. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
 
 _The plugin can decide to use 'Export Image' based on the situation, if this display mode is to be preferred over 'Preview Image'._
+
+<br>
+
+### Known Camera Limitations
 
 <br>
 

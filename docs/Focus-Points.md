@@ -533,7 +533,7 @@ This function reads the camera's roll angle from the metadata of selected photos
 
 Manually straightening individual images is not difficult, and Lightroom also supports automatic straightening using the `Transform` tool. However, Straighten Images is particularly useful for straightening a series of photos taken in burst mode, such as wildlife, sports or action shots. This is particularly useful when the scene lacks clear horizontal or vertical reference lines for you—or Lightroom's `Upright` tool—to use when straightening the image.
 
-As this function relies on the presence of the `RollAngle` tag in metadata, its application is currently limited to [certain cameras that record this information](Compatibility.md#cameras-that-support-straighten-images).
+As this function relies on the presence of the `RollAngle` tag in metadata, its application is limited to [certain cameras that record this information](Compatibility.md#cameras-that-support-straighten-images).
 
 **Note:** The Straighten Images feature is not available for LR5, since version 5.x of the Lightroom SDK does not yet support the required functionality.
 
