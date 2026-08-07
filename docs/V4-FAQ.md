@@ -83,7 +83,7 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 
 ### Troubleshooting
 
-* [Create a debug log file](#how-can-i-create-a-debug-log-file-to-help-the-developer-analyze-an-issue-)
+* [Create a debug log file](#how-can-i-create-a-debug-log-file-to-help-the-developer-analyze-an-issue)
 
 <br>
 
@@ -100,6 +100,8 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 Focus Points is compatible with Lightroom Classic – LR5.7 and LR6 perpetual licenses and LrC subscriptions. [↗](Focus-Points.md#1-scope-and-limitations)
 
 Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based on the Lightroom SDK, which is only available in Lightroom Classic.
+
+_Focus Point Viewer can be used with LR5.7 (except tagging and straightening) and LR6_
 
 <br>
 
@@ -227,7 +229,12 @@ _Support for macOS is planned for a future V4 pre-release._
 
 #### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
 
-This was caused by an issue in the Lightroom SDK prior to LrC 15.5 (August 2026). [↗](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos).<br>If you still experience this problem, please update Lightroom Classic to version 15.5. 
+This was caused by an issue in the Lightroom SDK prior to LrC 15.5 (August 2026). [↗](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos).
+
+If you are still experiencing this problem, please update Lightroom Classic to version 15.5.<br>
+An update of Focus Points Viewer (V4 PRE 4) has been released in parallel to LrC 15.5 to unlock the `Follow Lightroom` mode on macOS.
+
+_With Lightroom Classic 15.5 (August 2026) and the V4 PRE 4 plugin, Focus Point Viewer can be used on a secondary display on macOS._   
 
 <br>
 
@@ -317,6 +324,8 @@ The `Straighten Images` function uses the roll angle data from a photo's metadat
 
 Not all camera manufacturers record this information when an image is taken. For example, Sony does not. Others only do it in recent camera models. As `Straighten Images` relies on the presence of the `RollAngle` tag in the metadata, it is only compatible with certain [cameras that record this information](Compatibility.md#cameras-that-support-straighten-images).
 
+_`Straighten` is only supported on cameras that record `Roll Angle` metadata._
+
 <br>
 
 #### Why does `Straighen` produce non-optimal results for some images?
@@ -327,6 +336,8 @@ The quality of the result of aplying `Straighten` essentially depends on two fac
 - Accuracy of the camera's level gauge adjustment
 
 If either of these two factors is limited, the recorded camera roll angle will not accurately represent the camera's tilt when the photo was taken. Consequently, the outcome of the 'Straighten' function will also be inaccurate. [↗](Compatibility.md#cameras-that-support-straighten-images).
+
+_The accuracy of the 'Straighten' function relies on the accuracy of the 'Roll Angle' metadata._
 
 <br>
 
