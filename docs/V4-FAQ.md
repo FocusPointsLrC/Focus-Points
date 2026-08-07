@@ -59,11 +59,10 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
   
 * [Empty margins after resizing](#why-do-empty-margins-appear-on-the-right-or-bottom-of-the-focus-point-viewer-window-when-i-change-its-size-in-second-screen-mode)  
 
-### Straightening Images
+### Straighten Images
 
-* My Camera is not supported
-* The result is not good
-* 
+* [Is my Camera supported?](#why-is-the-straighten-button-grayed-out-for-all-my-photos)
+* [Why is the image not straight after using the `Straighten` tool?](#why-does-straighen-produce-non-optimal-results-for-some-images)
 
 
 ### User Interface
@@ -81,6 +80,10 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 ### Known Camera Limitations
 
 * [Fuji DNG files](#why-doesnt-the-focus-point-viewer-display-focus-points-for-fuji-dng-files)
+
+### Troubleshooting
+
+* [Create a debug log file](#how-can-i-create-a-debug-log-file-to-help-the-developer-analyze-an-issue-)
 
 <br>
 
@@ -400,4 +403,11 @@ The autofocus point information (x/y coordinates) recorded by Fujifilm cameras r
 Neither the standalone Adobe DNG Converter nor the Lightroom integration retains these tags when converting RAF to DNG. In fact, the converter creates custom-sized preview images and embeds them in the DNG file. Consequently, the DNG file in Lightroom contains all the AF information (e.g. the positions of the autofocus point, face and subject detection), but this cannot be linked to the photo because the plugin does not know what the original preview image size was.
 
 _Creating a DNG file from a RAF file involves generating new preview images, which typically differ in dimension from the original embedded preview image. Since the original preview dimensions have been lost, the plugin can no longer link the autofocus information to the original photo._
-`
+
+<br>
+
+### Troubleshooting
+
+#### How can I create a debug log file to help the developer analyze an issue? 
+
+to be added
