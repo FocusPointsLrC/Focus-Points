@@ -227,11 +227,7 @@ _Support for macOS is planned for a future V4 pre-release._
 
 #### How can I stop Focus Point Viewer from switching back to the primary screen on macOS?
 
-Focus Point Viewer remembers its size and position when you close and reopen it. However, on macOS, it doesn't remember which screen the window was opened on. If you drag the window to a secondary display, it switches back to the primary display when you open another photo.     
-
-**See also:** [Known Limitations 1)](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos) for background information, and instructions on how to support the Adobe bug report.
-
-_This limitation of the Lightroom SDK only affects macOS and cannot currently be resolved by the plugin._
+This was caused by an issue in the Lightroom SDK prior to LrC 15.5 (August 2026). [↗](V4-New-Features.md#1-focus-point-viewer-does-not-remember-its-position-on-a-secondary-monitor-on-macos).<br>If you still experience this problem, please update Lightroom Classic to version 15.5. 
 
 <br>
 
