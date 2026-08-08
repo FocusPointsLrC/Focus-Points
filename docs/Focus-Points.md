@@ -690,6 +690,7 @@ Depending on the camera maker and model, focus points may have a dimension (widt
 Logging involves recording the events and messages produced by the plugin while it is running. You can think of the log as a digital journal or 'black box flight recorder' — it keeps a detailed, chronologically ordered record of what happened, when it happened and the state that the plugin was in.
 
 The logging feature in Focus Point Viewer is used for various purposes:
+
 1. Provide additional information to explain error messages and warnings in more detail, for instance:<br>
    - why focus points cannot be displayed for a photo
      * [No focus points recorded](#no-focus-points-recorded)
@@ -697,8 +698,10 @@ The logging feature in Focus Point Viewer is used for various purposes:
    - when [straightening images in batch mode](#24-straighten-images)
 
    ⇒ Recommended logging level: `Auto`
+
 2. Provide details on the time it takes to open the dialog. You can use this information to tweak settings that [control preview image generation](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
-⇒ Recommended logging level: `Auto` or `Info`
+   ⇒ Recommended logging level: `Auto` or `Info`
+ 
 3. Gather information to help the developer figure out what went wrong if the plugin does not work as expected:
    - [Severe error encountered](#severe-error-encountered)
    - plugin crashed with an error message
