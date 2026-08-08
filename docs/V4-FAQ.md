@@ -415,6 +415,10 @@ _Creating a DNG file from a RAF file involves generating new preview images, whi
 
 ### Troubleshooting
 
-#### How can I create a debug log file to help the developer analyze an issue? 
+<br>
 
-to be added
+#### How can I create a debug log file to help the developer analyze an issue?
+
+This is much easier than it sounds! See the 'How to create a debug log file' section of the  for a simple three-step guide on how to create and email a debug log file to the developer.
+
+This is much easier than it sounds! For a simple three-step guide on how to create and email a debug log file to the developer, see the 'How to create a debug log file' section of the User Manual [↗](Focus-Points.md#how-to-create-a-debug-log-file).
