@@ -1440,4 +1440,14 @@ If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e.
 
 ## How to create a debug log file
 
-When you report an issue that you have experienced using Focus Point Viewer, you may be asked to provide a **Debug log file**. The log file records the plugin's execution.
+When you report an issue that you have experienced using Focus Point Viewer, you may be asked to provide a **Debug log file**. The logging feature is described in detail in the [Logging section](#logging). 
+
+Here are the steps to generate a debug log file and send it to the developer:
+
+1. Go to plugin settings. Look for the `Logging` section. Select `Debug` logging level:
+
+   <img src="images/Logging%20-%20Debug.jpg" alt="Logging Debug"/><br><br>
+
+2. Run the plugin to reproduce the behavior you want to be recorded in the log file.
+
+3. Go to plugin settings again. In the `Logging` section, click `Show file`. This will bring the Finder (on macOS) or Explorer (on Windows) to the foreground and highlights the log file. You can pick the log file from here to email it to the developer at [focuspoints.plugin@gmail.com](mailto:focuspoints.plugin@gmail.com) 
