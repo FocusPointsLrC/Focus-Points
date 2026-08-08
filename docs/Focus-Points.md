@@ -697,7 +697,7 @@ The logging feature in Focus Point Viewer is used for various purposes:
    - when [straightening images in batch mode](#24-straighten-images)
 
    ⇒ Recommended logging level: `Auto`
-2. Provide details on the time it takes to open the dialog. You can use this information to tweak settings that [control preview image generation](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
+2. Provide details on the time it takes to open the dialog. You can use this information to tweak settings that [control preview image generation](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
 ⇒ Recommended logging level: `Auto` or `Info`
 3. Gather information to help the developer figure out what went wrong if the plugin does not work as expected:
    - [Severe error encountered](#severe-error-encountered)
@@ -733,6 +733,7 @@ Alternatively, you can locate the file in the plugin settings. Clicking the `Sho
 
 <img src="images/Logging%20-%20Plugin%20log.jpg" alt="User Interface"/>
 
+<br>
 
 ### Straightening Options
 
