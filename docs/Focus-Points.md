@@ -1447,7 +1447,7 @@ Here are the steps to generate a debug log file and send it to the developer:
 
 1. Open the plugin settings and locate the `Logging` section. Select `Debug` as the logging level:
 
-   <img src="images/Logging%20-%20Debug.jpg" alt="Logging Debug"/><br><br>
+   <img src="images/Logging%20-%20Debug.jpg" alt="Logging Debug"/>
 
 2. Run the plugin and reproduce the problem you want to have recorded in the log file.
 3. Open the plugin settings again. In the `Logging` section, click `Show file`. This brings Finder (macOS) or File Explorer (Windows) to the foreground and highlights the log file.
