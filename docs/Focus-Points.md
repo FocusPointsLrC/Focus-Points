@@ -135,7 +135,7 @@ A file named `Focus-Points-[plugin_version].zip` will be downloaded to your comp
 
 
 2. Unzip the downloaded file. Inside the extracted content locate the plugin folder `focuspoints.lrplugin`.<br>
-_MAC users_: According to your macOS preferences the zip file will be automatically unzipped.
+_MAC users_: According to your macOS settings the zip file will be automatically unzipped.
 
 
 3. Find the folder where you keep your Lightroom plugins.<br> If you don't know where this is, open Lightroom, go to `File → Plug-in Manager` and click `Add`. This will open a "Select Folder" dialog in Lightroom's default folder for plugins. 
@@ -290,10 +290,10 @@ You can also access this information from the plugin window by clicking the link
 
 ### Plugin Status
 
-If errors or warnings were encountered while processing the autofocus metadata, a status message is displayed at the bottom of the text pane. To the right of this message, you can click the `Check log` button to open the logfile for more details. The logfile contains detailed information about the metadata processing, such as relevant tags found (or not found).<br>
+If errors or warnings were encountered while processing the autofocus metadata, a status message is displayed at the bottom of the text pane. You can click the `Check log` button to open the log file for more details. The log file contains detailed information about the metadata processing, such as relevant tags that were found or not found.<br>
 See [Logging](#logging) how to set up and customize logging. 
 
-For the image above, where focus info is said to be "missing from file", the logfile looks like this:
+For the image above, where the focus information is reported as "missing from file," the log file looks like this:
 
 <img src="images/BasicOperation3.jpg" alt="Basic Operation 3" style="width: 750px;"/>
 
@@ -325,14 +325,14 @@ Tagging can be performed using the same logic and [keyboard shortcuts](#keyboard
 
 **Notes / Restrictions:**
 
-- Although the plugin allows you to set the flag status, rating and color label of a photo, these settings are **not** reflected in the plugin's user interface. Any changes to the flag status, rating or color will be acknowledged immediately with a standard message in Lightroom, and these changes will be reflected in the filmstrip for the selected photo. **It is recommended that you adjust the sizes of the plugin window and Lightroom's filmstrip when using tagging, so that both are visible at the same time.**
+- Although the plugin allows you to set the flag status, rating and color label of a photo, these changes are **not** reflected in the plugin's user interface. Any changes to the flag status, rating or color will be acknowledged immediately with a standard message in Lightroom, and these changes will be reflected in the filmstrip for the selected photo. **It is recommended that you adjust the sizes of the plugin window and Lightroom's filmstrip when using tagging, so that both are visible at the same time.**
 
 - Use of `Shift` + `0`-`9` keyboard shortcuts require that the plugin is aware which international keyboard layout is currently used. This is necessary because the plugin cannot recognize key codes; it can only work with text input. See [Keyboard Shortcuts](#keyboard-shortcuts).<br>
-The keyboard layout in use can be configured in the plugin preferences, under the `User Interface`' section, [Keyboard Layout](#keyboard-layout) setting.
+The keyboard layout in use can be configured in the plugin settings, under the `User Interface`' section, [Keyboard Layout](#keyboard-layout) setting.
   
 - The LR SDK does not support clickable images, so all control elements must be text or text buttons. As the plugin UI displays all Unicode 'star symbol' characters as small, hardly recognizable stars, the rating controls are represented by numbers 1–5 instead.
 
-- The display of tagging controls and related keyboard shortcut operation can be disabled in the plugin preferences, under section `User Interface`.
+- The display of tagging controls and related keyboard shortcut operation can be disabled in the plugin settings, under section `User Interface`.
 
 - Note: Tagging features use the 'LrSelection' namespace, which is only available in SDK version 6.0 and above. Therefore, these features is not available on LR5.7 (which is still in use by a few plugin users!).
 
@@ -439,7 +439,7 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Direct View                                 | `D`                |
 | Preview Image                               | `V`                |
 | Export Image                                | `E`                | 
-| **Miscelleanous**                           | &nbsp;             |
+| **Miscellaneous**                           | &nbsp;             |
 | Open User Manual                            | `M`                |
 | Open Troubleshooting Information (Help)     | `?`, `H`           |
 | Check Log                                   | `L`                |
@@ -462,7 +462,7 @@ On macOS, clicking on any control (such as a button, link or tagging icon) remov
 
 By default, the input field is visible to indicate when it has lost focus. To continue working with keyboard shortcuts, you need to click the field again.
 
-You can configure the size of the text input field, including the labeling, in the [plugin preferences](#text-input-field-for-keyboard-shortcuts).
+You can configure the size of the text input field, including the labeling, in the [plugin settings](#text-input-field-for-keyboard-shortcuts).
 
 
 ### Got a question? Check the FAQ!
@@ -564,7 +564,7 @@ If any of the selected photos cannot be straightened, a dialog will provide a su
 
 <img src="images/Straighten%204.jpg" alt="User Interface" style="width: 1000px;"/>
 
-If you require more detailed information, you can access it by clicking 'See details', which opens the log file.
+If you need more detailed information, click `See details` to open the log file:
 
 <img src="images/Straighten%205.jpg" alt="User Interface" style="width: 1000px;"/>
 
@@ -704,33 +704,33 @@ The logging feature in Focus Point Viewer is used for various purposes:
  
 3. Gather information to help the developer figure out what went wrong if the plugin does not work as expected:
    - [Severe error encountered](#severe-error-encountered)
-   - plugin crashed with an error message
+   - the plugin reports an unexpected error
    
    ⇒ Recommended logging level: `Debug`
    
-Log messages are categorized  by log level (severity). The logging mechanism provides a detailed hierarchy of levels at which information will be recorded. Setting a specific logging level in the plugin settings will result in all messages at or above that level being written, including those at lower levels. The description of the levels, from lowest to highest, is as follows:
+Log messages are categorized by log level (severity). Selecting a logging level causes messages at that level and at higher severity levels to be written to the log file. The available levels, from lowest to highest, are:
 
-   | Level     | Information logged                                                      |
-   |-----------|-------------------------------------------------------------------------|
-   | None      | No logging output. No logfile created.                                  |
-   | Error     | Only error messages.                                                    |
-   | Warning   | + warnings                                                              |
-   | Info      | + information on progress and intermediate results                      |
-   | Debug     | + important debug information. No noticeable slow down.                 |
-   | Full      | Full debug information, including entire EXIF data. Slow down.          |
-   | Auto*     | Same as 'Info'. Recommended setting. No noticeable slow down of plugin. |
+   | Level     | Information logged                                                              |
+   |-----------|---------------------------------------------------------------------------------|
+   | None      | No logging output. No log file created.                                         |
+   | Error     | Error messages.                                                                 |
+   | Warning   | Errors + warnings                                                               |
+   | Info      | Errors + warnings + information on progress and intermediate results            |
+   | Debug     | Errors + warnings + information + debug information. No noticeable slowdown.    |
+   | Full      | Full debug information, including complete EXIF data. May slow down the plugin. |
+   | Auto*     | Same as 'Info'. Recommended setting. No noticeable slowdown.                    |
 
-\* `Auto`logging will start on an empty log file for each image. When you open a log file produced with `Auto`, this will only contain the information for the current or most recent photo. For all other logging levels, the log file will be emptied when the plugin starts executing.
+\* * With `Auto`, logging starts with an empty log file for each image. Therefore, the log file will contain information only for the current or most recently processed photo. With all other logging levels, the log file is emptied when the plugin starts executing.
 
-The `Auto` logging option will only display a `Check log` button at the [user interface](#user-interface) if errors or warnings occured:
+With `Auto`, the `Check log` button is displayed only if errors or warnings occurred:
 
 <img src="images/Logging%20-%20Errors%20encountered.jpg" alt="User Interface"/> <img src="images/Logging%20-%20Warnings%20encountered.jpg" alt="User Interface"/>
 
-For all other logging levels the `Check log` button will be displayed: 
+For all other logging levels, the `Check log` button is always displayed:
 
 <img src="images/Logging%20-%20Information%20collected.jpg" alt="User Interface"/>
 
-The name of the log file is `FocusPoints.log`, it is located in the Lightroom folder, `LrClassicLogs`. You can open the file directly in an application associated with `.log` files (e.g. a text editor) by clicking the `Check log` button.  
+The log file is named `FocusPoints.log` and is located in Lightroom's `LrClassicLogs` folder. You can open the file directly in an application associated with `.log` files (e.g. a text editor) by clicking the `Check log` button.  
 
 Alternatively, you can locate the file in the plugin settings. Clicking the `Show file` button will open an Explorer or Finder dialog with the file selected: 
 
@@ -931,7 +931,7 @@ Supported features:
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 <sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).
 
-In Sony models, the focus point of an image is specified by the (x, y) coordinates in the `FocusLocation` tag. Newer models also support a `FocusFrameSize` tag, which specifies the size of the focus area. Custom focus frame size settings in the plugin's preferences only apply when the focus frame size is not available in the metadata. In this case, medium and large focus boxes will display a center dot.
+In Sony models, the focus point of an image is specified by the (x, y) coordinates in the `FocusLocation` tag. Newer models also support a `FocusFrameSize` tag, which specifies the size of the focus area. Custom focus frame size settings in the plugin's settings only apply when the focus frame size is not available in the metadata. In this case, medium and large focus boxes will display a center dot.
 
 <img src= "images/Sony 1a.jpg" alt="Sony 1a.jpg" style="width: 1000px;"/><br>
 α9. The focus point recorded by the camera corresponds to the center dot. The box is only there to make the dot more visible.<br><br>
@@ -956,7 +956,7 @@ Sony supports face detection on almost all of their mirrorless (alpha) and also 
 RX10 IV. Detected face indicated by a yellow frame. Detected eye in focus indicated by a red dot.<br><br>
 
 
-In contrast to Canon and Nikon, there's not much that you can find in the EXIF maker notes for Sony's AF menu settings. This is why the focus information section is rather empty. Sony also lacks a focus distance tag, meaning there is no Depth of Field section.
+In contrast to Canon and Nikon, there is not much that you can find in the EXIF maker notes for Sony's AF menu settings. This is why the focus information section is rather empty. Sony also lacks a focus distance tag, meaning there is no Depth of Field section.
 
 <img src= "images/Sony 4.jpg" alt="Sony 4" style="width: 750px;"/><br>
 α1 II. The number of known* AF settings entries is small compared to a Canon R5 Mark II.<br>
@@ -980,7 +980,7 @@ Supported features:
 
 Fuji metadata contains information on both face and subject recognition. Whether the detected subject is a person, an animal, a bicycle, a car, an airplane, or a train, and whether the detected eye is a real eye or a cockpit, all the information for visualizing a detected subject and its parts is stored in the same place and format.
 
-Fuji focus points are 'focus pixel' points with no dimension. For better visualization, you can change the size and color of the focus box in the plugin's preferences.
+Fuji focus points are 'focus pixel' points with no dimension. For better visualization, you can change the size and color of the focus box in the plugin's settings.
 
 <img src="images/Fuji 1.jpg" alt="Fuji 1" style="width: 1000px;"/><br>
 GFX100 II shot with face detection. Heads, faces and eyes are detected for both people (indicated by yellow frames). The focus point is slightly off the detected eye; this can also be seen in shots taken with OM system cameras. It seems that the subject detection analysis performed on a 2D image on the sensor is more accurate than what the 3D autofocus can achieve.<br><br> 
@@ -1011,7 +1011,7 @@ Supported features:
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 <sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).
 
-Since 2008, Olympus has been using the same format for storing autofocus information in EXIF for all of its mirrorless cameras (starting with the E-M5 in 2012) as well as the last E-System models (E-5, E-420, E-520, E-620). Therefore, the focus point display is the same for all these models. The `AFPointSelected` tag contains the pixel coordinates of the focus point. The size and color of the focus box can be adjusted in the plugin's preferences.
+Since 2008, Olympus has been using the same format for storing autofocus information in EXIF for all of its mirrorless cameras (starting with the E-M5 in 2012) as well as the last E-System models (E-5, E-420, E-520, E-620). Therefore, the focus point display is the same for all these models. The `AFPointSelected` tag contains the pixel coordinates of the focus point. The size and color of the focus box can be adjusted in the plugin's settings.
 
 Earlier E-System models used the `AFAreas` tag, which gives a fixed size area that is displayed without a center point.
 
@@ -1059,7 +1059,7 @@ With this information, it is possible to visualize not only the AF area selected
 
 ### 3.6.1 OM System - AF Selection
 
-The AF area selected by the user is highlighted in white. The focus area is displayed in the color specified in the plugin preferences. The size of the focus area cannot be selected, as the dimensions are set by the camera.
+The AF area selected by the user is highlighted in white. The focus area is displayed in the color specified in the plugin settings. The size of the focus area cannot be selected, as the dimensions are set by the camera.
 
 Here are some examples for visualization of in-focus vs selected AF points (subject detection mode OFF): 
 
@@ -1081,7 +1081,7 @@ The plugin visualizes the subject detection frames as they appear in the viewfin
 
 <img src="images/OM System 5.jpg" alt="User Interface (Multi-image)" style="width: 650px;"/>
 
-The subject and subject detail detection frames are displayed in yellow. The focus area is displayed in the color specified in the plugin preferences. The size of the focus area cannot be selected, as the dimensions are set by the camera. The focus area has a center because the center of this area coincides with the coordinates specified by the `AFPointSelected` tag.
+The subject and subject detail detection frames are displayed in yellow. The focus area is displayed in the color specified in the plugin settings. The size of the focus area cannot be selected, as the dimensions are set by the camera. The focus area has a center because the center of this area coincides with the coordinates specified by the `AFPointSelected` tag.
 
 **Birds:**
 
@@ -1160,7 +1160,7 @@ Panasonic also supports face detection identification in EXIF metadata. This inf
 
 <img src="images/Panasonic 3.jpg" alt="Panasonic 3" style="width: 750px;"/>
 
-Panasonic doesn't support a "focus distance" specification in the metadata, so there's not much to go on other than the focus mode and AF area mode listed in the focus information section.
+Panasonic doesn't support a "focus distance" specification in the metadata, so there is not much to go on other than the focus mode and AF area mode listed in the focus information section.
 
 
 ## 3.8 Pentax
@@ -1283,7 +1283,7 @@ Although the plugin supports multi-image operation by selecting multiple images 
 
 Unfortunately, Lightroom itself does not provide a way to assign keyboard shortcuts to these commands.
 
-Plugins such as [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) and [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) can assign shortcuts only to commands that belong to Lightroom's built-in menus. Commands that Lightroom creates dynamically — such as entries under _Plug-in Extras_, _Edit in_, _Export with Preset_ — cannot be assigned shortcuts. Focus Point Viewer falls into this category.
+    Plugins such as [Any Shortcut](https://johnrellis.com/lightroom/anyshortcut.htm) and [Keyboard Tamer](https://www.photographers-toolbox.com/products/keyboardtamer.php) can assign shortcuts only to commands that belong to Lightroom's built-in menus. Commands that Lightroom creates dynamically — such as entries under _Plug-in Extras_, _Edit in_, _Export with Preset_ — cannot be assigned shortcuts. Focus Point Viewer falls into this category.
 
 However, at the system level, there are ways to automate the startup of the plugin.
 
@@ -1407,8 +1407,7 @@ The second setting determines whether a progress indicator is displayed to notif
 
 The optimum values for the preview acquisition timeout and the progress indicator display depend largely on the hardware setup and the type of image files. These, in turn, depend on the camera manufacturer and model. As such, there is no one-fits-all recommendation, and each user must determine the optimal timeout value for their specific environment. The default values timeout = 0.5s and progress indicator delay = 0.5 should be a good starting point.
 
-To help you find reasonable settings that will ensure the plugin performs well overall, the log file output has been enhanced to provide insight into how long it takes to create and display the plugin window.
-
+To help you find reasonable settings that ensure good overall performance, the log file provides information about how long it takes to create and display the plugin window.
 
 **Example**
 
@@ -1416,7 +1415,7 @@ Let's look at an example of a photo taken with the Nikon Z9:
 
 <img src="images/Performance%20Control%203.jpg" alt="Performance Control 3" style="width: 1000px;"/>
 
- We open the same photo three times in the plugin window, each time under different conditions and with different performance settings. The resulting log file contains information about: 
+ We open the same photo three times in the plugin window, each time under different conditions and with different performance settings. The resulting log file shows: 
  - how quickly a preview could be obtained; 
  - whether a waiting timeout was reached;
  - how long it took the plugin window to open.
@@ -1442,14 +1441,14 @@ If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e.
 
 ## How to create a debug log file
 
-When you report an issue that you have experienced using Focus Point Viewer, you may be asked to provide a **Debug log file**. The logging feature is described in detail in the [Logging section](#logging). 
+When you report an issue with Focus Point Viewer, you may be asked to provide a `Debug` log file. The logging feature is described in detail in the [Logging section](#logging). 
 
 Here are the steps to generate a debug log file and send it to the developer:
 
-1. Go to plugin settings. Look for the `Logging` section. Select `Debug` logging level:
+1. Open the plugin settings and locate the `Logging` section. Select `Debug` as the logging level:
 
    <img src="images/Logging%20-%20Debug.jpg" alt="Logging Debug"/><br><br>
 
-2. Run the plugin to reproduce the behavior you want to be recorded in the log file.
-
-3. Go to plugin settings again. In the `Logging` section, click `Show file`. This will bring the Finder (on macOS) or Explorer (on Windows) to the foreground and highlights the log file. You can pick the log file from here to email it to the developer at [focuspoints.plugin@gmail.com](mailto:focuspoints.plugin@gmail.com) 
+2. Run the plugin and reproduce the problem you want to have recorded in the log file.
+3. Open the plugin settings again. In the `Logging` section, click `Show file`. This brings Finder (macOS) or File Explorer (Windows) to the foreground and highlights the log file.
+4. Attach the log file to an email and send it to the developer at [focuspoints.plugin@gmail.com](mailto:focuspoints.plugin@gmail.com) 
