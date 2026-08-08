@@ -693,8 +693,8 @@ The logging feature in Focus Point Viewer is used for various purposes:
 
 1. Provide additional information to explain error messages and warnings in more detail, for instance:<br>
    - why focus points cannot be displayed for a photo
-     * [No focus points recorded](#no-focus-points-recorded)
-     * [Focus info missing from file](#focus-info-missing-from-file)
+     * [No focus points recorded](Troubleshooting_FAQ.md#no-focus-points-recorded)
+     * [Focus info missing from file](Troubleshooting_FAQ.md#focus-info-missing-from-file)
    - when [straightening images in batch mode](#24-straighten-images)
 
    ⇒ Recommended logging level: `Auto`
@@ -703,7 +703,7 @@ The logging feature in Focus Point Viewer is used for various purposes:
    ⇒ Recommended logging level: `Auto` or `Info`
  
 3. Gather information to help the developer figure out what went wrong if the plugin does not work as expected:
-   - [Severe error encountered](#severe-error-encountered)
+   - [Severe error encountered](Troubleshooting_FAQ.md#severe-error-encountered)
    - the plugin reports an unexpected error
    
    ⇒ Recommended logging level: `Debug`
