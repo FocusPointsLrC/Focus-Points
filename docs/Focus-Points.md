@@ -35,7 +35,7 @@
 
 * [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
 * [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
-* How to create a debug log file
+* [How to create a debug log file](#how-to-create-a-debug-log-file)
 
 <br>
 
@@ -1378,6 +1378,7 @@ Note: `NumPad *` and `NumPad /` may not work because macOS sometimes treats NumP
 Note:<br> 
 Of course, you can use any other keys you like. Just note, that if you assign the same shortcut to two different items, macOS picks one unpredictably.
 
+<br>
 
 ## How to reduce long wait times when opening the plugin window on Windows
 
@@ -1437,6 +1438,7 @@ Check for your images, how long it takes typically to **obtain a preview that is
 
 If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e. non-SSD), it may be useful to experiment with higher timeout values.
 
+<br>
 
 ## How to create a debug log file
 
