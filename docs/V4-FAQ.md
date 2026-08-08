@@ -234,7 +234,7 @@ This was caused by an issue in the Lightroom SDK prior to LrC 15.5 (August 2026)
 If you are still experiencing this problem, please update Lightroom Classic to version 15.5.<br>
 An update of Focus Points Viewer (V4 PRE 4) has been released in parallel to LrC 15.5 to unlock the `Follow Lightroom` mode on macOS.
 
-_With Lightroom Classic 15.5 (August 2026) and the V4 PRE 4 plugin, Focus Point Viewer can be used on a secondary display on macOS._   
+_With LrC 15.5 (August 2026) and the V4 PRE 4 plugin version, Focus Point Viewer can be used on a secondary display on macOS._   
 
 <br>
 

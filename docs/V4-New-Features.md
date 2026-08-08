@@ -210,7 +210,7 @@ Voting is easy — simply sign in to the Adobe Community using your Adobe creden
 
 **Reason:** Inconsistent behavior of the underlying SDK function on Windows vs macOS.
 
-**Status:** Adobe has acknowledged the issue and a bug report has been filed.  
+**Status:** A bug has been logged for this issue, and Adobe's engineering team is actively working on it.  
 
 **Workaround:** Use [AutoHotkey companion script](#6-autohotkey-companion-script-for-windows) on Windows.
 

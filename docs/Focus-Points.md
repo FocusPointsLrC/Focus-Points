@@ -25,16 +25,17 @@
 
 ### [Status Messages and Warnings](Troubleshooting_FAQ.md#status-messages-and-warnings)
 
-### [Special Topics](#4-special-topics)
-
-* [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
-* [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
-
 ### [Compatibility](Compatibility.md)
 
 * [Cameras that support display of autofocus points](Compatibility.md#cameras-that-support-display-of-autofocus-points)
 * [Cameras that support Straighten Images](Compatibility.md#cameras-that-support-straighten-images)
 * [Features not supported in earlier versions of Lightroom](Compatibility.md#features-not-supported-in-earlier-versions-of-lightroom)
+
+### [Special Topics](#4-special-topics)
+
+* [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin)
+* [How to reduce long wait times when opening the plugin window on Windows](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
+* How to create a debug log file
 
 <br>
 
@@ -686,26 +687,51 @@ Depending on the camera maker and model, focus points may have a dimension (widt
 
 **_Level of information to be logged_**. Default setting: `Auto`
 
-The logging feature serves two purposes:
-1. Gather information to explain why focus points are not displayed
-2. Gather information to help the developer figure out what went wrong if the plugin does not work as expected.
+Logging involves recording the events and messages produced by the plugin while it is running. You can think of the log as a digital journal or 'black box flight recorder' — it keeps a detailed, chronologically ordered record of what happened, when it happened and the state that the plugin was in.
 
-For 1. `Auto` is the recommended setting, because it logs relevant information that can help to understand why, for example, the plugin is not able to correctly determine the focus point(s) for a given image. If the plugin encounters any errors or warnings during its operation, it will provide a link to view the log for additional information. See example in "User Messages" below.
+The logging feature in Focus Point Viewer is used for various purposes:
+1. Provide additional information to explain error messages and warnings in more detail, for instance:<br>
+   - why focus points cannot be displayed for a photo
+     * [No focus points recorded](#no-focus-points-recorded)
+     * [Focus info missing from file](#focus-info-missing-from-file)
+   - when [straightening images in batch mode](#24-straighten-images)
 
-The logging mechanism provides a fine-grained hierarchy of levels at which information should be logged. Setting a certain logging level in the plugin preferences will cause all messages of that level to be written, including those at lower levels. description, from lower to higher levels:
+   ⇒ Recommended logging level: `Auto`
+2. Provide details on the time it takes to open the dialog. You can use this information to tweak settings that [control preview image generation](#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)
+⇒ Recommended logging level: `Auto` or `Info`
+3. Gather information to help the developer figure out what went wrong if the plugin does not work as expected:
+   - [Severe error encountered](#severe-error-encountered)
+   - plugin crashed with an error message
+   
+   ⇒ Recommended logging level: `Debug`
+   
+Log messages are categorized  by log level (severity). The logging mechanism provides a detailed hierarchy of levels at which information will be recorded. Setting a specific logging level in the plugin settings will result in all messages at or above that level being written, including those at lower levels. The description of the levels, from lowest to highest, is as follows:
 
-   | Level   | Information logged                                                      |
-   |---------|-------------------------------------------------------------------------|
-   | None    | No logging output. No logfile created.                                  |
-   | Error   | Only error messages.                                                    |
-   | Warning | + warnings                                                              |
-   | Info    | + information on progress and intermediate results                      |
-   | Debug   | + important debug information. No noticeable slow down.                 |
-   | Full    | Full debug information, including entire EXIF data. Slow down.          |
-   | Auto    | Same as 'Info'. Recommended setting. No noticeable slow down of plugin. |
+   | Level     | Information logged                                                      |
+   |-----------|-------------------------------------------------------------------------|
+   | None      | No logging output. No logfile created.                                  |
+   | Error     | Only error messages.                                                    |
+   | Warning   | + warnings                                                              |
+   | Info      | + information on progress and intermediate results                      |
+   | Debug     | + important debug information. No noticeable slow down.                 |
+   | Full      | Full debug information, including entire EXIF data. Slow down.          |
+   | Auto*     | Same as 'Info'. Recommended setting. No noticeable slow down of plugin. |
 
+\* `Auto`logging will start on an empty log file for each image. When you open a log file produced with `Auto`, this will only contain the information for the current or most recent photo. For all other logging levels, the log file will be emptied when the plugin starts executing.
 
-<u>Hint</u>: `Auto`logging will start on an empty log file for each image. When you open such a log file, it will immediately focus on the most recent image. The log file will be emptied when the plugin starts for all other logging levels.
+The `Auto` logging option will only display a `Check log` button at the [user interface](#user-interface) if errors or warnings occured:
+
+<img src="images/Logging%20-%20Errors%20encountered.jpg" alt="User Interface"/> <img src="images/Logging%20-%20Warnings%20encountered.jpg" alt="User Interface"/>
+
+For all other logging levels the `Check log` button will be displayed: 
+
+<img src="images/Logging%20-%20Information%20collected.jpg" alt="User Interface"/>
+
+The name of the log file is `FocusPoints.log`, it is located in the Lightroom folder, `LrClassicLogs`. You can open the file directly in an application associated with `.log` files (e.g. a text editor) by clicking the `Check log` button.  
+
+Alternatively, you can locate the file in the plugin settings. Clicking the `Show file` button will open an Explorer or Finder dialog with the file selected: 
+
+<img src="images/Logging%20-%20Plugin%20log.jpg" alt="User Interface"/>
 
 
 ### Straightening Options
@@ -1406,3 +1432,8 @@ It's the same image, and there is no preview available. This time, the 'Use temp
 Check for your images, how long it takes typically to **obtain a preview that is already available**. Add a small buffer to this number and enter it as the **timeout value**.
 
 If you have a very powerful CPU/GPU but are exporting to a slow hard drive (i.e. non-SSD), it may be useful to experiment with higher timeout values.
+
+
+## How to create a debug log file
+
+When you report an issue that you have experienced using Focus Point Viewer, you may be asked to provide a **Debug log file**. The log file records the plugin's execution.
