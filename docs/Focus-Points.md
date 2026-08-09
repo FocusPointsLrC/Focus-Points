@@ -207,7 +207,7 @@ Click on the following links for more detailed information:
 
 The plugin uses colors to visualize autofocus points, detected faces, subjects and details. This means that the respective area is highlighted by a rectangular marker:<br>
 
-<img src="images/BasicOperation1.jpg" alt="Basic Operation 1" style="width: 1000px;"/>
+<img src="images/BasicOperation1.jpg" alt="BasicOperation1" style="width: 1000px;"/>
 
 This overview shows which elements are supported by the plugin, and the shapes and colors used to visualize them. On Windows, the rectangular marker is a solid frame. On macOS, the frame is indicated by corner symbols*.
 
@@ -285,7 +285,7 @@ Click on the message to learn what it means and how to deal with it in case of a
 
 You can also access this information from the plugin window by clicking the link icon 🔗 next to the message:
 
-<img src="images/BasicOperation6.jpg" alt="Basic Operation 6" style="width: 850px;"/>
+<img src="images/BasicOperation6.jpg" alt="BasicOperation6" style="width: 850px;"/>
 
 
 ### Plugin Status
@@ -295,7 +295,7 @@ See [Logging](#logging) how to set up and customize logging.
 
 For the image above, where the focus information is reported as "missing from file," the log file looks like this:
 
-<img src="images/BasicOperation3.jpg" alt="Basic Operation 3" style="width: 750px;"/>
+<img src="images/BasicOperation3.jpg" alt="BasicOperation3" style="width: 750px;"/>
 
 There are two warnings and one error:
 The tag `CameraSettingsVersion` has not been found which means that this file does not contain a makernotes section with AF information (which is required for the plugin to work). The image file was not created in-camera but by an application. In this case, it is a JPG file exported from (and created! by) Lightroom.

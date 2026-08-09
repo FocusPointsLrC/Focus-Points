@@ -288,7 +288,7 @@ To activate the fix, run the executable and drag it to your Windows Startup fold
 To overcome the limitations imposed by the current implementation of the Lightroom SDK, the script mimics the actions a user would take to resolve the issue. The script consists of two independent watchers: one for Follow mode and one for Interactive mode.
 
 
-#### **<sup>2)</sup> Focus Point Viewer always becomes the active window when opened**  
+#### Focus Point Viewer always becomes the active window when opened
 While Follow mode is open, the watcher keeps Lightroom as the active application so that keyboard navigation continues to work. The watcher virtually clicks into Lightroom as soon as a window with the title 'Focus Points Follow ...' becomes the active window. 
 
 Consequently, minimizing Lightroom while the Follow window is visible immediately restores Lightroom. Minimize or close the Follow window first if you want to minimize Lightroom.
@@ -296,7 +296,7 @@ Consequently, minimizing Lightroom while the Follow window is visible immediatel
 Also, it is not possible to operate the plugin using keyboard shortcuts with the fix enabled.
 
 
-#### **<sup>3)</sup> Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows.**
+#### Keyboard shortcuts do not work immediately after opening Focus Point Viewer in Interactive mode on Windows
 
 While Interactive mode is open, the watcher ensures that the Focus Points dialog receives keyboard input. As soon as a window with the title 'Focus Points Interactive ...' is detected, the watcher activates this window and virtually presses the Down Arrow key, causing the keyboard shortcut entry field to receive keyboard input.   
 
