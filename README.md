@@ -115,7 +115,7 @@ This is particularly useful when reviewing action, wildlife or sports photograph
 
 Version 3.4 also introduces [interactive straightening](docs/Focus-Points.md#straightening-control) directly from the Focus Point Viewer, allowing you to preview the result immediately and undo the adjustment if required.
 
-Availability depends on camera support for roll-angle metadata. See the [compatibility section](docs/Compatibility.md#cameras-that-support-straightening-images) for supported camera models.
+Availability depends on camera support for roll-angle metadata. See the [compatibility section](docs/Compatibility.md#cameras-that-support-straighten-images) for supported camera models.
 
 <br>
 
@@ -131,10 +131,9 @@ If you don't have a GitHub account and don't want to create one, you can email m
 
 <br>
 
-
 ## Enjoying Focus Points?
 
-If Focus Points has become a useful part of your Lightroom workflow and you'd like to support its continued development, bug fixes, and future improvements, you can buy me a coffee on <img src="focuspoints.lrplugin/assets/icons/kofi.png" style="width:16px;"/> [Ko-fi](https://ko-fi.com/focuspoints). Your support is always appreciated, but never expected. 
+If Focus Points has become a useful part of your Lightroom workflow and you'd like to support its continued development, bug fixes, and future improvements, you can buy me a coffee on <img src="focuspoints.lrplugin/assets/icons/kofi.png" alt="kofi" style="width:16px;"/> [Ko-fi](https://ko-fi.com/focuspoints). Your support is always appreciated, but never expected. 
 
 <br>
 
@@ -150,7 +149,6 @@ Special thanks also go to **[John R. Ellis](https://johnrellis.com/)** for provi
 
 
 A full list of contributors to this project can be found on the [project's GitHub Contributors page](https://github.com/FocusPointsLrC/Focus-Points/graphs/contributors).
-
 
 <br>
 

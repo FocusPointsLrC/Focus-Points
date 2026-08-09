@@ -229,6 +229,54 @@ def check_external_url(url: str, timeout: float = 8.0) -> str:
         return ""
 
 
+def audit_alt_text(root: Path, texts: dict[Path, str]) -> list[Problem]:
+    """Audit alt text against the filename-without-extension convention."""
+    problems: list[Problem] = []
+
+    for document, text in texts.items():
+        for match in MD_IMAGE.finditer(text):
+            alt_text = match.group(0)[2:].split("](", 1)[0]
+            target = markdown_target(match.group(1))
+            image_path, _ = split_target(target)
+            expected = Path(unquote(image_path)).stem
+
+            if alt_text.strip() and alt_text != expected:
+                problems.append(
+                    Problem(
+                        "Alt text does not match filename",
+                        Reference(document, line_number(text, match.start()), target),
+                        detail=f"expected {expected!r}, found {alt_text!r}",
+                    )
+                )
+
+        for match in HTML_TAG.finditer(text):
+            tag = match.group(0)
+            if match.group(1).lower() != "img":
+                continue
+
+            target = attribute_value(tag, "src")
+            if not target or is_external(target):
+                continue
+
+            alt_text = attribute_value(tag, "alt")
+            if not alt_text or not alt_text.strip():
+                continue
+
+            image_path, _ = split_target(target)
+            expected = Path(unquote(image_path)).stem
+
+            if alt_text != expected:
+                problems.append(
+                    Problem(
+                        "Alt text does not match filename",
+                        Reference(document, line_number(text, match.start()), target),
+                        detail=f"expected {expected!r}, found {alt_text!r}",
+                    )
+                )
+
+    return problems
+
+
 def validate_external_links(root: Path, texts: dict[Path, str]) -> list[Problem]:
     """Check HTTP/HTTPS links. Failures are warnings, not validation errors."""
     problems: list[Problem] = []
@@ -261,6 +309,13 @@ def validate(root: Path) -> tuple[
         path for path in root.rglob("*")
         if path.is_file() and path.suffix.lower() in MARKDOWN_SUFFIXES
     )
+
+    # The repository-level README is part of the documentation set even
+    # though it lives one level above the docs directory.
+    parent_readme = root.parent / "README.md"
+    if parent_readme.is_file() and parent_readme not in documents:
+        documents.append(parent_readme)
+        documents.sort()
     images = sorted(
         path for path in root.rglob("*")
         if path.is_file() and path.suffix.lower() in IMAGE_SUFFIXES
@@ -334,38 +389,24 @@ def validate(root: Path) -> tuple[
                     Problem("Broken image link", ref, suggestion)
                 )
 
-        # Check Markdown image alt text against the documentation convention:
-        # the alt text is the actual image filename, with URL encoding decoded.
+        # Normal QA check: only verify that image alt text is present.
         for match in MD_IMAGE.finditer(text):
             alt_text = match.group(0)[2:].split("](", 1)[0]
             target = markdown_target(match.group(1))
-            image_path, _ = split_target(target)
-            expected_alt = Path(image_path).stem
-
-            alt_ref = Reference(
-                document,
-                line_number(text, match.start()),
-                target,
-            )
 
             if not alt_text.strip():
                 alt_text_problems.append(
                     Problem(
                         "Missing alt text",
-                        alt_ref,
-                        detail=f"expected {expected_alt!r}",
-                    )
-                )
-            elif alt_text != expected_alt:
-                alt_text_problems.append(
-                    Problem(
-                        "Alt text does not match filename",
-                        alt_ref,
-                        detail=f"expected {expected_alt!r}, found {alt_text!r}",
+                        Reference(
+                            document,
+                            line_number(text, match.start()),
+                            target,
+                        ),
                     )
                 )
 
-        # Apply the same convention to HTML <img> tags.
+        # HTML <img>: verify that an alt attribute is present and non-empty.
         for match in HTML_TAG.finditer(text):
             tag = match.group(0)
             if match.group(1).lower() != "img":
@@ -375,30 +416,16 @@ def validate(root: Path) -> tuple[
             if not target or is_external(target):
                 continue
 
-            image_path, _ = split_target(target)
-            expected_alt = Path(image_path).stem
             alt_text = attribute_value(tag, "alt")
-
-            alt_ref = Reference(
-                document,
-                line_number(text, match.start()),
-                target,
-            )
-
             if not alt_text or not alt_text.strip():
                 alt_text_problems.append(
                     Problem(
                         "Missing alt text",
-                        alt_ref,
-                        detail=f"expected {expected_alt!r}",
-                    )
-                )
-            elif alt_text != expected_alt:
-                alt_text_problems.append(
-                    Problem(
-                        "Alt text does not match filename",
-                        alt_ref,
-                        detail=f"expected {expected_alt!r}, found {alt_text!r}",
+                        Reference(
+                            document,
+                            line_number(text, match.start()),
+                            target,
+                        ),
                     )
                 )
 
@@ -491,7 +518,16 @@ def load_config(root: Path) -> dict[str, set[str]]:
 def print_problems(root: Path, problems: list[Problem]) -> None:
     for problem in problems:
         ref = problem.reference
-        location = ref.source.resolve().relative_to(root.resolve())
+        source_path = ref.source.resolve()
+        root_path = root.resolve()
+        try:
+            location = source_path.relative_to(root_path)
+        except ValueError:
+            # The repository-level README is one level above docs/.
+            # Keep it readable without allowing pathlib.relative_to()
+            # to raise an exception.
+            location = Path("..") / source_path.name
+
         message = f"  {problem.kind}: {location}:{ref.line}: {ref.target}"
         if problem.suggestion:
             message += f" (did you mean {problem.suggestion}?)"
@@ -515,6 +551,11 @@ def main() -> int:
         metavar="MIB",
         default=1.0,
         help="warn about images larger than MIB (default: 1.0)",
+    )
+    parser.add_argument(
+        "--check-alt-text",
+        action="store_true",
+        help="audit image alt text against the filename convention",
     )
     parser.add_argument(
         "--quiet",
@@ -543,6 +584,15 @@ def main() -> int:
         document_count,
         image_count,
     ) = validate(root)
+
+    alt_audit_problems: list[Problem] = []
+    if args.check_alt_text:
+        audit_texts = {
+            path: path.read_text(encoding="utf-8-sig")
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix.lower() in MARKDOWN_SUFFIXES
+        }
+        alt_audit_problems = audit_alt_text(root, audit_texts)
 
     external_problems: list[Problem] = []
     if args.external:
@@ -582,6 +632,11 @@ def main() -> int:
     print(f"  Missing alt text ........ {len(alt_text)}")
     print(f"  Duplicate headings ...... {len(duplicate_headings)}")
     print(f"  Large images (> {args.large_images:g} MiB) .. {len(large_images)}")
+
+    if args.check_alt_text:
+        print()
+        print("ALT TEXT AUDIT")
+        print(f"  Filename mismatches ...... {len(alt_audit_problems)}")
 
     if args.external:
         print()
@@ -623,6 +678,11 @@ def main() -> int:
         for path, size in large_images:
             size_mib = size / (1024 * 1024)
             print(f"  {size_mib:6.2f} MiB  {path.relative_to(root)}")
+
+    if alt_audit_problems:
+        print()
+        print("Alt text audit:")
+        print_problems(root, alt_audit_problems)
 
     if external_problems:
         print()

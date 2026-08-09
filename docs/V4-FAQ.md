@@ -115,7 +115,7 @@ The same applies to straightening images. Please note that this is independent o
 
 There are also a number of specific reasons why Focus Point Viewer does not seem to work with  certain images. This is indicated by an error message in the `Focus Information` section. Clicking the blue link icon provides more information about the underlying problem. [↗](Troubleshooting_FAQ.md)
 
-<img src="images/FAQ%20Focus%20Info%20missing.jpg"><br>
+<img src="images/FAQ%20Focus%20Info%20missing.jpg" alt="FAQ Focus Info missing"><br>
 
 _If your camera manufacturer is supported and your camera is less than 10 years old, it is most likely that your camera model is supported._
 

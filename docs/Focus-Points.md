@@ -1314,7 +1314,7 @@ There is a precompiled executable (`.exe`) for each script, as well as the corre
 
 1. Go to the `focuspoints.lrplugin\ahk` folder.
 2. Choose the script that matches your Lightroom version and language.
-3. Double-click the corresponding executable. An active script is indicated by a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray.
+3. Double-click the corresponding executable. An active script is indicated by a green<img src="images/autohotkey_icon.jpg" alt="autohotkey_icon" style="width: 36px;"/>icon in the system tray.
 4. Drag the executable to your Windows `Startup` folder, to make the shortcuts available each time you start Windows.
 
 -----
@@ -1334,7 +1334,7 @@ You can use [FocusPointsHotkey.ahk](../focuspoints.lrplugin/ahk/FocusPointsHotke
     **Example:**<br>
     If you want to assign the plugin functions to `Win-F`, `Win-M`, `Win-S` you have to replace `NumpadMult` by `#f`, `NumpadDiv` by `#m` and `^NumPad -` by `#s`. If you prefer a `Ctrl-Shift` combination instead of `Win` the hotkey names are `^+f`, `^+m`, `^+s`.<br>Save your changes to the file. 
 
-4. Double-click `FocusPointsHotkey.ahk` to run the script. In case you didn't introduce any errors, a green<img src="images/autohotkey_icon.jpg" style="width: 36px;"/>icon in the system tray indicates that the script is active.
+4. Double-click `FocusPointsHotkey.ahk` to run the script. In case you didn't introduce any errors, a green<img src="images/autohotkey_icon.jpg" alt="autohotkey_icon" style=" width: 36px;"/>icon in the system tray indicates that the script is active.
 
 5. To make the shortcuts available permanently, place `FocusPointsHotkey.ahk` in your Windows `Startup` folder.<br>
 
