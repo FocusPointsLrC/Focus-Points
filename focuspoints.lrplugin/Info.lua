@@ -63,10 +63,10 @@ return {
       minor      = 0,
       revision   = 0,
       build      = 9040,
-      display    = "4 PRE 4",
+      display    = "4 PRE 4 +leica",
       -- custom additions:
       channel    = "prerelease",
-      branch     = "v4",
+      branch     = "v4-leica",
       rawBaseUrl = "https://raw.githubusercontent.com/focuspointslrc/Focus-Points/",
   },
 
