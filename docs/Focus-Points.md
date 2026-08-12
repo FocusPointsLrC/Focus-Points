@@ -19,7 +19,7 @@
 
 ### [Display of Focus Points](#3-display-of-focus-points)
 
-* Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fuji](#34-fuji), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Pentax](#38-pentax), [Ricoh](#39-ricoh), [Apple](#310-apple)
+* Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fuji](#34-fuji), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Pentax](#38-pentax), [Ricoh](#39-ricoh), [Leica](#311-leica), [Apple](#310-apple)
 
 ### [Special Topics](#4-special-topics)
 
@@ -45,11 +45,11 @@ A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS:
 - Straightening images by applying compensation for camera roll angle<sup>3,6,7</sup>
 
 <sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Apple.<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh, Leica, Apple.<br>
 &nbsp;&nbsp;&nbsp;Check the [list of supported cameras](Compatibility.md#cameras-that-support-display-of-autofocus-points) to see if your camera is supported.<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
-<sup>5</sup> Currently supported for Fuji, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
+<sup>5</sup> Currently supported for Fuji, OM System (subjects, faces), Sony, Olympus, Pentax (faces) and Leica (people, face+eye, animal detection).<br> 
 <sup>6</sup> Currently supported for Canon, Nikon, Fuji, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
 <sup>7</sup> Not for LR5.<br>
 
@@ -1140,6 +1140,38 @@ For modern Apple devices there are some interesting tags to extend the Shooting 
 Face detection for an image exported from Apple Photos:
 
 <img src="images/Apple 3.jpg" alt="Apple 3" style="width: 1000px;"/>
+
+## 3.11 Leica
+
+Supported features:
+
+|                                    MAC                                    |                                      WIN                                      |      Color      | Meaning                                                              |
+|:-------------------------------------------------------------------------:|:-----------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
+| <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/> | <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/> | red<sup>1</sup> | Active AF point. Focus location reported by the camera               |
+|    <img src="images/af_face.png" alt="face" style="width: 20px;"/>    |    <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>    |     yellow      | Subject detected (People, Face+Eye, Animal, Animal+Eye) in this area |
+
+<sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+
+Supported camera models:
+
+* **Mirrorless with phase-detection AF**: Q2, Q3, SL2, SL3, CL
+* **Not supported**: M-series (M10, M11, etc.) — manual focus only
+
+The Leica Q3 (and similar models) stores the active AF point as a pair of normalized coordinates in the proprietary MakerNotes section. These coordinates are not decoded by ExifTool by name, but are accessible using ExifTool's unknown-tag mode (`-u`). The plugin reads these directly.
+
+The AF point location is valid for all autofocus modes: Spot, Large Area, Multi Zone and Tracking. When manual focus is used, the camera writes a sentinel value instead of coordinates and the plugin displays no focus point.
+
+The **Focus Information** panel displays:
+
+| Field          | Values                                         |
+|----------------|------------------------------------------------|
+| Focus Distance | Distance to the focused subject                |
+| Focus Mode     | AF-S / AF-C / iAF                              |
+| AF Area        | Spot / Large / Multi Zone / Tracking           |
+| Detection      | People / Face+Eye / Animal / Animal+Eye        |
+
+When subject detection is active, the focus point is displayed in **yellow** because the camera focused on the detected subject. The yellow marker shows where the camera locked onto the person, face, eye or animal.
+
 
 <br>
 

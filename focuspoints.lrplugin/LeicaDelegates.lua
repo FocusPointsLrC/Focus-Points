@@ -22,9 +22,20 @@
   Delegate functions for Leica cameras (Q2, Q3, SL2, SL3, CL) with phase-detection AF.
   M-series cameras (M10, M11) are manual focus only and are not supported.
 
-  AF position is read from MakerNotes tag "Panasonic Leica 5 0x044d" which contains
-  normalized X,Y coordinates (0.0–1.0) of the AF point center. Reverse-engineered
-  from Leica Q3 DNG files using ExifTool 13.59 (2026-08-11).
+  Reverse-engineered from Leica Q3 DNG files using ExifTool 13.59 (2026-08-12).
+
+  Key MakerNotes tags (group "Panasonic Leica 5", accessed via -u exiftool flag):
+
+  0x044d  AF point center, two normalized floats X Y (0.0–1.0, top-left origin).
+          Sentinel value -1/1024 (-0.0009765625) for both X and Y indicates MF.
+
+  0x0404  4-byte AF configuration [b0, b1, b2, b3]:
+            b3 (word 4) = Focus mode  : 0=MF, 1=AF-S, 2=AF-C, 4=iAF
+            b2 (word 3) = Detection   : 0=none, 1=People, 2=Face+Eye, 3=Animal, 4=Animal+Eye
+            b0 (word 1) = Area mode   : 0=MF, 9=Tracking, 15=Spot or Large, 16=Multi Zone
+
+  0x041e  AF area selector, single int: 0=Tracking, 1=Spot, 4=Large or Multi Zone.
+          Used together with 0x0404 b0 to distinguish Spot from Large (both have b0=15).
 ------------------------------------------------------------------------------]]
 local LeicaDelegates = {}
 
@@ -45,21 +56,44 @@ local metaKeyMakerNotes    = "Film Mode"
 -- AF position: normalized X Y center of the focus point (0.0–1.0)
 local metaKeyAfPoint       = "Panasonic Leica 5 0x044d"
 
--- Face detection
-local metaKeyFacesDetected = "Faces Detected"
+-- AF configuration: [area_byte, 0, detection_byte, focus_mode_byte]
+local metaKeyAfConfig      = "Panasonic Leica 5 0x0404"
 
--- Focus / shooting info
+-- AF area selector: 0=Tracking, 1=Spot, 4=Large/Multi Zone
+local metaKeyAfArea        = "Panasonic Leica 5 0x041e"
+
+-- Focus distance
 local metaKeyFocusDistance = "Focus Distance"
+
+-- Human-readable lookup tables for 0x0404 bytes
+local FOCUS_MODE_NAMES = { [1] = "AF-S", [2] = "AF-C", [4] = "iAF" }
+local DETECTION_NAMES  = { [1] = "People", [2] = "Face + Eye", [3] = "Animal", [4] = "Animal + Eye" }
+
+--[[----------------------------------------------------------------------------
+  local function
+  parseAfConfig(table metadata) -> int b0, int b2, int b3
+
+  Parse tag 0x0404 into the three meaningful bytes.
+  Returns 0,0,0 if the tag is absent.
+------------------------------------------------------------------------------]]
+local function parseAfConfig(metadata)
+  local config = ExifUtils.findValue(metadata, metaKeyAfConfig)
+  if not config then return 0, 0, 0 end
+  local b0 = tonumber(Utils.get_nth_Word(config, 1, " ")) or 0
+  local b2 = tonumber(Utils.get_nth_Word(config, 3, " ")) or 0
+  local b3 = tonumber(Utils.get_nth_Word(config, 4, " ")) or 0
+  return b0, b2, b3
+end
 
 --[[----------------------------------------------------------------------------
   local function
   addInfo(string title, string key, table props, table metadata)
 
-  Helper to create a single row for the info panel. Returns nil if the tag
-  has no meaningful value (n/a, none, or missing).
+  Helper to create a single row for the info panel. Returns an empty row if
+  the tag has no meaningful value.
 ------------------------------------------------------------------------------]]
 local function addInfo(title, key, props, metadata)
-  if not key then return nil end
+  if not key then return FocusInfo.emptyRow() end
   local value = ExifUtils.findValue(metadata, key)
   if not value then
     props[key] = ExifUtils.metaValueNA
@@ -103,24 +137,36 @@ end
   public boolean
   manualFocusUsed(table photo, table metadata)
 
-  Returns true if the photo was taken with manual focus. For Leica M-series
-  this is always true. For other models, the absence of the AF point tag
-  indicates manual focus was used.
+  Returns true if the photo was taken with manual focus.
+  Primary check: byte 3 of 0x0404 == 0 (MF mode).
+  Fallback (older firmware / tag absent): sentinel value -1/1024 in 0x044d.
 ------------------------------------------------------------------------------]]
 function LeicaDelegates.manualFocusUsed(_photo, metadata)
   if string.find(DefaultDelegates.cameraModel, "leica m", 1, true) then
     return true
   end
-  return ExifUtils.findValue(metadata, metaKeyAfPoint) == nil
+  local _, _, b3 = parseAfConfig(metadata)
+  if b3 ~= 0 then
+    -- AF mode byte is known and non-zero → autofocus was used
+    return false
+  end
+  -- b3 == 0 could mean MF or missing tag; confirm via 0x044d sentinel
+  local afPoint = ExifUtils.findValue(metadata, metaKeyAfPoint)
+  if not afPoint then return true end
+  local x = tonumber(Utils.get_nth_Word(afPoint, 1, " "))
+  return (x == nil or x < 0)
 end
 
 --[[----------------------------------------------------------------------------
   public table
   getAfPoints(table photo, table metadata)
 
-  Returns focus point data for rendering. Reads the AF center position from
-  "Panasonic Leica 5 0x044d" which contains two space-separated normalized
-  floats: X Y (each in range 0.0–1.0, origin at top-left).
+  Returns focus point data for rendering.
+
+  The AF center is read from 0x044d (two normalized floats X Y, 0.0–1.0).
+  When subject/face/animal detection is active (0x0404 byte 2 > 0), the point
+  is rendered as POINTTYPE_FACE (yellow) because 0x044d is where the camera
+  focused on the detected subject.
 ------------------------------------------------------------------------------]]
 function LeicaDelegates.getAfPoints(photo, metadata)
 
@@ -142,14 +188,32 @@ function LeicaDelegates.getAfPoints(photo, metadata)
     return nil
   end
 
-  local x = math.floor(tonumber(orgPhotoWidth)  * tonumber(focusX))
-  local y = math.floor(tonumber(orgPhotoHeight) * tonumber(focusY))
+  local fx = tonumber(focusX)
+  local fy = tonumber(focusY)
+
+  -- Sentinel -1/1024 means MF — should not reach here, but guard anyway
+  if fx == nil or fx < 0 or fy == nil or fy < 0 then
+    Log.logInfo("Leica", "Sentinel coordinates in 0x044d — manual focus, skipping AF point")
+    return nil
+  end
+
+  local x = math.floor(orgPhotoWidth  * fx)
+  local y = math.floor(orgPhotoHeight * fy)
 
   Log.logInfo("Leica", string.format("Focus point at [x=%d, y=%d]", x, y))
 
   FocusInfo.focusPointsDetected = true
 
-  return DefaultPointRenderer.createFocusFrame(x, y)
+  local result = DefaultPointRenderer.createFocusFrame(x, y)
+
+  -- When subject detection was active, render the AF point as a face/subject box (yellow)
+  local _, b2, _ = parseAfConfig(metadata)
+  if b2 > 0 then
+    Log.logInfo("Leica", string.format("Subject detection active (mode %d) — rendering as face point", b2))
+    result.points[1].pointType = DefaultDelegates.POINTTYPE_FACE
+  end
+
+  return result
 end
 
 --[[----------------------------------------------------------------------------
@@ -172,18 +236,33 @@ end
   public table
   getFocusInfo(table photo, table props, table metadata)
 
-  Returns the "Focus Information" section with focus distance and face detection.
+  Returns the "Focus Information" panel content.
+  Displays: Focus Distance, Focus Mode, AF Area, Detection (when active).
 ------------------------------------------------------------------------------]]
 function LeicaDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
 
-  local focusInfo = f:column {
+  local b0, b2, b3 = parseAfConfig(metadata)
+
+  -- Determine AF Area string
+  local areaStr
+  if b0 == 9 then
+    areaStr = "Tracking"
+  elseif b0 == 16 then
+    areaStr = "Multi Zone"
+  elseif b0 == 15 then
+    local areaTag = ExifUtils.findValue(metadata, metaKeyAfArea)
+    areaStr = (tonumber(areaTag) == 1) and "Spot" or "Large"
+  end
+
+  return f:column {
     fill = 1,
     spacing = 2,
-    addInfo("Focus Distance",  metaKeyFocusDistance, props, metadata),
-    addInfo("Faces Detected",  metaKeyFacesDetected, props, metadata),
+    addInfo("Focus Distance", metaKeyFocusDistance, props, metadata),
+    b3 > 0 and FocusInfo.addRow("Focus Mode", FOCUS_MODE_NAMES[b3] or ("mode " .. b3)) or FocusInfo.emptyRow(),
+    areaStr         and FocusInfo.addRow("AF Area",    areaStr)                           or FocusInfo.emptyRow(),
+    b2 > 0          and FocusInfo.addRow("Detection",  DETECTION_NAMES[b2] or ("type " .. b2)) or FocusInfo.emptyRow(),
   }
-  return focusInfo
 end
 
 return LeicaDelegates

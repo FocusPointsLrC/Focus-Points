@@ -35,7 +35,7 @@ Whether you're trying to understand why a photograph is perfectly sharp, why it 
 
 Focus Points supports cameras from
 
-**Canon • Nikon • Sony • Fuji • Olympus / OM System • Panasonic • Pentax • Ricoh • Apple**
+**Canon • Nikon • Sony • Fuji • Olympus / OM System • Panasonic • Pentax • Ricoh • Leica • Apple**
 
 Support depends on the information recorded by each camera model. Please refer to the [compatibility list](docs/Compatibility.md) to check if your camera is supported.
 
