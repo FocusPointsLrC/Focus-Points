@@ -42,7 +42,7 @@ Straighten.ERROR   = 2
 --]]
 local supportedMakes = {
   'canon', 'nikon', 'nikon corporation', 'fujifilm', 'olympus', 'om digital solutions',
-  'pentax', 'ricoh', 'panasonic', 'leica camera ag'
+  'pentax', 'ricoh', 'panasonic', 'leica camera ag', 'leica'
 }
 
 local function makeSupported(make)
@@ -121,7 +121,8 @@ function Straighten.getRollAngleCW(photo, metadata)
     if rollAngleValue then
       rollAngle = tonumber(rollAngleValue)
       if rollAngle then
-        if  lowerMake == 'fujifilm' or (string.find(lowerMake, "nikon", 1, true)) then
+        if lowerMake == 'fujifilm' or string.find(lowerMake, "nikon", 1, true)
+                                   or string.find(lowerMake, "leica", 1, true) then
           -- makes that record angle value clockwise
           rollAngle = rollAngle *  1
         else
