@@ -22,12 +22,18 @@
   Delegate functions for Leica cameras (Q2, Q3, SL2, SL3, CL) with phase-detection AF.
   M-series cameras (M10, M11) are manual focus only and are not supported.
 
-  Reverse-engineered from Leica Q3 DNG files using ExifTool 13.59 (2026-08-12).
+  Reverse-engineered from 93 Leica Q3 DNG files (2026-08-12/13), covering all AF
+  modes: Spot, Large, Multi Zone, Tracking; all detection modes; Macro; portrait
+  orientation (Rotate 90 CW and 270 CW); AF-C on moving subjects; and failed
+  detection. Validated with ExifTool 13.59.
 
   Key MakerNotes tags (group "Panasonic Leica 5", accessed via -u exiftool flag):
 
   0x044d  AF point center, two normalized floats X Y (0.0–1.0, top-left origin).
-          Sentinel value -1/1024 (-0.0009765625) for both X and Y indicates MF.
+          Always in sensor (landscape) coordinates regardless of camera orientation.
+          Sentinel value -1/1024 (-0.0009765625) for both X and Y indicates MF or
+          failed subject detection.
+          Special case: FocusDistance = 65.535 m means focus at infinity (AF-C).
 
   0x0404  4-byte AF configuration [b0, b1, b2, b3]:
             b3 (word 4) = Focus mode  : 0=MF, 1=AF-S, 2=AF-C, 4=iAF
@@ -37,6 +43,9 @@
 
   0x041e  AF area selector, single int: 0=Tracking, 1=Spot, 4=Large or Multi Zone.
           Used together with 0x0404 b0 to distinguish Spot from Large (both have b0=15).
+
+  Note: The Q3 stores only ONE AF point per photo regardless of area mode. Large and
+  Multi Zone modes record the final focus position within the zone, not the zone size.
 ------------------------------------------------------------------------------]]
 local LeicaDelegates = {}
 
