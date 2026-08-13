@@ -42,7 +42,7 @@ Straighten.ERROR   = 2
 --]]
 local supportedMakes = {
   'canon', 'nikon', 'nikon corporation', 'fujifilm', 'olympus', 'om digital solutions',
-  'pentax', 'ricoh', 'panasonic'
+  'pentax', 'ricoh', 'panasonic', 'leica camera ag'
 }
 
 local function makeSupported(make)
