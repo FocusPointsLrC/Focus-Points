@@ -63,8 +63,10 @@ local metaKeyAfConfig      = "Panasonic Leica 5 0x0404"
 -- AF area selector: 0=Tracking, 1=Spot, 4=Large/Multi Zone
 local metaKeyAfArea        = "Panasonic Leica 5 0x041e"
 
--- Focus distance
-local metaKeyFocusDistance = "Focus Distance"
+-- Focus distance and optics
+local metaKeyFocusDistance  = "Focus Distance"
+local metaKeyDepthOfField   = "Depth Of Field"
+local metaKeyHyperfocalDist = "Hyperfocal Distance"
 
 -- Human-readable lookup tables for 0x0404 bytes
 local FOCUS_MODE_NAMES = { [1] = "AF-S", [2] = "AF-C", [4] = "iAF" }
@@ -260,7 +262,9 @@ function LeicaDelegates.getFocusInfo(_photo, props, metadata)
   return f:column {
     fill = 1,
     spacing = 2,
-    addInfo("Focus Distance", metaKeyFocusDistance, props, metadata),
+    addInfo("Focus Distance",    metaKeyFocusDistance,  props, metadata),
+    addInfo("Depth of Field",    metaKeyDepthOfField,   props, metadata),
+    addInfo("Hyperfocal Distance", metaKeyHyperfocalDist, props, metadata),
     b3 > 0 and FocusInfo.addRow("Focus Mode", FOCUS_MODE_NAMES[b3] or ("mode " .. b3)) or FocusInfo.emptyRow(),
     areaStr         and FocusInfo.addRow("AF Area",    areaStr)                           or FocusInfo.emptyRow(),
     b2 > 0          and FocusInfo.addRow("Detection",  DETECTION_NAMES[b2] or ("type " .. b2)) or FocusInfo.emptyRow(),
