@@ -32,6 +32,7 @@
   0x0404  4-byte AF configuration [b0, b1, b2, b3]:
             b3 (word 4) = Focus mode  : 0=MF, 1=AF-S, 2=AF-C, 4=iAF
             b2 (word 3) = Detection   : 0=none, 1=People, 2=Face+Eye, 3=Animal, 4=Animal+Eye
+            b1 (word 2) = Macro mode  : 0=normal, 1=Macro
             b0 (word 1) = Area mode   : 0=MF, 9=Tracking, 15=Spot or Large, 16=Multi Zone
 
   0x041e  AF area selector, single int: 0=Tracking, 1=Spot, 4=Large or Multi Zone.
@@ -71,18 +72,19 @@ local DETECTION_NAMES  = { [1] = "People", [2] = "Face + Eye", [3] = "Animal", [
 
 --[[----------------------------------------------------------------------------
   local function
-  parseAfConfig(table metadata) -> int b0, int b2, int b3
+  parseAfConfig(table metadata) -> int b0, int b1, int b2, int b3
 
-  Parse tag 0x0404 into the three meaningful bytes.
-  Returns 0,0,0 if the tag is absent.
+  Parse tag 0x0404 into its four bytes.
+  Returns 0,0,0,0 if the tag is absent.
 ------------------------------------------------------------------------------]]
 local function parseAfConfig(metadata)
   local config = ExifUtils.findValue(metadata, metaKeyAfConfig)
-  if not config then return 0, 0, 0 end
+  if not config then return 0, 0, 0, 0 end
   local b0 = tonumber(Utils.get_nth_Word(config, 1, " ")) or 0
+  local b1 = tonumber(Utils.get_nth_Word(config, 2, " ")) or 0
   local b2 = tonumber(Utils.get_nth_Word(config, 3, " ")) or 0
   local b3 = tonumber(Utils.get_nth_Word(config, 4, " ")) or 0
-  return b0, b2, b3
+  return b0, b1, b2, b3
 end
 
 --[[----------------------------------------------------------------------------
@@ -145,7 +147,7 @@ function LeicaDelegates.manualFocusUsed(_photo, metadata)
   if string.find(DefaultDelegates.cameraModel, "leica m", 1, true) then
     return true
   end
-  local _, _, b3 = parseAfConfig(metadata)
+  local _, _, _, b3 = parseAfConfig(metadata)
   if b3 ~= 0 then
     -- AF mode byte is known and non-zero → autofocus was used
     return false
@@ -207,7 +209,7 @@ function LeicaDelegates.getAfPoints(photo, metadata)
   local result = DefaultPointRenderer.createFocusFrame(x, y)
 
   -- When subject detection was active, render the AF point as a face/subject box (yellow)
-  local _, b2, _ = parseAfConfig(metadata)
+  local _, _, b2, _ = parseAfConfig(metadata)
   if b2 > 0 then
     Log.logInfo("Leica", string.format("Subject detection active (mode %d) — rendering as face point", b2))
     result.points[1].pointType = DefaultDelegates.POINTTYPE_FACE
@@ -242,7 +244,7 @@ end
 function LeicaDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
 
-  local b0, b2, b3 = parseAfConfig(metadata)
+  local b0, b1, b2, b3 = parseAfConfig(metadata)
 
   -- Determine AF Area string
   local areaStr
@@ -262,6 +264,7 @@ function LeicaDelegates.getFocusInfo(_photo, props, metadata)
     b3 > 0 and FocusInfo.addRow("Focus Mode", FOCUS_MODE_NAMES[b3] or ("mode " .. b3)) or FocusInfo.emptyRow(),
     areaStr         and FocusInfo.addRow("AF Area",    areaStr)                           or FocusInfo.emptyRow(),
     b2 > 0          and FocusInfo.addRow("Detection",  DETECTION_NAMES[b2] or ("type " .. b2)) or FocusInfo.emptyRow(),
+    b1 == 1         and FocusInfo.addRow("Focus Range", "Macro")                          or FocusInfo.emptyRow(),
   }
 end
 
