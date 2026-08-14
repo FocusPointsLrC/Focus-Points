@@ -35,6 +35,7 @@ local LrFileUtils     = import  'LrFileUtils'
 local LrHttp          = import  'LrHttp'
 local LrPrefs         = import  'LrPrefs'
 local LrShell         = import  'LrShell'
+local LrSystemInfo    = import  'LrSystemInfo'
 local LrTasks         = import  'LrTasks'
 local LrView          = import  'LrView'
 
@@ -45,14 +46,21 @@ local Log             = require 'Log'
 local Utils           = require 'Utils'
 
 -- Important plugin definitions and settings -----------------------------------
+local PLUGIN_WINDOW_DISPLAY_AUTO = 0
+local PLUGIN_WINDOW_SIZE_DEFAULT = 5
 
--- Size options for plugin window
-FocusPointPrefs.pluginWindow3XL    = 0.9
-FocusPointPrefs.pluginWindowXXL    = 0.8
-FocusPointPrefs.pluginWindowXL     = 0.7
-FocusPointPrefs.pluginWindowL      = 0.6
-FocusPointPrefs.pluginWindowM      = 0.5
-FocusPointPrefs.pluginWindowS      = 0.4
+local WINDOW_SIZES = {
+    { scale = 0.40, name = "XS"     },
+    { scale = 0.45, name = "S"      },
+    { scale = 0.50, name = "M"      },
+    { scale = 0.55, name = "M/L"    },
+    { scale = 0.60, name = "L"      },
+    { scale = 0.65, name = "L/XL"   },
+    { scale = 0.70, name = "XL"     },
+    { scale = 0.75, name = "XL/XXL" },
+    { scale = 0.80, name = "XXL"    },
+    { scale = 0.85, name = "3XL"    },
+}
 
 -- Scaling values for size of 'pixel focus' box, relative to focus point window size
 FocusPointPrefs.focusBoxSize = { 0, 0.04, 0.1 }
@@ -111,7 +119,7 @@ local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboa
 local urlHelpOnDisplayMode          = FocusPointPrefs.urlNewFeatures .. "#2-display-modes"
 local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
 local urlHelpOnSecondScreenMode     = FocusPointPrefs.urlNewFeatures .. "#1-second-screen-mode"
-local urlHelpOnPluginWindowScaling  = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
+local urlHelpOnPluginWindowScale     = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
 local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
 local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
 local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
@@ -124,7 +132,9 @@ FocusPointPrefs.urlKofi             = "https://ko-fi.com/focuspoints"
 FocusPointPrefs.kbdShortcutsDirectMode      = "dD"
 FocusPointPrefs.kbdShortcutsPreviewImage    = "vV"
 FocusPointPrefs.kbdShortcutsExportImage     = "eE"
-FocusPointPrefs.kbdShortcutsPrev            = "-<"
+FocusPointPrefs.kbdShortcutsSizeDown        = "<"
+FocusPointPrefs.kbdShortcutsSizeUp          = ">"
+FocusPointPrefs.kbdShortcutsPrev            = "-"
 FocusPointPrefs.kbdShortcutsNext            = " +"
 FocusPointPrefs.kbdShortcutsPick            = "p"
 FocusPointPrefs.kbdShortcutsUnflag          = "u"
@@ -147,6 +157,7 @@ local displayScaleFactor = 0.0
 local LR5 = (LrApplication.versionTable().major == 5)
 local bind = LrView.bind
 
+
 --[[----------------------------------------------------------------------------
   public void
   InitializePrefs()
@@ -157,10 +168,11 @@ local bind = LrView.bind
 function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
   if not prefs.screenScaling                    then prefs.screenScaling              = 0 end
-  if not prefs.pluginWindowScaling              then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
-  if     prefs.secondScreenMode        == nil then prefs.secondScreenMode           = true      end
-  if not prefs.secondScreenBehavior           then prefs.secondScreenBehavior       = FocusPointPrefs.secondScreenBehaviorInteractive end
-  if not prefs.previewAspectRatio             then prefs.previewAspectRatio         = 3/2       end
+  if not prefs.pluginWindowSize                 then prefs.pluginWindowSize           = PLUGIN_WINDOW_SIZE_DEFAULT end
+  if not prefs.pluginWindowDisplay              then prefs.pluginWindowDisplay        = PLUGIN_WINDOW_DISPLAY_AUTO end
+  if     prefs.secondScreenMode          == nil then prefs.secondScreenMode           = true      end
+  if not prefs.secondScreenBehavior             then prefs.secondScreenBehavior       = FocusPointPrefs.secondScreenBehaviorInteractive end
+  if not prefs.photoViewAspectRatio             then prefs.photoViewAspectRatio       = 3/2       end
   if     prefs.truncateLongText          == nil then prefs.truncateLongText           = true      end
   if not prefs.truncateLimit                    then prefs.truncateLimit              = 32        end
   if     prefs.hideKofiControl           == nil then prefs.hideKofiControl            = false     end
@@ -186,6 +198,14 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if not prefs.previewTimeout                   then prefs.previewTimeout             = 0.5       end
   if     prefs.previewShowProgress       == nil then prefs.previewShowProgress        = true      end
   if not prefs.previewProgressDelay             then prefs.previewProgressDelay       = 0.5       end
+
+  -- Check if the most recently used display for the plugin is still valid
+  -- E.g. if a secondary display has been removed from the setup
+  local displays = LrSystemInfo.displayInfo()
+  if prefs.pluginWindowDisplay > #displays then
+    -- fall back to the default display
+    prefs.pluginWindowDisplay = PLUGIN_WINDOW_DISPLAY_AUTO
+  end
 
   -- OS dependent initialization: displayMode
   -- required as long as not all modes can be supported on both WIN and MAC
@@ -298,7 +318,50 @@ end
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getPluginWindowSize()
   local prefs = LrPrefs.prefsForPlugin( nil )
-  return prefs.pluginWindowScaling
+  return WINDOW_SIZES[prefs.pluginWindowSize].name
+end
+
+function FocusPointPrefs.getPluginWindowScale()
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  return WINDOW_SIZES[prefs.pluginWindowSize].scale
+end
+
+function FocusPointPrefs.upsizePluginWindow()
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  prefs.pluginWindowSize = math.min(
+    (prefs.pluginWindowSize or 1) + 1,
+    #WINDOW_SIZES
+  )
+end
+
+function FocusPointPrefs.downsizePluginWindow()
+  local prefs = LrPrefs.prefsForPlugin(nil)
+  prefs.pluginWindowSize = math.max(
+    (prefs.pluginWindowSize or 1) - 1,
+    1
+  )
+end
+
+function FocusPointPrefs.getPluginWindowDisplay(displayIndex)
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  local displays = LrSystemInfo.displayInfo()
+
+  if not displayIndex then
+    return displays[1]
+  end
+
+  if prefs.secondScreenMode and displayIndex ~= PLUGIN_WINDOW_DISPLAY_AUTO then
+    return displays[displayIndex] or displays[1]
+  end
+
+  for _, display in ipairs(displays) do
+    if display.hasAppMain then
+      return display
+    end
+  end
+
+  -- Fallback
+  return displays[1]
 end
 
 --[[----------------------------------------------------------------------------
@@ -537,6 +600,43 @@ function FocusPointPrefs.getReleaseURL()
   end
 end
 
+local function getPluginWindowDisplayItems()
+  local prefs    = LrPrefs.prefsForPlugin( nil )
+  local displays = LrSystemInfo.displayInfo()
+  local items = {
+    {
+      title = "Automatic (Lightroom Display)",
+      value = PLUGIN_WINDOW_DISPLAY_AUTO,
+    },
+  }
+
+  for index, display in ipairs(displays) do
+    local title
+
+    if display.isMain then
+      title = string.format(
+        "Main Display (%d x %d)",
+        display.width,
+        display.height
+      )
+    else
+      title = string.format(
+        "Display %d (%d x %d)",
+        index,
+        display.width,
+        display.height
+      )
+    end
+
+    items[#items + 1] = {
+      title = title,
+      value = index,
+    }
+  end
+
+  return items
+end
+
 --[[----------------------------------------------------------------------------
   public table
   genSectionsForBottomOfDialog( table viewFactory, propertyTable )
@@ -603,7 +703,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           value = bind("screenScaling"),
           width_in_chars = dropDownWidth,
           items = {
-            { title = "Auto", value = 0    },
+--          { title = "Auto", value = 0    },   -- for later use when floating dialog can automatically resize
             { title = "100%", value = 1.0  },
             { title = "125%", value = 0.8  },
             { title = "150%", value = 0.67 },
@@ -764,99 +864,114 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
       title = "User Interface",
 
       --------------------------------------------------------------------------
-      -- Second Screen
+      -- Second Screen mode and behavior
       --------------------------------------------------------------------------
       f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
 
-        f:column {
-          spacing = 6,
-
-          ----------------------------------------------------------------------
-          -- Main row
-          ----------------------------------------------------------------------
-          f:row {
-            bind_to_object = prefs,
-            spacing = f:control_spacing(),
-
-            f:popup_menu {
-              title = "secondScreenMode",
-              value = bind("secondScreenMode"),
-              width_in_chars = dropDownWidth,
-              items = {
-                { title = "On", value = true },
-                { title = "Off", value = false },
-              },
-            },
-
-            f:static_text {
-              title = "Second Screen. Fixed aspect ratio of photo view:"
-            },
-
-            f:popup_menu {
-              title = "previewAspectRatio",
-              value = bind("previewAspectRatio"),
-              items = {
-                { title = "1 x 1",  value = 1.0    },
-                { title = "4 x 3",  value = 1.3333 },
-                { title = "3 x 2",  value = 1.5    },
-                { title = "16 x 9", value = 1.7778 },
-              },
-            },
+        f:popup_menu {
+          title = "secondScreenMode",
+          value = bind("secondScreenMode"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title = "On", value = true },
+            { title = "Off", value = false },
           },
-
-          ----------------------------------------------------------------------
-          -- Second Screen sub-mode
-          ----------------------------------------------------------------------
-          f:row {
-            bind_to_object = prefs,
-            enabled = bind("secondScreenMode"),
-
-            -- Align with the "S" in "Second Screen"
-            f:spacer { width = 76 },
-
-            f:radio_button {
-              title = "Interactive",
-              value = bind("secondScreenBehavior"),
-              checked_value = "Interactive",
-            },
-
-            f:spacer { width = 8 },
-
-            f:radio_button {
-              title = "Follow Lightroom",
-              value = bind("secondScreenBehavior"),
-              checked_value = "Follow",
---            enabled = WIN_ENV,
-            },
-          },
-
         },
-
+        f:static_text {
+          title = "Second Screen"
+        },
+--      f:spacer { width = 4 },
+        f:row {
+          f:radio_button {
+            title = "Interactive",
+            value = bind("secondScreenBehavior"),
+            checked_value = "Interactive",
+            enabled = bind("secondScreenMode"),
+          },
+          f:spacer { width = 2 },
+          f:radio_button {
+            title = "Follow Lightroom",
+            value = bind("secondScreenBehavior"),
+            checked_value = "Follow",
+            enabled = bind("secondScreenMode"),
+          },
+        },
         f:spacer { fill_horizontal = 1 },
         clickForHelp(urlHelpOnSecondScreenMode),
       },
 
+      --------------------------------------------------------------------------
+      -- Display to host plugin in second screen mode
+      --------------------------------------------------------------------------
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
+
         f:popup_menu {
-          title = "pluginWindowScaling",
-          value = bind("pluginWindowScaling"),
+          title = "pluginWindowDisplay",
+          value = bind("pluginWindowDisplay"),
           width_in_chars = dropDownWidth,
-          items = {
-            { title = "3XL", value = FocusPointPrefs.pluginWindow3XL },
-            { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
-            { title = "XL",  value = FocusPointPrefs.pluginWindowXL  },
-            { title = "L",   value = FocusPointPrefs.pluginWindowL   },
-            { title = "M",   value = FocusPointPrefs.pluginWindowM   },
-            { title = "S",   value = FocusPointPrefs.pluginWindowS   },
-          }
+          items = getPluginWindowDisplayItems(),
         },
         f:static_text {
-          title = "Size of plugin window"
+          title = "Second Screen display"
         },
-        clickForHelp( urlHelpOnPluginWindowScaling ),
+        f:spacer { width = 8 },
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Plugin window size:"
+          },
+          f:slider {
+            value = bind("pluginWindowSize"),
+            min = 1,
+            max = #WINDOW_SIZES,
+            integral = true,
+          },
+          f:static_text {
+            width_in_chars = 6,
+            title = bind {
+              key = "pluginWindowSize",
+              transform = function(value, fromTable)
+                local size = WINDOW_SIZES[value]
+                return size and size.name or "?"
+              end,
+            },
+          },
+        },
       },
+
+      --------------------------------------------------------------------------
+      -- Aspect ratio of photo view in second screen mode
+      --------------------------------------------------------------------------
+      f:row {
+        bind_to_object = prefs,
+        spacing = f:control_spacing(),
+
+        f:popup_menu {
+          title = "photoViewAspectRatio",
+          value = bind("photoViewAspectRatio"),
+          width_in_chars = dropDownWidth,
+          items = {
+            { title =  "Auto",  value = 0 },
+            { title =  "1 x 1", value = 1.0 },
+            { title =  "4 x 3", value = 1.3333 },
+            { title =  "3 x 2", value = 1.5 },
+            { title = "16 x 9", value = 1.7778 },
+          },
+        },
+
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Second Screen: Photo view aspect ratio"
+          },
+        },
+      },
+
+
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -887,21 +1002,29 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
+        f:row {
+          spacing = 0,
+          f:static_text {
             title = "Truncate or wrap strings after"
+          },
+          f:edit_field {
+            value = bind("truncateLimit"),
+            width_in_chars = 3,
+            min = 10,
+            max = 100,
+            alignment = "center",
+            precision = 0,
+          },
+          f:static_text {
+            title = "  characters",
+          },
         },
-        f:edit_field {
-          value = bind("truncateLimit"),
-          width_in_chars = 3,
-          min = 10,
-          max = 100,
-          precision = 0,
+        f:row {
+          clickForHelp(urlHelpOnTruncateLongText),
         },
-        f:static_text {
-          title = "characters",
-        },
-        clickForHelp( urlHelpOnTruncateLongText ),
       },
+
+
       straightenControlsSetting(), -- empty for LR5
       taggingControlsSetting(),    -- empty for LR5
       keyboardLayoutSetting(),     -- empty for LR5

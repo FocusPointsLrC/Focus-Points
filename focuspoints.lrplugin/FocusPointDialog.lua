@@ -58,9 +58,10 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     "Image: %s (%s x %s)", photo:getFormattedMetadata('fileName'), w, h))
 
   -- Take user-defined plugin window size into account
-  local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..3XL
-  local contentWidth  = GlobalDefs.appWidth  * windowSize
-  local contentHeight = GlobalDefs.appHeight * windowSize
+  local windowScale   = FocusPointPrefs.getPluginWindowScale()
+  local display       = FocusPointPrefs.getPluginWindowDisplay(prefs.pluginWindowDisplay)
+  local contentWidth  = display.width  * windowScale
+  local contentHeight = display.height * windowScale
 
   -- Take Windows scaling factor into account
   if WIN_ENV then
@@ -88,15 +89,23 @@ function FocusPointDialog.calculatePhotoViewDimens(photo)
     end
   end
 
-  if prefs.secondScreenMode then
+  if prefs.secondScreenMode and prefs.photoViewAspectRatio ~= 0 then
     -- Store preview panel dimensions for later view creation
     previewHeight = contentHeight
-    previewWidth  = contentHeight * prefs.previewAspectRatio
+    previewWidth  = contentHeight * prefs.photoViewAspectRatio
+    -- Adjust dimensions of previewPanel if it doesn't fit display dimensions
+    if previewWidth > contentWidth then
+      previewWidth  = contentWidth
+      previewHeight = contentWidth / prefs.photoViewAspectRatio
+    end
 
     -- Adjust dimensions of photo if it does not fit preview panel
     if photoWidth > previewWidth then
-      photoHeight = previewHeight * previewWidth/photoWidth
+      photoHeight = photoHeight * previewWidth/photoWidth
       photoWidth  = previewWidth
+    elseif photoHeight > previewHeight then
+      photoWidth  = photoWidth * previewHeight/photoHeight
+      photoHeight = previewHeight
     end
   end
 

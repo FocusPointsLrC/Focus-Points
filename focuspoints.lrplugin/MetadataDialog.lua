@@ -26,6 +26,7 @@ local MetadataDialog = {}
 -- Imported LR namespaces
 local LrFunctionContext = import  'LrFunctionContext'
 local LrDialogs         = import  'LrDialogs'
+local LrPrefs           = import  'LrPrefs'
 local LrView            = import  'LrView'
 local LrBinding         = import  'LrBinding'
 
@@ -52,6 +53,7 @@ function MetadataDialog.showDialog(
   local result
 
   LrFunctionContext.callWithContext("showMetadataDialog", function(context)
+    local prefs = LrPrefs.prefsForPlugin( nil )
 
     local bool_to_number={ [true]=1, [false]=0 }
 
@@ -59,8 +61,13 @@ function MetadataDialog.showDialog(
     local properties = LrBinding.makePropertyTable( context )
     local delimiter = "\r"  -- carriage return; used to separate individual entries in column1 and column2 strings
 
-    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..3XL
-    local contentHeight = GlobalDefs.appHeight * windowSize
+    -- Take user-defined plugin window size into account
+    local windowScale   = FocusPointPrefs.getPluginWindowScale()
+    local display       = FocusPointPrefs.getPluginWindowDisplay()
+    local contentWidth  = display.width  * windowScale
+    local contentHeight = display.height * windowScale
+
+    local contentHeight = display.height * windowScale
     local contentWidth  = contentHeight * 0.7                    -- minimum width of dialog window
 
     -- Consider user-defined display scaling value on Windows

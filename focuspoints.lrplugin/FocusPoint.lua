@@ -118,9 +118,9 @@ local function showFocusPoint()
     local function getSettingsSignature()
       return table.concat({
         tostring(prefs.screenScaling),
-        tostring(prefs.secondScreenMode),
-        tostring(prefs.previewAspectRatio),
-        tostring(prefs.pluginWindowScaling),
+        tostring(prefs.pluginWindowDisplay),
+        tostring(prefs.pluginWindowSize),
+        tostring(prefs.photoViewAspectRatio),
         tostring(prefs.keyboardInput),
         tostring(prefs.truncateLongText),
         tostring(prefs.truncateLimit),
@@ -229,9 +229,12 @@ local function showFocusPoint()
         Log.logInfo("System", "Display scaling level " ..
                 math.floor(100/FocusPointPrefs.getDisplayScaleFactor() + 0.5) .. "%")
       end
+
+      local display = FocusPointPrefs.getPluginWindowDisplay(prefs.pluginWindowDisplay)
       Log.logInfo("System", string.format(
-       "Application window size: %s x %s. Plugin window size: %sx",
-          GlobalDefs.appWidth, GlobalDefs.appHeight, prefs.pluginWindowScaling))
+       "Display size: %s x %s. Plugin window size: %s (%sx)",
+          display.width,  display.height, FocusPointPrefs.getPluginWindowSize(), FocusPointPrefs.getPluginWindowScale()))
+
     end
 
     -- Get the active photo plus additionally selected photos
@@ -543,6 +546,13 @@ local function showFocusPoint()
               straightenAndRefresh(view)
               return true
             end
+          -- Resize plugin window
+          elseif string.find(FocusPointPrefs.kbdShortcutsSizeUp, char, 1, true) then
+            FocusPointPrefs.upsizePluginWindow()
+            closeDialog(view,"refresh")
+          elseif string.find(FocusPointPrefs.kbdShortcutsSizeDown, char, 1, true) then
+            FocusPointPrefs.downsizePluginWindow()
+            closeDialog(view,"refresh")
           -- Display mode Direct
           elseif string.find(FocusPointPrefs.kbdShortcutsDirectMode, char, 1, true) then
             prefs.displayMode = FocusPointPrefs.displayModeDirect
@@ -1349,6 +1359,8 @@ local function showFocusPoint()
       or getTransformSignature(targetPhoto) ~= originalTransformSignature then
         return "refresh"
       end
+
+     local displayInfo = import 'LrSystemInfo'.displayInfo()
 
       LrDialogs.presentFloatingDialog(_PLUGIN, {
         title = appName .. " (Version " .. GlobalDefs.pluginDisplayVersion .. ")",
