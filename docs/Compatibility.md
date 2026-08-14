@@ -50,6 +50,12 @@
   * Face detection
 
 
+* Leica
+  * Mirrorless: Q2, Q3, SL2, SL3, CL (phase-detection AF models)
+  * M-series (M10, M11, etc.) not supported — manual focus only
+  * Subject/face/animal detection (People, Face+Eye, Animal, Animal+Eye)
+
+
 * Apple
   * iPhone (starting from at least iPhone 5)
   * Face/pet detection frames (visualizing "Person & Pets" information from Apple's Photos App)

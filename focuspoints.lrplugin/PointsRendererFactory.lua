@@ -30,6 +30,7 @@ local CanonDelegates       = require 'CanonDelegates'
 local DefaultDelegates     = require 'DefaultDelegates'
 local DefaultPointRenderer = require 'DefaultPointRenderer'
 local FujifilmDelegates    = require 'FujifilmDelegates'
+local LeicaDelegates       = require 'LeicaDelegates'
 local Log                  = require 'Log'
 local NikonDelegates       = require 'NikonDelegates'
 local NikonDuplicates      = require 'NikonDuplicates'
@@ -156,6 +157,15 @@ function PointsRendererFactory.createRenderer(photo)
     DefaultPointRenderer.funcGetImageInfo    = OlympusDelegates.getImageInfo
     DefaultPointRenderer.funcGetShootingInfo = OlympusDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = OlympusDelegates.getFocusInfo
+
+  elseif (string.find(cameraMake, "leica", 1, true)) then
+    DefaultPointRenderer.funcModelSupported  = LeicaDelegates.modelSupported
+    DefaultPointRenderer.funcMakerNotesFound = LeicaDelegates.makerNotesFound
+    DefaultPointRenderer.funcManualFocusUsed = LeicaDelegates.manualFocusUsed
+    DefaultPointRenderer.funcGetAfPoints     = LeicaDelegates.getAfPoints
+    DefaultPointRenderer.funcGetImageInfo    = LeicaDelegates.getImageInfo
+    DefaultPointRenderer.funcGetShootingInfo = LeicaDelegates.getShootingInfo
+    DefaultPointRenderer.funcGetFocusInfo    = LeicaDelegates.getFocusInfo
 
   elseif (string.find(cameraMake, "panasonic", 1, true)) then
     DefaultPointRenderer.funcModelSupported  = PanasonicDelegates.modelSupported
