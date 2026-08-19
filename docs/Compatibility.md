@@ -51,9 +51,11 @@
 
 
 * Leica
-  * Mirrorless: Q2, Q3, SL2, SL3, CL (phase-detection AF models)
+  * **Confirmed**: Q3 with firmware 4.x (AF point display fully validated)
+  * **Preliminary** (same MakerNotes structure assumed, unverified): Q2, SL2, SL3, CL
   * M-series (M10, M11, etc.) not supported — manual focus only
   * Subject/face/animal detection (People, Face+Eye, Animal, Animal+Eye)
+  * Note: AF point display requires firmware 4.x or later — the required tag (`0x044d`) is absent in firmware 3.x and below
 
 
 * Apple
@@ -72,6 +74,7 @@ The Straightening function relies on the presence of the `RollAngle` tag in the 
   - R7 (FW 1.3), R8 (FW 1.2), R10??
 - Nikon (D5, D500 and later models)
 - Fuji (XT-5 and later models)<sup>1</sup>
+- Leica (Q2, Q3, SL2, SL3, CL — roll angle present in all DNG files)
 - Olympus/OM (EM-1/5/10 III and later models)
 - Panasonic (Lumix G6 and later models)
 - Pentax (K-7 and later models)<sup>2</sup>
