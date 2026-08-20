@@ -19,11 +19,13 @@
 --[[----------------------------------------------------------------------------
   LeicaDelegates.lua
 
-  Delegate functions for Leica cameras (Q2, Q3, SL2, SL3, CL) with phase-detection AF.
+  Delegate functions for Leica cameras with phase-detection AF.
+  Confirmed: Q3 (firmware 4.x, validated on 95+ DNG files).
+  Preliminary (same MakerNotes structure assumed, unverified): Q2, SL2, SL3, CL.
   M-series cameras (M10, M11) are manual focus only and are not supported.
 
-  Reverse-engineered from 93 Leica Q3 DNG files (2026-08-12/13), covering all AF
-  modes: Spot, Large, Multi Zone, Tracking; all detection modes; Macro; portrait
+  Reverse-engineered from 93+ Leica Q3 DNG files (2026-08-12/19), covering all AF
+  modes: Spot, Field, Zone, Multi-Field, Tracking; all detection modes; Macro; portrait
   orientation (Rotate 90 CW and 270 CW); AF-C on moving subjects; and failed
   detection. Validated with ExifTool 13.59.
 
@@ -39,13 +41,14 @@
             b3 (word 4) = Focus mode  : 0=MF, 1=AF-S, 2=AF-C, 4=iAF
             b2 (word 3) = Detection   : 0=none, 1=People, 2=Face+Eye, 3=Animal, 4=Animal+Eye
             b1 (word 2) = Macro mode  : 0=normal, 1=Macro
-            b0 (word 1) = Area mode   : 0=MF, 9=Tracking, 15=Spot or Large, 16=Multi Zone
+            b0 (word 1) = Area mode   : 0=MF, 9=Tracking, 15=Spot or Field, 16=Zone or Multi-Field
 
-  0x041e  AF area selector, single int: 0=Tracking, 1=Spot, 4=Large or Multi Zone.
-          Used together with 0x0404 b0 to distinguish Spot from Large (both have b0=15).
+  0x041e  AF area selector, single int: 0=Tracking, 1=Spot, 2=Zone, 4=Field or Multi-Field.
+          Used together with 0x0404 b0 to distinguish Spot from Field (both b0=15), and
+          Zone from Multi-Field (both b0=16).
 
-  Note: The Q3 stores only ONE AF point per photo regardless of area mode. Large and
-  Multi Zone modes record the final focus position within the zone, not the zone size.
+  Note: The Q3 stores only ONE AF point per photo regardless of area mode. Field, Zone
+  and Multi-Field modes record the final focus position within the zone, not the zone size.
 ------------------------------------------------------------------------------]]
 local LeicaDelegates = {}
 
@@ -69,7 +72,7 @@ local metaKeyAfPoint       = "Panasonic Leica 5 0x044d"
 -- AF configuration: [area_byte, 0, detection_byte, focus_mode_byte]
 local metaKeyAfConfig      = "Panasonic Leica 5 0x0404"
 
--- AF area selector: 0=Tracking, 1=Spot, 4=Large/Multi Zone
+-- AF area selector: 0=Tracking, 1=Spot, 2=Zone, 4=Field/Multi-Field
 local metaKeyAfArea        = "Panasonic Leica 5 0x041e"
 
 -- Focus distance and optics
@@ -259,13 +262,13 @@ function LeicaDelegates.getFocusInfo(_photo, props, metadata)
 
   -- Determine AF Area string
   local areaStr
+  local areaTag = tonumber(ExifUtils.findValue(metadata, metaKeyAfArea))
   if b0 == 9 then
     areaStr = "Tracking"
   elseif b0 == 16 then
-    areaStr = "Multi Zone"
+    areaStr = (areaTag == 2) and "Zone" or "Multi-Field"
   elseif b0 == 15 then
-    local areaTag = ExifUtils.findValue(metadata, metaKeyAfArea)
-    areaStr = (tonumber(areaTag) == 1) and "Spot" or "Large"
+    areaStr = (areaTag == 1) and "Spot" or "Field"
   end
 
   return f:column {
