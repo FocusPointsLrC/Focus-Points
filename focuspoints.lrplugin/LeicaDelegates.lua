@@ -19,7 +19,8 @@
 --[[----------------------------------------------------------------------------
   LeicaDelegates.lua
 
-  Delegate functions for Leica cameras (Q2, Q3, SL2, SL3, CL) with phase-detection AF.
+  Delegate functions for Leica cameras with phase-detection AF.
+  In order to include the relevant tags in metadata, the camera needs to support Exif 3.0.
   M-series cameras (M10, M11) are manual focus only and are not supported.
 
   Reverse-engineered from 93 Leica Q3 DNG files (2026-08-12/13), covering all AF
@@ -124,10 +125,13 @@ end
   with phase-detection AF (Q2, Q3, SL2, SL3, CL, etc.) return true.
 ------------------------------------------------------------------------------]]
 function LeicaDelegates.modelSupported(model)
+--[[ Original implementation commented out
+
   if string.find(model, "leica m", 1, true) then
     Log.logInfo("Leica", "M-series camera detected — manual focus only, not supported")
     return false
   end
+--]]
   return true
 end
 
@@ -219,12 +223,14 @@ function LeicaDelegates.getAfPoints(photo, metadata)
 
   local result = DefaultPointRenderer.createFocusFrame(x, y)
 
+--[[ For Q3 disabled because at least for this camera there is no face/subject detect area
   -- When subject detection was active, render the AF point as a face/subject box (yellow)
   local _, _, b2, _ = parseAfConfig(metadata)
   if b2 > 0 then
     Log.logInfo("Leica", string.format("Subject detection active (mode %d) — rendering as face point", b2))
     result.points[1].pointType = DefaultDelegates.POINTTYPE_FACE
   end
+--]]
 
   return result
 end
@@ -266,6 +272,8 @@ function LeicaDelegates.getFocusInfo(_photo, props, metadata)
   elseif b0 == 15 then
     local areaTag = ExifUtils.findValue(metadata, metaKeyAfArea)
     areaStr = (tonumber(areaTag) == 1) and "Spot" or "Large"
+  else
+    areaStr = string.format("Unknown (%s)", b0)
   end
 
   return f:column {

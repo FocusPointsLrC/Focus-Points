@@ -816,19 +816,24 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               { title = "Off", value = false },
             },
           },
-          f:static_text {
-            title = "Preview Image: Use Export Image if no preview becomes available within"
+          f:row {
+            spacing = 0,
+            f:static_text {
+              title = "Preview Image: Use Export Image if no preview becomes available within"
+            },
+            f:edit_field {
+              value = bind("previewTimeout"),
+              width_in_chars = 3,
+              min = 0,
+              max = 10,
+              alignment = "center",
+              precision = 1,
+            },
+            f:static_text {
+              title = "  seconds",
+            },
           },
-          f:edit_field {
-            value = bind("previewTimeout"),
-            width_in_chars = 3,
-            min = 0,
-            max = 10,
-            precision = 1,
-          },
-          f:static_text {
-            title = "seconds",
-          },
+          f:spacer { fill_horizontal = 1 },
           clickForHelp( urlHelpOnPerformanceControl ),
         },
         f:row {
@@ -843,18 +848,22 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               { title = "Off", value = false },
             },
           },
-          f:static_text {
-            title = "Preview Image: Show progress notification after "
-          },
-          f:edit_field {
-            value = bind("previewProgressDelay"),
-            width_in_chars = 3,
-            min = 0,
-            max = 10,
-            precision = 1,
-          },
-          f:static_text {
-            title = "seconds",
+          f:row {
+            spacing = 0,
+            f:static_text {
+              title = "Preview Image: Show progress notification after"
+            },
+            f:edit_field {
+              value = bind("previewProgressDelay"),
+              width_in_chars = 3,
+              min = 0,
+              max = 10,
+              alignment = "center",
+              precision = 1,
+            },
+            f:static_text {
+              title = "  seconds",
+            },
           },
         },
       }
@@ -862,7 +871,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
 
     return {
       title = "User Interface",
-
       --------------------------------------------------------------------------
       -- Second Screen mode and behavior
       --------------------------------------------------------------------------
@@ -882,7 +890,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         f:static_text {
           title = "Second Screen"
         },
---      f:spacer { width = 4 },
         f:row {
           f:radio_button {
             title = "Interactive",
@@ -901,7 +908,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         f:spacer { fill_horizontal = 1 },
         clickForHelp(urlHelpOnSecondScreenMode),
       },
-
       --------------------------------------------------------------------------
       -- Display to host plugin in second screen mode
       --------------------------------------------------------------------------
@@ -942,7 +948,6 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           },
         },
       },
-
       --------------------------------------------------------------------------
       -- Aspect ratio of photo view in second screen mode
       --------------------------------------------------------------------------
@@ -970,8 +975,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           },
         },
       },
-
-
+      --------------------------------------------------------------------------
+      -- Keyboard input
+      --------------------------------------------------------------------------
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -990,6 +996,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         },
         clickForHelp( urlHelpOnKeyboardInput ),
       },
+      --------------------------------------------------------------------------
+      -- Truncate long text
+      --------------------------------------------------------------------------
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -1183,28 +1192,33 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
-          title = "Apply straightening only for angles between"
-        },
-        f:edit_field {
-          value = bind("straightenLimitLow"),
-          width_in_chars = 3,
-          min = 0,
-          max = 45,
-          precision = 1,
-        },
-        f:static_text {
-          title = "and",
-        },
-        f:edit_field {
-          value = bind("straightenLimitHigh"),
-          width_in_chars = 3,
-          min = 0,
-          max = 45,
-          precision = 1,
-        },
-        f:static_text {
-          title = "degrees (in any direction)",
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Apply straightening only for angles between"
+          },
+          f:edit_field {
+            value = bind("straightenLimitLow"),
+            width_in_chars = 3,
+            min = 0,
+            max = 45,
+            alignment ="center",
+            precision = 1,
+          },
+          f:static_text {
+            title = "  and",
+          },
+          f:edit_field {
+            value = bind("straightenLimitHigh"),
+            width_in_chars = 3,
+            min = 0,
+            max = 45,
+            alignment ="center",
+            precision = 1,
+          },
+          f:static_text {
+            title = "  degrees (in any direction)",
+          },
         },
       },
       f:row {
@@ -1219,18 +1233,22 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
-          title = "Apply calibration offset of"
-        },
-        f:edit_field {
-          value = bind("straightenBias"),
-          width_in_chars = 4,
-          min = -5,
-          max = 5,
-          precision = 2,
-        },
-        f:static_text {
-          title = "degrees to roll angle",
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Apply calibration offset of"
+          },
+          f:edit_field {
+            value = bind("straightenBias"),
+            width_in_chars = 4,
+            min = -5,
+            max = 5,
+            alignment ="center",
+            precision = 2,
+          },
+          f:static_text {
+            title = "  degrees to roll angle",
+          },
         },
       },
       f:row {

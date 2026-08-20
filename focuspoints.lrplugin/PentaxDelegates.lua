@@ -112,26 +112,7 @@ local metaKeyShakeReduction       = "Shake Reduction"
 local metaValueFaceDetection      = "Face Detection"
 
 -- Forward references
-local getAfPointsPhase, getAfPointsContrast, getK3iiiAfPoints
-
---[[----------------------------------------------------------------------------
-  private boolean
-  modelHasK3iiiAfInfo(string model)
-
-  Returns true if the specified camera model uses the new focus point format
-  and logic introduced with the K-3 Mark III.
-------------------------------------------------------------------------------]]
-local function modelHasK3iiiAfInfo(model)
-  -- returns true for models launched after 2019 which have AFInfo data structure in metadata
-  return (model == "pentax k-3 mark iii")
-      or (model == "pentax k-3 mark iii monochrome")
-      or (model == "ricoh gr iii")
-      or (model == "ricoh gr iii hdf")
-      or (model == "ricoh gr iiix")
-      or (model == "ricoh gr iiix hdf")
-      or (model == "ricoh gr iv")
-      or (model == "ricoh gr iv monochrome")
-end
+local getAfPointsPhase, getAfPointsContrast, getK3iiiAfPoints, modelHasK3iiiAfInfo
 
 --[[----------------------------------------------------------------------------
   public table
@@ -170,6 +151,25 @@ function PentaxDelegates.getAfPoints(photo, metadata)
   end
 
   return result
+end
+
+--[[----------------------------------------------------------------------------
+  private boolean
+  modelHasK3iiiAfInfo(string model)
+
+  Returns true if the specified camera model uses the new focus point format
+  and logic introduced with the K-3 Mark III.
+------------------------------------------------------------------------------]]
+function modelHasK3iiiAfInfo(model)
+  -- returns true for models launched after 2019 which have AFInfo data structure in metadata
+  return (model == "pentax k-3 mark iii")
+      or (model == "pentax k-3 mark iii monochrome")
+      or (model == "ricoh gr iii")
+      or (model == "ricoh gr iii hdf")
+      or (model == "ricoh gr iiix")
+      or (model == "ricoh gr iiix hdf")
+      or (model == "ricoh gr iv")
+      or (model == "ricoh gr iv monochrome")
 end
 
 --[[----------------------------------------------------------------------------
