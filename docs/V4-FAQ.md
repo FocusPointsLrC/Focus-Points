@@ -69,6 +69,10 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
 
 * [Plugin window exceeds screen dimensions](#the-plugin-window-exceeds-the-dimensions-of-my-screen-how-can-this-be-avoided)
  
+### How-To
+
+* Zoom in on the photo to make the area around the focus point more visible
+
 ### Performance
 
 * [Wait times when opening the plugin window on Windows](#is-there-anything-i-can-do-to-reduce-how-long-it-takes-to-open-the-plugin-window)
@@ -193,7 +197,7 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 
 Since Lightroom doesn't support the use of keyboard shortcuts in plugins, Focus Point Viewer uses a "trick" to implement keyboard shortcuts. This approach has certain limitations. [↗](Focus-Points.md#important-technical-note-on-keyboard-shortcuts)
 
-_The Focus Point Viewer features can be controlled entirely using the keyboard._
+_Focus Point Viewer features can be controlled entirely using the keyboard._
 
 <br>
 
@@ -308,9 +312,9 @@ _This is normal macOS behavior when any application is active and you click in t
 
 #### Why do empty margins appear on the right or bottom of the Focus Point Viewer window when I change its size in 'Second Screen' mode?  
 
-The Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
+Focus Point Viewer keeps a fixed layout so it does not resize when switching between landscape and portrait photos on a secondary screen. Choosing a smaller size for the plugin window can result in empty margins. Simply resize the window once to remove them. [↗](V4-New-Features.md#13-configuration)  
 
-_The Focus Point Viewer cannot remember the last window position used and automatically resize to fit the displayed contents at the same time._
+_Focus Point Viewer cannot remember the last window position used and automatically resize to fit the displayed contents at the same time._
 
 <br>
 
@@ -352,6 +356,18 @@ If you are experiencing this problem, it is highly likely that you are using Win
 Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
 
 _This can happen in Windows, but the plugin provides a setting that can be used to correct it._
+
+<br>
+
+### How-To Q&A
+
+#### Can I zoom in on the photo to make the area around the focus point more visible?
+
+The plugin currently does not have a zoom feature. While it would not be straightforward to add this feature, it could be a useful addition in the future.
+
+In V4, when running in Second Screen mode, you can simulate a zoom. With the photo and its markings (focus point and detection frames) displayed, open the Crop tool and click and drag a rectangle over the part of the image that you want to enlarge. As soon as you confirm the crop, the Focus Point Viewer will update its display. You can repeat this process as many times as you like, or simply press Ctrl+Z to undo the crop.
+
+_Focus Point Viewer does not support a native zoom feature, but you achieve a similar effect by temporarily cropping the photo in Lightroom._
 
 <br>
 
