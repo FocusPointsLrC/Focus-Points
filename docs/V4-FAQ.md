@@ -1,7 +1,3 @@
-## ⚠️ Important update for users of V3.4 and V4 PRE 1<br><br>[CRITICAL: Update check fails to detect available updates in V3.4 and V4 PRE 1](https://github.com/FocusPointsLrC/Focus-Points/issues/405)
-
-<br>
-
 # Frequently Asked Questions (FAQ)
 
 **Got a question? Chances are you'll find the answer here.**
@@ -71,7 +67,7 @@ This FAQ answers common questions about Focus Point Viewer, explains certain beh
  
 ### How-To
 
-* Zoom in on the photo to make the area around the focus point more visible
+* [Zoom in on the photo to make the area around the focus point more visible](#can-i-zoom-in-on-the-photo-to-make-the-area-around-the-focus-point-more-visible)
 
 ### Performance
 
