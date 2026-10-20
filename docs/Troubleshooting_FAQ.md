@@ -79,9 +79,11 @@ Although focus points have been detected, they may be invisible or partially inv
 Note: This message is not triggered by face or subject detection frames, only focus points. 
 
 Cropped image (focus point outside):
+
 <img src="images/Troubleshooting 11.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
 
 Original image with focus point:
+
 <img src="images/Troubleshooting 12.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
 
 
@@ -90,6 +92,7 @@ Original image with focus point:
 The focus point information recorded by the camera refers to the original image. While the plugin can retain the original focus point location if the photo has been cropped, rotated, or flipped in Lightroom, this is not possible for photos to which Transform or Upright operations have been applied. As a result, the displayed focus point may not accurately match its actual position in the transformed image.
 
 This photo has been processed with Transform, Upright 'Auto'. Note that the frames for autofocus point and bird head detection are slightly off:
+
 <img src="images/Troubleshooting 13.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
 
 Transform operations change the geometry of the image content, so the focus point and subject detection frames may no longer be properly aligned with the subject features (such as the bird's body and head) that triggered autofocus:
