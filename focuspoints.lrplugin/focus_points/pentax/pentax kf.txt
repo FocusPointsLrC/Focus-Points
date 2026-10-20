@@ -1,0 +1,27 @@
+-- Pentax KF
+-- 24 MP, 6000x4000
+-- AF System: 11 point
+-- Coordinates represent the CENTER of the AF point
+
+-- full size image dimensions
+fullSizeDimens = {6000, 4000}
+
+-- point dimensions
+focusPointDimens = {122, 122}
+
+-- top row
+1 = {2118, 1364}
+2 = {3000, 1364}
+3 = {3881, 1364}
+
+-- center row
+4 = {1272, 2000, 73, 245}
+5 = {2118, 2000}
+6 = {3000, 2000}
+7 = {3881, 2000}
+8 = {4728, 2000, 73, 245}
+
+-- bottom row
+9 = {2118, 2636}
+10 = {3000, 2636}
+11 = {3881, 2636}

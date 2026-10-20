@@ -268,11 +268,35 @@ end
   This checks whether two floating-point numbers are equal within a given tolerance.
   If a tolerance is not specified, the default is the second decimal place.
 ------------------------------------------------------------------------------]]
-function Utils.floatsEqual(a, b, epsilon)
-  epsilon = epsilon or 0.005
-  return math.abs(a - b) < epsilon
-end
+--[[----------------------------------------------------------------------------
+  public boolean
+  floatsEqual(float a, b, epsilon)
 
+  This checks whether two floating-point numbers are equal within a given tolerance.
+  If a tolerance is not specified, the default is the second decimal place.
+------------------------------------------------------------------------------]]
+function Utils.floatsEqual(a, b, epsilon)
+  -- 1. Ensure numbers (guards against nil, non-numbers, and NaN)
+  if type(a) ~= "number" or type(b) ~= "number" then
+    return false
+  end
+
+  -- NaN check: NaN is the only value in Lua that is not equal to itself
+  if a ~= a or b ~= b then
+    return false
+  end
+
+  -- 2. Fallback default for epsilon
+  epsilon = (type(epsilon) == "number" and epsilon) or 0.005
+
+  -- 3. Exact equality check (handles math.huge / infinity matching)
+  if a == b then
+    return true
+  end
+
+  -- 4. Safe absolute difference calculation
+  return math.abs(a - b) <= epsilon
+end
 
 return Utils
 

@@ -40,6 +40,7 @@ local FocusPointPrefs  = require 'FocusPointPrefs'
 local GlobalDefs       = require 'GlobalDefs'
 local Log              = require 'Log'
 local MogrifyUtils     = require 'MogrifyUtils'
+local Straighten       = require 'Straighten'
 local Utils            = require 'Utils'
 
 DefaultPointRenderer.imageSource = nil
@@ -461,6 +462,10 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
       -- To prevent UI freeze and keep plugin responsive
       LrTasks.yield()
     end
+
+    -- If the photo been transformed this will trigger a warning that focus points may be misaligned
+    FocusInfo.focusPointsMisaligned = Straighten.hasTransform(photo)
+
   end
 
   return fpTable

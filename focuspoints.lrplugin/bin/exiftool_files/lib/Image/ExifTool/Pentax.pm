@@ -4856,7 +4856,7 @@ my %binaryDataAttrs = (
         },
         {
             Name => 'BodyBatteryVoltage1', # (static?)
-            Condition => '$$self{Model} =~ /(645D|645Z|K-(1|01|3|5|7|30|50|70|500|r|x|S[12])|KP)\b/ and $$self{Model} !~ /III/',
+            Condition => '$$self{Model} =~ /(645D|645Z|K-(1|01|3|5|7|30|50|70|500|r|x|S[12])|KF|KP)\b/ and $$self{Model} !~ /III/',   #KG: also for K-70 and KF
             Format => 'int16u',
             ValueConv => '$val / 100',
             ValueConvInv => '$val * 100',
@@ -4911,7 +4911,7 @@ my %binaryDataAttrs = (
         },
         {
             Name => 'BodyBatteryVoltage2', # (less than BodyBatteryVoltage1 -- under load?)
-            Condition => '$$self{Model} =~ /(645D|645Z|K-(1|01|3|5|7|30|50|70|500|r|x|S[12])|KP)\b/ and $$self{Model} !~ /III/',
+            Condition => '$$self{Model} =~ /(645D|645Z|K-(1|01|3|5|7|30|50|70|500|r|x|S[12])|KF|KP)\b/ and $$self{Model} !~ /III/',   #KG: also for K-70 and KF
             Format => 'int16u',
             ValueConv => '$val / 100',
             ValueConvInv => '$val * 100',
@@ -5062,7 +5062,7 @@ my %binaryDataAttrs = (
     # 0x0a - values: 00,05,0d,15,86,8e,a6,ae
     0x0b => { #JD
         Name => 'AFPointsInFocus',
-        Condition => '$$self{Model} !~ /(K-(1|3|70|S1|S2)|KP)\b/',  #KG: valid also for K-S1/S2
+        Condition => '$$self{Model} !~ /(K-(1|3|70|S1|S2)|KF|KP)\b/',  #KG: valid also for K-S1/S2 and KF
         Notes => q{
             models other than the K-1, K-3, K-70, KP and K-S1/S2. May report two points
             in focus even though a single AFPoint has been selected, in which case the
@@ -6073,21 +6073,21 @@ my %binaryDataAttrs = (
     },
     4 => {
         Name => 'AFPointsInFocus',
-        Condition => '$$self{Model} =~ /K(P|-1|-70)\b/',
+        Condition => '$$self{Model} =~ /K(F|P|-1|-70)\b/',     #KG: also for K-70
         Format => 'int8u[int(($val{2}+3)/4)]',
         Writable => 0,
         PrintConv => 'Image::ExifTool::Pentax::DecodeAFPoints($val,$$self{NumAFPoints},2,0x02)',
     },
     4.1 => {
         Name => 'AFPointsSelected',
-        Condition => '$$self{Model} =~ /K(P|-1|-70)\b/',
+        Condition => '$$self{Model} =~ /K(F|P|-1|-70)\b/',     #KG: also for K-70
         Format => 'int8u[int(($val{2}+3)/4)]',
         Writable => 0,
         PrintConv => 'Image::ExifTool::Pentax::DecodeAFPoints($val,$$self{NumAFPoints},2,0x03)',
     },
     4.2 => {
         Name => 'AFPointsSpecial',
-        Condition => '$$self{Model} =~ /K(P|-1|-70)\b/',
+        Condition => '$$self{Model} =~ /K(F|P|-1|-70)\b/',     #KG: also for K-70
         Format => 'int8u[int(($val{2}+3)/4)]',
         Writable => 0,
         PrintConv => 'Image::ExifTool::Pentax::DecodeAFPoints($val,$$self{NumAFPoints},2,0x03,0x03)',

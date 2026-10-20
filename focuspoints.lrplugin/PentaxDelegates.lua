@@ -67,7 +67,7 @@ local supportedModels = {
     "k-3", "k-s1", "k-s2", "k-3 ii",                                            -- Pentax version 11
     "k-70", "k-1", "kp", "k-1 mark ii",                                         -- Pentax version 12
     "gr iii",                                                                   -- Pentax version 13
-    "k-3 mark iii", "gr iii hdf", "gr iiix",                                    -- Pentax version 14
+    "kf", "k-3 mark iii", "gr iii hdf", "gr iiix",                              -- Pentax version 14
     "k-3 mark iii monochrome", "gr iiix hdf", "gr iv", "gr iv monochrome",      -- Pentax version 15
 }
 

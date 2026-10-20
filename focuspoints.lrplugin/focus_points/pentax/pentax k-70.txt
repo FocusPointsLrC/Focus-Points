@@ -7,6 +7,9 @@
 -- point dimensions
 focusPointDimens = {122, 122}
 
+-- full size image dimensions
+fullSizeDimens = {6000, 4000}
+
 -- top row
 1 = {2118, 1364}
 2 = {3000, 1364}

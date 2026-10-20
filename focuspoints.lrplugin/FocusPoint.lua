@@ -241,6 +241,10 @@ local function showFocusPoint()
       end
     end
 
+--[[----------------------------------------------------------------------------
+    Execution entry point
+------------------------------------------------------------------------------]]
+
     -- Initialize logging, log system level information
     Log.initialize()
 
@@ -435,13 +439,15 @@ local function showFocusPoint()
           elseif string.find(FocusPointPrefs.kbdShortcutsPrev, char, 1, true) then
             closeDialog(view,"previous")
             return true  -- done
+          -- Straighten image
           elseif string.find(FocusPointPrefs.kbdShortcutsStraighten, char, 1, true) then
-            if props.rollAngleAction == rollAngleStraighten then
+            if props.rollAngleActionEnabled then
               straightenAndRefresh(view)
               return true
             end
+          -- Reset straighten image
           elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
-            if props.rollAngleAction == rollAngleReset then
+            if props.rollAngleActionEnabled then
               straightenAndRefresh(view)
               return true
             end
@@ -872,7 +878,7 @@ local function showFocusPoint()
       local f = LrView.osFactory()
       local status = {
         { text = rollAngleStraighten, tooltip = "Apply roll angle correction to straighten image (S)", color = LrColor("red") },
-        { text = rollAngleReset,      tooltip = "Undo straightening (R)", color = LrColor(0, 0.66, 0)  },
+        { text = rollAngleReset,      tooltip = "Undo straightening (R)", color = LrColor(0, 0.66, 0) },
         { text = rollAngleStraighten, tooltip = "", color = LrColor("black") },
       }
 
@@ -881,13 +887,14 @@ local function showFocusPoint()
       -- Button title, tooltip, and enabled state are all set from condition at dialog-construction time.
       -- Which is fine because the dialog needs to be created freshly for every image.
       local condition = 1
-      if not props.rollAngle then
+      if not props.rollAngle or Utils.floatsEqual(props.rollAngle, 0) then
         condition = 3
-      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
+      elseif Utils.floatsEqual(props.rollAngle, -props.cropAngle) then
         condition = 2
       end
 
-      props.rollAngleAction = status[condition].text
+      props.rollAngleAction        = status[condition].text
+      props.rollAngleActionEnabled = (condition ~= 3) and not Utils.floatsEqual(props.rollAngle, 0)
 
       return f:row {
         margin = 0,
@@ -914,7 +921,7 @@ local function showFocusPoint()
         f:push_button {
           title   = status[condition].text,
           tooltip = status[condition].tooltip,
-          enabled = props.rollAngleText ~= rollAngleNA and not Utils.floatsEqual(props.rollAngle, 0),
+          enabled = props.rollAngleActionEnabled,
           margin  = 0,
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!
@@ -1009,7 +1016,8 @@ local function showFocusPoint()
         contents = FocusPointDialog.createDialog(
                      photoView, infoView, kbdShortcutInput, checkFAQ()),
         accessoryView = controlPanel,
-        save_frame = "FocusPointsModalDialogFrame",
+--      save_frame = "FocusPointsModalDialogFrame",
+--      resizable  = true,
         actionVerb = "Close",
         cancelVerb = "< exclude >",
       }
@@ -1018,9 +1026,10 @@ local function showFocusPoint()
 
     -- Find the index 'current' of the target photo in set of selectedPhotos
     current = getPositionInSelection(targetPhoto, selectedPhotos)
-    -- throw up this dialog as soon as possible as it blocks input which keeps the plugin from potentially launching
-    -- twice if clicked on really quickly
-    -- let the renderer build the view now and show progress dialog
+--[[----------------------------------------------------------------------------
+    Main loop
+------------------------------------------------------------------------------]]
+
     repeat
 
       -- Get logging ready for next photo
@@ -1040,9 +1049,6 @@ local function showFocusPoint()
       -- otherwise potential flagging operations will apply to all selected photos
       catalog:setSelectedPhotos(targetPhoto, {})
 
-      -- Save reference to selected photo and its crop to detect whether were any missed updates during processing
---      local buildCropSignature = getCropSignature(targetPhoto)
-
       -- Build the views for the current photo. The 'Loading Data / Calculating
       -- Focus Point' progress dialog has been removed: in the new non-modal
       -- workflow it would flash up briefly each time the photo is changed in
@@ -1060,8 +1066,8 @@ local function showFocusPoint()
           if not (photoView and infoView) then
             errorMsg = "Internal error: Unable to create main window"
           end
-        -- Update initial roll angle display
-        initializeStraightenControl(targetPhoto)
+          -- Update the roll and crop angle display
+          initializeStraightenControl(targetPhoto)
         else
           -- just to have this case covered - normally this condition should not occur
           errorMsg = "Internal error: Unmapped points renderer"
@@ -1076,7 +1082,7 @@ local function showFocusPoint()
         skipMainWindow = true
       end
 
-      -- a fatal error has occurred for the current image: ask user whether to "Exit" the plugin
+      -- a fatal error has occured for the current image: ask user whether to "Exit" the plugin
       -- or "Continue" with the next image in multi-image mode (which means repeat in single-image mode)
       if errorMsg then
         local action = LrDialogs.confirm(errorMsg, Utils.getPhotoFileName(), "Continue", "Stop")
@@ -1090,7 +1096,7 @@ local function showFocusPoint()
       end
 
       if skipMainWindow then
-        -- A fatal error has occurred for the current image, "Exit" the plugin operation or
+        -- A fatal error has occured for the current image, "Exit" the plugin operation or
         -- "Continue" with the next image as per last user response
         if userResponse == "previous" then
           previousPhoto()
@@ -1119,7 +1125,7 @@ local function showFocusPoint()
         -- Clean up
         rendererTable.cleanup()
 
-        -- Close the windows if user clicked <Exit> button or pressed <Esc>
+        -- Close the plugin if user closed the dialog window
         exitPlugin = (userResponse == "ok") or (userResponse == "cancel")
       end
 
@@ -1130,7 +1136,7 @@ local function showFocusPoint()
       end
     until exitPlugin
 
-    -- Restore the original selection pf photos when the plugin was started
+    -- Restore the original selection of photos when the plugin was started
     if #selectedPhotos > 1 and not LR5 then
       catalog:setSelectedPhotos(targetPhoto, selectedPhotos)
     end
