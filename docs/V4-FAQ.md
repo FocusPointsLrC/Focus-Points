@@ -351,11 +351,17 @@ _The accuracy of the 'Straighten' function relies on the accuracy of the 'Roll A
 
 #### The plugin window exceeds the dimensions of my screen. How can this be avoided?
 
-If you are experiencing this problem, it is highly likely that you are using Windows and have set a scale factor in the Display settings. A typical example would be a screen with a high resolution but a relatively small area, such as a laptop with a 4K display.
+There are multiple reasons for this:
 
-Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
+1. If you are using Windows and have set a scale factor in the Display settings.  
+   A typical example would be a screen with a high resolution but a relatively small display area, such as a laptop with a 4K display. Lightroom SDK apps, such as Focus Point Viewer, are unaware of this scale factor. You can adjust a setting to tell the plugin about it. [↗](Focus-Points.md#screen-scaling)
 
-_This can happen in Windows, but the plugin provides a setting that can be used to correct it._
+
+2. Versions 3.4, 3.4.1, 3.4.2 as well as V4 PRE versions 1 to 3 (with the `Second Screen` option set to `OFF`) had a bug that caused the plugin window to occupy more space than actually required, with no options to resize the windows to smaller dimensions [#420](https://github.com/FocusPointsLrC/Focus-Points/issues/420) 
+
+
+3. In versions V4 PRE 1 to 5 (with the `Second Screen` option set to `ON`) the plugin window also retains its previous size when choosing a smaller window size. However, in Second Screen mode, the window can be manually resized by moving the mouse to any border or corner of the window until a double-pointed arrow appears, and then clicking and dragging the window inward.   
+
 
 <br>
 
