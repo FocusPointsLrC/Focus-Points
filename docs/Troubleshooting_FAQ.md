@@ -11,6 +11,7 @@ This document explains the various Focus Point Viewer messages displayed at the 
 * [Focus point recorded in manual focus mode](#focus-point-recorded-in-manual-focus-mode)
 * [Focus info missing from file](#focus-info-missing-from-file)
 * [Focus points outside cropped image area](#focus-points-outside-cropped-image-area)
+* [Focus points may be misaligned due to Transform](#focus-points-may-be-misaligned-due-to-transform-settings)
 * [Camera model not supported](#camera-model-not-supported)
 * [Camera maker not supported](#camera-maker-not-supported)
 * [No camera-specific metadata found](#no-camera-specific-metadata-found)
@@ -82,6 +83,22 @@ Cropped image (focus point outside):
 
 Original image with focus point:
 <img src="images/Troubleshooting 12.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+
+### "Focus points may be misaligned due to Transform settings"
+
+The focus point information recorded by the camera refers to the original image. While the plugin can retain the original focus point location if the photo has been cropped, rotated, or flipped in Lightroom, this is not possible for photos to which Transform or Upright operations have been applied. As a result, the displayed focus point may not accurately match its actual position in the transformed image.
+
+This photo has been processed with Transform, Upright 'Auto'. Note that the frames for autofocus point and bird head detection are slightly off:
+<img src="images/Troubleshooting 13.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+Transform operations change the geometry of the image content, so the focus point and subject detection frames may no longer be properly aligned with the subject features (such as the bird's body and head) that triggered autofocus:
+
+<img src="images/Troubleshooting 14.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+The actual error depends on the type and degree of transformation. A small Transform adjustment might produce only a very small displacement, while a strong perspective correction can produce a substantial one.
+
+If precision of focus point display matters, you should always check this on a photo without Transform operations applied.
 
 
 ### "Camera model not supported"
