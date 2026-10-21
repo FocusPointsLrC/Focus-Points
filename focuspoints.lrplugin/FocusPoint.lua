@@ -896,6 +896,19 @@ local function showFocusPoint()
       props.rollAngleAction        = status[condition].text
       props.rollAngleActionEnabled = (condition ~= 3) and not Utils.floatsEqual(props.rollAngle, 0)
 
+      local function transformIndicator()
+        if props.transformSettings ~= nil then
+          return f:static_text {
+            margin = 0,
+            title   = LrView.bind {key = "transformText",    object = props},
+            tooltip = LrView.bind {key = "transformTooltip", object = props},
+            text_color = status[condition].color,
+          }
+        else
+          return LrView.kIgnoredView
+        end
+      end
+
       return f:row {
         margin = 0,
         spacing = 0,
@@ -911,12 +924,7 @@ local function showFocusPoint()
           tooltip = LrView.bind {key = "cropAngleTooltip", object = props},
           text_color = status[condition].color,
         },
-        f:static_text {
-          margin = 0,
-          title   = LrView.bind {key = "transformText",    object = props},
-          tooltip = LrView.bind {key = "transformTooltip", object = props},
-          text_color = status[condition].color,
-        },
+        transformIndicator(),
         f:spacer { width = 5 },  -- space before the button
         f:push_button {
           title   = status[condition].text,
