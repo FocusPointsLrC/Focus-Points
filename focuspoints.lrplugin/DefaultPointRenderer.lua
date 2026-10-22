@@ -464,7 +464,7 @@ function prepareRendering(photo, photoDisplayWidth, photoDisplayHeight, metadata
     end
 
     -- If the photo been transformed this will trigger a warning that focus points may be misaligned
-    FocusInfo.focusPointsMisaligned = Straighten.hasTransform(photo)
+    FocusInfo.focusPointsMisaligned = Straighten.hasTransformSettings(developSettings)
 
   end
 

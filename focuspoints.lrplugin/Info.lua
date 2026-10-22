@@ -62,7 +62,7 @@ return {
       major      = 3,
       minor      = 4,
       revision   = 4,
-      build      = 0,
+      build      = 100,
       display    = "3.4.4",
       -- custom additions:
       channel    = "release",

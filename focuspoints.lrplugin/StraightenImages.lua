@@ -189,7 +189,7 @@ local function straightenImages()
     -- Retrieve existing crop angle of photo
     local settings = photo:getDevelopSettings()
     local cropAngle = settings.CropAngle or 0
-    local photoTransformed = Straighten.hasTransform(photo)
+    local photoTransformed = Straighten.hasTransformSettings(settings)
 
     -- Retrieve RollAngle information from metadata, normalize and apply correction
     local cameraRollAngle, status, message = Straighten.getRollAngleCW(photo)
