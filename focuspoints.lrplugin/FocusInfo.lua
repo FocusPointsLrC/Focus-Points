@@ -273,9 +273,10 @@ local function getStatusCode()
   elseif not FocusInfo.cameraModelSupported   then statusCode = statusModelNotSupported
   elseif not FocusInfo.makerNotesFound        then statusCode = statusMakerNotesNotFound
   elseif     FocusInfo.focusPointsInvisible   then statusCode = statusFocusPointsNotVisible
-  elseif     FocusInfo.focusPointsMisaligned  then statusCode = statusFocusPointsMisaligned
   elseif     FocusInfo.focusPointsDetected
          and FocusInfo.manualFocusUsed        then statusCode = statusMfFocusPointsRecorded
+  elseif     FocusInfo.focusPointsDetected
+         and FocusInfo.focusPointsMisaligned  then statusCode = statusFocusPointsMisaligned
   elseif     FocusInfo.focusPointsDetected    then statusCode = statusFocusPointsDetected
   elseif     FocusInfo.manualFocusUsed        then statusCode = statusManualFocusUsed
   else                                             statusCode = statusNoFocusPointsRecorded
