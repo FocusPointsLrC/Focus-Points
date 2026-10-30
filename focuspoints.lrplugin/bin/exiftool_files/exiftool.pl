@@ -11,7 +11,7 @@ use strict;
 use warnings;
 require 5.004;
 
-my $version = '13.55';
+my $version = '13.60';
 
 $^W = 1;    # enable global warnings
 
@@ -210,6 +210,7 @@ my $showGroup;      # number of group to show (may be zero or '')
 my $showTagID;      # non-zero to show tag ID's
 my $stayOpenBuff='';# buffer for -stay_open file
 my $stayOpenFile;   # name of the current -stay_open argfile
+my $stayOpenStdin;  # true if stay-open input is piped stdin
 my $structOpt;      # output structured XMP information (JSON and XML output only)
 my $tabFormat;      # non-zero for tab output format
 my $tagOut;         # flag for separate text output file for each tag
@@ -455,7 +456,8 @@ if ($stayOpen >= 2) {
 
 # initialize necessary static file-scope variables
 # (not done: @commonArgs, @moreArgs, $critical, $binaryStdout, $helped,
-#  $interrupted, $mt, $pause, $rtnValApp, $rtnValPrev, $stayOpen, $stayOpenBuff, $stayOpenFile)
+#  $interrupted, $mt, $pause, $rtnValApp, $rtnValPrev, $stayOpen, $stayOpenBuff,
+#  $stayOpenFile, $stayOpenStdin)
 undef @condition;
 undef @csvExclude;
 undef @csvFiles;
@@ -863,6 +865,7 @@ for (;;) {
         }
         if ($stayOpen == 1) {
             $stayOpenFile = $argFile;   # remember the name of the file we have open
+            $stayOpenStdin = ($argFile eq '-' and (-p $fp or -S $fp));
             $stayOpenBuff = '';         # initialize buffer for reading this file
             $stayOpen = 2;
             $helped = 1;
@@ -1021,7 +1024,8 @@ for (;;) {
     /^list_dir$/i and $listDir = 1, next;
     (/^e$/ or $a eq '-composite') and $mt->Options(Composite => 0), next;
     (/^-e$/ or $a eq 'composite') and $mt->Options(Composite => 1), next;
-    (/^E$/ or $a eq 'escapehtml') and require Image::ExifTool::HTML and $escapeHTML = 1, next;
+    # (-eh is undocumented)
+    (/^E$/ or $a eq 'escapehtml' or $a eq 'eh') and require Image::ExifTool::HTML and $escapeHTML = 1, next;
     ($a eq 'ec' or $a eq 'escapec') and $escapeC = 1, next;
     ($a eq 'ex' or $a eq 'escapexml') and $escapeXML = 1, next;
     if (/^echo(\d)?$/i) {
@@ -2436,7 +2440,8 @@ sub GetImageInfo($$)
             if (defined $tag) {
                 $done{$tag} = 1;
                 $g = $et->GetGroup($tag, $showGroup);
-            } else {
+            }
+            unless ($g) { # ($g could be '' if requesting non-existent tag, and this will sort last)
                 for (;;) {
                     $tag2 = shift @found2;
                     defined $tag2 or $g = '', last;
@@ -4216,8 +4221,8 @@ sub SetWindowTitle($)
     if ($curTitle ne $title) {
         $curTitle = $title;
         if ($^O eq 'MSWin32') {
-            $title =~ tr(-_a-zA-Z0-9%.+/:=?*@~ )()dc;  # allow only safe characters
-            $title =~ s/([\/?:%])/^$1/g;   # escape remaing questionable chars
+            # allow only safe characters
+            $title =~ tr(-_a-zA-Z0-9 \(\)[]{}%.+/:;,=?*!@#$~')()dc;
             eval { system qq{title $title} };
         } else {
             # (this only works for XTerm terminals, and STDERR must go to the console)
@@ -4663,6 +4668,7 @@ sub FilenameSPrintf($;$@)
     $part{F} = $part{f} . $part{E};
     ($part{D} = $part{d}) =~ s{/+$}{};
     @part{qw(t g s o)} = @extra;
+    $part{o} =~ s(^.*[/\\])()s if $part{o}; # remove directory if it exists
     my ($filename, $pos) = ('', 0);
     while ($fmt =~ /(%([-+]?)(\d*)([.:]?)(\d*)([lu]?)([dDfFeEtgso]))/g) {
         $filename .= substr($fmt, $pos, pos($fmt) - $pos - length($1));
@@ -4970,7 +4976,12 @@ sub ReadStayOpen($)
                 last;
             }
         } elsif ($result == 0) {
-            # sysread() didn't block (eg. when reading from a file),
+            if ($stayOpenStdin) {
+                # EOF on piped stdin means the parent closed its input channel
+                close STAYOPEN;
+                $stayOpen = 0;
+                last;
+            }            # sysread() didn't block (eg. when reading from a file),
             # so wait for a short time (1/100 sec) then try again
             # Note: may break out of this early if SIGCONT is received
             select(undef,undef,undef,0.01);

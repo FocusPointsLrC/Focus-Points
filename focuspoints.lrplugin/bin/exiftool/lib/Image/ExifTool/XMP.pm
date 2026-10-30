@@ -50,7 +50,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 require Exporter;
 
-$VERSION = '3.78';
+$VERSION = '3.80';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeXML UnescapeXML);
 
@@ -2541,7 +2541,8 @@ my %sPantryItem = (
     # new in Exif 2.32 (according to the spec, these should use a different namespace
     # URI, but the same namespace prefix... Exactly how is that supposed to work?!!
     # -- I'll just stick with the same URI)
-    CompositeImage => { Writable => 'integer',
+    CompositeImage => {
+        Writable => 'integer',
         PrintConv => {
             0 => 'Unknown',
             1 => 'Not a Composite Image',
@@ -2576,6 +2577,85 @@ my %sPantryItem = (
     RAWDevelopingSoftware   => { },
     ImageEditingSoftware    => { },
     MetadataEditingSoftware => { },
+    GPSAltitudeRef  => {
+        Groups => { 2 => 'Location' },
+        Writable => 'integer',
+        Notes => 'avoided to prioritize the original version of this tag in the exif namespace',
+        Avoid => 1,
+        PrintConv => {
+            OTHER => sub {
+                my ($val, $inv) = @_;
+                return undef unless $inv and $val =~ /^([-+0-9])/;
+                return($1 eq '-' ? 1 : 0);
+            },
+            0 => 'Above Sea Level',
+            1 => 'Below Sea Level',
+            2 => 'Positive Sea Level (sea-level ref)', # sea-level reference, Exif 3.0
+            3 => 'Negative Sea Level (sea-level ref)', # sea-level reference, Exif 3.0
+        },
+    },
+    # new in Exif 3.1
+    LightSource => {
+        Groups => { 2 => 'Camera' },
+        SeparateTable => 'EXIF LightSource',
+        Notes => 'avoided to prioritize the original version of this tag in the exif namespace',
+        Avoid => 1,
+        PrintConv =>  \%Image::ExifTool::Exif::lightSource,
+    },
+    LearningOptOutIn => {
+        Struct => {
+            STRUCT_NAME => 'LearningOptOutIn',
+            NAMESPACE => 'exifEX',
+            # this is a stupid way to do this...
+            # Do the CIPA idiots have nobody that understands XMP?
+            # This should be an ordered list of structures, with no "NumberOfSets".
+            # As it stands, converting this would be a pain in the ass requiring
+            # dedicated code, so I'm punting on this one and leaving it unconverted.
+            NumberOfSets => { Writable => 'integer' },
+            Values => { List => 'Seq', Writable => 'integer' },
+        },
+    },
+    DevelopmentType => {
+        Struct => {
+            STRUCT_NAME => 'DevelopmentType',
+            NAMESPACE => 'exifEX',
+            DevelopmentCharacteristic => {
+                Writable => 'integer',
+                PrintConv => {
+                    1 => 'Accurate Reproduction',
+                    2 => 'Small Differences',
+                    4 => 'Extreme Differences',
+                },
+            },
+            FactoryDefault => {
+                Writable => 'integer',
+                PrintConv => {
+                    1 => 'Factory Default Settings',
+                    2 => 'Not Default Settings',
+                    4 => 'Unknown Settings',
+                },
+            },
+        },
+    },
+    DevelopmentTypeDevelopmentCharacteristic => { Flat => 1, Name => 'DevelopmentTypeCharacteristic' },
+    DevelopmentTypeDescription => { },
+    DistortionCorrection => {
+        Writable => 'integer',
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
+    },
+    ChromaticAberrationCorrection => {
+        Name => 'ChromaticAberrationCorrection',
+        Writable => 'integer',
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
+    },
+    ShadingCorrection => {
+        Writable => 'integer',
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
+    },
+    NoiseReduction => {
+        Writable => 'integer',
+        PrintConv => { 0 => 'No', 1 => 'Low', 2 => 'Normal', 3 => 'High' },
+    },
 );
 
 # Auxiliary namespace properties (aux) - not fully documented (ref PH)
@@ -3661,7 +3741,7 @@ NoLoop:
         my $v = UnescapeXML(substr($val, 0, $p - length($1) - 12)) . $1;
         while ($val =~ /<!\[CDATA\[(.*?)\]\]>/sg) {
             my $p1 = pos $val;
-            $v .= UnescapeXML(substr($val, $p, $p1 - length($1) - 12)) . $1;
+            $v .= UnescapeXML(substr($val, $p, $p1 - $p - length($1) - 12)) . $1;
             $p = $p1;
         }
         $val = $v . UnescapeXML(substr($val, $p));
@@ -3774,6 +3854,7 @@ sub ParseXMPElement($$$;$$$$)
     my $isSVG = $$et{XMP_IS_SVG};
     my $saveNS;     # save xlatNS lookup if changed for the scope of this element
     my (%definedNS, %usedNS);  # namespaces defined and used in this scope
+    my $err;
 
     # get our parse procs
     my ($attrProc, $foundProc);
@@ -3803,11 +3884,16 @@ sub ParseXMPElement($$$;$$$$)
         last if pos($$dataPt) > $end - 4;
         # reset nodeID before processing each element
         my $nodeID = $$blankInfo{NodeID} = $oldNodeID;
-        # get next element
-        last if $$dataPt !~ m{<([?/]?)([-\w:.\x80-\xff]+|!--)([^>]*)>}sg or pos($$dataPt) > $end;
+        # find start of next element, skipping over "<![CDATA[xxx]]>" sections
+        last if $$dataPt !~ m{<([?/]?)([-\w:.\x80-\xff]+|!--)([^>]*)>|(<!\[CDATA\[)}sg or pos($$dataPt) > $end;
         # (the only reason we match '<[?/]' is to keep from scanning past the
         #  "<?xpacket end..." terminator or other closing token, so
         next if $1;
+        if ($4) { # skip CDATA
+            next if $$dataPt =~ /\]\]>/sg and pos($$dataPt) <= $end;
+            $err = "Missing CDATA terminator";
+            last Element;
+        }
         my ($prop, $attrs) = ($2, $3);
         # skip comments
         if ($prop eq '!--') {
@@ -3815,7 +3901,7 @@ sub ParseXMPElement($$$;$$$$)
             last;
         }
         my $valStart = pos($$dataPt);
-        my $valEnd;
+        my ($valEnd, $wasComment);
         # only look for closing token if this is not an empty element
         # (empty elements end with '/', eg. <a:b/>)
         if ($attrs !~ s/\/$//) {
@@ -3827,11 +3913,22 @@ sub ParseXMPElement($$$;$$$$)
 #                my $val2 = $1;
                 # find next matching closing token, or the next opening token
                 # of a nested same-named element
-                if ($$dataPt !~ m{<(/?)$prop([-\w:.\x80-\xff]*)(.*?(/?))>}sg or
+                if ($$dataPt !~ m{<(?:(/?)\Q$prop\E([-\w:.\x80-\xff]*)(.*?(/?))>|(!\[CDATA\[|!--))}sg or
                     pos($$dataPt) > $end)
                 {
-                    $et->Warn("XMP format error (no closing tag for $prop)");
+                    $err = "XMP format error (no closing tag for $prop)";
                     last Element;
+                }
+                if ($5) { # find end of CDATA or comment section
+                    if ($5 eq '![CDATA[') {
+                        next if $$dataPt =~ /\]\]>/sg and pos($$dataPt) <= $end;
+                        $err = 'Missing CDATA terminator';
+                        last Element;
+                    } else {
+                        $$dataPt =~ /-->/sg and pos($$dataPt) <= $end and $wasComment = 1, next;
+                        $err = 'Missing comment terminator';
+                        last Element;
+                    }
                 }
                 next if $2; # ignore opening properties with different names
                 if ($1) {
@@ -4161,6 +4258,8 @@ sub ParseXMPElement($$$;$$$$)
                     # remove comments and whitespace from rdf:Description only
                     if ($prop eq 'rdf:Description' and $val) {
                         $val =~ s/<!--.*?-->//g; $val =~ s/^\s+//; $val =~ s/\s+$//;
+                    } elsif ($wasComment and $val) {
+                        $val =~ s/<!--.*?-->//g;
                     }
                     # if element value is empty, take value from RDF 'value' or 'resource' attribute
                     # (preferentially) or 'about' attribute (if no 'value' or 'resource')
@@ -4214,6 +4313,8 @@ sub ParseXMPElement($$$;$$$$)
         pos($$dataPt) = $start;
         $$dataPt =~ /\G\s+/gc;  # skip white space after closing token
     }
+    # handle any error which aborted processing
+    $isWriting ? $et->Error($err) : $et->Warn($err) if $err;
 #
 # process resources referenced by blank nodeID's
 #

@@ -220,8 +220,8 @@ local function getWinScalingFactor()
     result = 100 / scale
     Log.logDebug("System", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
   else
-    result = 100 / 125
-    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 125% instead")
+    result = 100 / 100
+    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 100% instead")
   end
 
   -- Clean up: remove the temp file

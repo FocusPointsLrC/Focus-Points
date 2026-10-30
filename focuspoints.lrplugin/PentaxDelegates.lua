@@ -43,18 +43,6 @@
 ------------------------------------------------------------------------------]]
 local PentaxDelegates = {}
 
--- Imported LR namespaces
-local LrView               = import  'LrView'
-
--- Required Lua definitions
-local DefaultDelegates     = require 'DefaultDelegates'
-local DefaultPointRenderer = require 'DefaultPointRenderer'
-local ExifUtils            = require 'ExifUtils'
-local FocusInfo            = require 'FocusInfo'
-local Log                  = require 'Log'
-local PointsUtils          = require 'PointsUtils'
-local Utils                = require 'Utils'
-
 -- List of supported models is sorted by date / Pentax version
 -- to potentially support handling of changes in tag usage across models / Pentax versions
 local supportedModels = {
@@ -70,6 +58,18 @@ local supportedModels = {
     "kf", "k-3 mark iii", "gr iii hdf", "gr iiix",                              -- Pentax version 14
     "k-3 mark iii monochrome", "gr iiix hdf", "gr iv", "gr iv monochrome",      -- Pentax version 15
 }
+
+-- Imported LR namespaces
+local LrView               = import  'LrView'
+
+-- Required Lua definitions
+local DefaultDelegates     = require 'DefaultDelegates'
+local DefaultPointRenderer = require 'DefaultPointRenderer'
+local ExifUtils            = require 'ExifUtils'
+local FocusInfo            = require 'FocusInfo'
+local Log                  = require 'Log'
+local PointsUtils          = require 'PointsUtils'
+local Utils                = require 'Utils'
 
 -- Tag indicating that makernotes / AF section exists
 -- Note: There is a "Pentax Version" tag, but it does not exist for pre-2008 models.
@@ -112,26 +112,7 @@ local metaKeyShakeReduction       = "Shake Reduction"
 local metaValueFaceDetection      = "Face Detection"
 
 -- Forward references
-local getAfPointsPhase, getAfPointsContrast, getK3iiiAfPoints
-
---[[----------------------------------------------------------------------------
-  private boolean
-  modelHasK3iiiAfInfo(string model)
-
-  Returns true if the specified camera model uses the new focus point format
-  and logic introduced with the K-3 Mark III.
-------------------------------------------------------------------------------]]
-local function modelHasK3iiiAfInfo(model)
-  -- returns true for models launched after 2019 which have AFInfo data structure in metadata
-  return (model == "pentax k-3 mark iii")
-      or (model == "pentax k-3 mark iii monochrome")
-      or (model == "ricoh gr iii")
-      or (model == "ricoh gr iii hdf")
-      or (model == "ricoh gr iiix")
-      or (model == "ricoh gr iiix hdf")
-      or (model == "ricoh gr iv")
-      or (model == "ricoh gr iv monochrome")
-end
+local getAfPointsPhase, getAfPointsContrast, getK3iiiAfPoints, modelHasK3iiiAfInfo
 
 --[[----------------------------------------------------------------------------
   public table
@@ -170,6 +151,25 @@ function PentaxDelegates.getAfPoints(photo, metadata)
   end
 
   return result
+end
+
+--[[----------------------------------------------------------------------------
+  private boolean
+  modelHasK3iiiAfInfo(string model)
+
+  Returns true if the specified camera model uses the new focus point format
+  and logic introduced with the K-3 Mark III.
+------------------------------------------------------------------------------]]
+function modelHasK3iiiAfInfo(model)
+  -- returns true for models launched after 2019 which have AFInfo data structure in metadata
+  return (model == "pentax k-3 mark iii")
+      or (model == "pentax k-3 mark iii monochrome")
+      or (model == "ricoh gr iii")
+      or (model == "ricoh gr iii hdf")
+      or (model == "ricoh gr iiix")
+      or (model == "ricoh gr iiix hdf")
+      or (model == "ricoh gr iv")
+      or (model == "ricoh gr iv monochrome")
 end
 
 --[[----------------------------------------------------------------------------
@@ -905,6 +905,18 @@ function PentaxDelegates.manualFocusUsed(_photo, metadata)
     string.format("Focus mode tag '%s' found: %s",metaKeyFocusMode, focusMode))
 --return (Utils.splitTrim(focusMode, " ") == "Manual")
   return focusMode == "Manual"
+end
+
+--[[----------------------------------------------------------------------------
+  public table
+  function getImageInfo(table photo, table props, table metadata)
+
+  Called by FocusInfo.createInfoView to append maker-specific entries to the
+  'Image Information' section, if applicable; otherwise, returns an empty column.
+------------------------------------------------------------------------------]]
+function PentaxDelegates.getImageInfo(_photo, _props, _metadata)
+  local imageInfo
+  return imageInfo
 end
 
 --[[----------------------------------------------------------------------------

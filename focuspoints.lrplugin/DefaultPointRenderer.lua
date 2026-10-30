@@ -196,10 +196,14 @@ end
 
 --[[----------------------------------------------------------------------------
   public table pointsTable
-  createFocusFrame(int x, int y)
+  createFocusFrame(int x, int y, int w, int h)
 
-  Creates the correct visualisation for the given focus point location,
-  depending on the size of the focus box selected by the user.
+  x/y: center coordinates of the focus point
+  w/h: dimensions of the frame centered on x/y
+
+  Creates a visualization of a focus point at a given location (x, y).
+  If width and height are specified, the focus point is created as a 'focus box'.
+  Otherwise, it is created as a 'focus pixel point'.
 ------------------------------------------------------------------------------]]
 function DefaultPointRenderer.createFocusFrame(x, y, w, h)
   local pointType

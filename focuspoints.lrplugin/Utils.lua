@@ -268,13 +268,6 @@ end
   This checks whether two floating-point numbers are equal within a given tolerance.
   If a tolerance is not specified, the default is the second decimal place.
 ------------------------------------------------------------------------------]]
---[[----------------------------------------------------------------------------
-  public boolean
-  floatsEqual(float a, b, epsilon)
-
-  This checks whether two floating-point numbers are equal within a given tolerance.
-  If a tolerance is not specified, the default is the second decimal place.
-------------------------------------------------------------------------------]]
 function Utils.floatsEqual(a, b, epsilon)
   -- 1. Ensure numbers (guards against nil, non-numbers, and NaN)
   if type(a) ~= "number" or type(b) ~= "number" then
@@ -299,4 +292,3 @@ function Utils.floatsEqual(a, b, epsilon)
 end
 
 return Utils
-

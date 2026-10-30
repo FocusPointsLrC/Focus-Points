@@ -304,6 +304,7 @@ function PanasonicDelegates.getShootingInfo(_photo, props, metadata)
   shootingInfo = f:column {
     fill = 1,
     spacing = 2,
+    addInfo("Shooting Mode"      , metaKeyShootingMode      , props, metadata),
     addInfo("Image Stabilization", metaKeyImageStabilization, props, metadata),
     addInfo("Burst Mode"         , metaKeyBurstMode         , props, metadata),
   }

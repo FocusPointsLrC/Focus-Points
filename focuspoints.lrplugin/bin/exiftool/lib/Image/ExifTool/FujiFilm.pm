@@ -31,13 +31,13 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '2.00';
+$VERSION = '2.03';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
 sub ProcessMRAW($$$);
 
-# the following RAF version numbers have been tested for writing:
+# the following firmware version numbers have been tested for writing:
 # (as of ExifTool 11.70, this lookup is no longer used if the version number is numerical)
 my %testedRAF = (
     '0100' => 'E550, E900, F770, S5600, S6000fd, S6500fd, HS10/HS11, HS30, S200EXR, X100, XF1, X-Pro1, X-S1, XQ2 Ver1.00, X-T100, GFX 50R, XF10',
@@ -67,7 +67,7 @@ my %testedRAF = (
    # 0400  - expect to see this for X-T1
     '0540' => 'X-T1 Ver5.40',
     '0712' => 'S5000 Ver3.00',
-    '0716' => 'S5000 Ver3.00', # (yes, 2 RAF versions with the same Software version)
+    '0716' => 'S5000 Ver3.00', # (yes, 2 firmware versions with the same Software version)
     '0Dgi' => 'X-A10 Ver1.01 and X-A3 Ver1.02', # (yes, non-digits in the firmware number)
 );
 
@@ -494,8 +494,10 @@ my %faceCategories = (
         Writable => 'int32s',
         PrintConv => {
             0 => 'Off',
-            32 => 'Weak',
-            64 => 'Strong',
+            16 => 'Weak/Small', #github455 (X-HF1)
+            32 => 'Weak', # (X-HF1 Weak/Large)
+            48 => 'Strong/Small', #github455 (X-HF1)
+            64 => 'Strong', # (X-HF1 Strong/Large)
         },
     },
     0x1048 => { #12
@@ -667,9 +669,18 @@ my %faceCategories = (
             0x70000 => 'Soft Focus',
             0x90000 => 'Low Key',
             0x100000 => 'Light Leak', #forum17392
+            0x110000 => 'Halation', #github454
             0x130000 => 'Expired Film Green', #forum17392
             0x130001 => 'Expired Film Red', #forum17392 (NC)
             0x130002 => 'Expired Film Neutral', #forum17392
+            0x140000 => 'Canvas', #github454
+            0x150000 => 'Retro', #github454
+            0x160000 => 'Vignette', #github454
+            0x170000 => 'Blur', #github454
+            0x180000 => 'Fisheye', #github454
+            0x190000 => 'Color Shift', #github454
+            0x1a0000 => 'Mirror', #github454
+            0x1b0000 => 'Double Exposure', #github454
         },
     },
     0x1210 => { #2
@@ -780,7 +791,7 @@ my %faceCategories = (
     },
     # 0x1408 - values: '0100', 'S100', 'VQ10'
     # 0x1409 - values: same as 0x1408
-    # 0x140a - values: 0, 1, 3, 5, 7 (bit 2=red-eye detection, ref 11/13)
+    # 0x140a - values: 0, 1, 3, 5, 7 (bit 2=red-eye detection, ref 11/13; 0x13=face/subject detection, github439)
     0x140b => { #6
         Name => 'AutoDynamicRange',
         Writable => 'int16u',
@@ -804,6 +815,7 @@ my %faceCategories = (
             2 => 'On (mode 2, shooting only)',
         }],
     },
+  # 0x1424 - in16u: FilmSimulation 0x1000=Provia, 0x1120=Velvia or 0x1200=Astia (see github456)
     0x1425 => { # if present and 0x1031 PictureMode is zero, then PictureMode is SR+, not Auto (ref 11)
         Name => 'SceneRecognition',
         Writable => 'int16u',
@@ -981,7 +993,7 @@ my %faceCategories = (
             29 => 'Animal Body (29)', #forum15192
         },'REPEAT'],
     },
-    # 0x4202 int8u[-1] - number of cooredinates in each rectangle? (ref 11)
+    # 0x4202 int8u[-1] - number of coordinates in each rectangle? (ref 11)
     0x4203 => { #11
         Name => 'FaceElementPositions',
         Writable => 'int16u',
@@ -1226,7 +1238,7 @@ my %faceCategories = (
     NOTES => 'Tags extracted from the header of RAF images.',
   # 0x00 - eg. "FUJIFILMCCD-RAW 0201FA392001FinePix S3Pro"
     0x3c => { #PH
-        Name => 'RAFVersion',
+        Name => 'FirmwareVersion', #forum17969
         Format => 'undef[4]',
     },
     # (all int32u values)
@@ -1373,37 +1385,37 @@ my %faceCategories = (
         Count => 4, # (ignore the duplicate values)
     },
     0x2100 => { #IB
-        Name => 'WB_GRGBLevelsDaylight',
+        Name => 'WB_GRGBLevelsDaylight', # (EXIF Fine Weather)
         Format => 'int16u',
         Count => 4,
     },
     0x2200 => { #IB
-        Name => 'WB_GRGBLevelsCloudy',
+        Name => 'WB_GRGBLevelsCloudy', # (EXIF Shade)
         Format => 'int16u',
         Count => 4,
     },
     0x2300 => { #IB
-        Name => 'WB_GRGBLevelsDaylightFluor',
+        Name => 'WB_GRGBLevelsDaylightFluor', # (EXIF FL_D)
         Format => 'int16u',
         Count => 4,
     },
     0x2301 => { #IB
-        Name => 'WB_GRGBLevelsDayWhiteFluor',
+        Name => 'WB_GRGBLevelsDayWhiteFluor', # (EXIF FL_N)
         Format => 'int16u',
         Count => 4,
     },
     0x2302 => { #IB
-        Name => 'WB_GRGBLevelsWhiteFluorescent',
+        Name => 'WB_GRGBLevelsWhiteFluorescent', # (EXIF FL_W)
         Format => 'int16u',
         Count => 4,
     },
     0x2310 => { #IB
-        Name => 'WB_GRGBLevelsWarmWhiteFluor',
+        Name => 'WB_GRGBLevelsWarmWhiteFluor', # (EXIF FL_WW)
         Format => 'int16u',
         Count => 4,
     },
     0x2311 => { #IB
-        Name => 'WB_GRGBLevelsLivingRoomWarmWhiteFluor',
+        Name => 'WB_GRGBLevelsLivingRoomWarmWhiteFluor', # (EXIF FL_L)
         Format => 'int16u',
         Count => 4,
     },
@@ -1412,9 +1424,14 @@ my %faceCategories = (
         Format => 'int16u',
         Count => 4,
     },
+    0x2410 => { #IB
+        Name => 'WB_GRGBLevelsFlash',
+        Format => 'int16u',
+        Count => 4,
+    },
     # 0x2f00 => WB_GRGBLevelsCustom: int32u count, then count * (int16u GRGBGRGB), ref IB
     0x2ff0 => {
-        Name => 'WB_GRGBLevels',
+        Name => 'WB_GRGBLevels', # (as shot)
         Format => 'int16u',
         Count => 4,
     },

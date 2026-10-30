@@ -59,7 +59,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.62';
+$VERSION = '3.63';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -2232,7 +2232,16 @@ my %binaryDataAttrs = (
             32768 => 'Standard', #KG (K-3IIIm) (was "n/a" previously - PH)
             32769 => 'Hard', #KG (K-3IIIm)
             32770 => 'Soft', #KG (K-3IIIm)
-            33024 => 'Monochrome', #forum17904 (GR IV Monochrome)
+            #the following from forum17904 (GR IV Monochrome)
+            33024 => 'Standard', 
+            33025 => 'Solid',
+            33026 => 'Soft',
+            33027 => 'High Contrast',
+            33028 => 'Grainy',
+            33029 => 'HDR tone',
+            33024 => 'Custom 1',
+            33024 => 'Custom 2',
+            33024 => 'Custom 3',
         },
     },
     0x0050 => { #PH
@@ -2741,6 +2750,34 @@ my %binaryDataAttrs = (
                     return "Unknown ($val)";
                 }
             },
+        },
+    },
+    0x0099 => { #forum17904
+        Name => 'SnapFocusDistance',
+        Writable => 'int8u',
+        Count => 3,
+        Notes => 'the DOF settings occur in Snap Distance Priority AE or Sn mode',
+        PrintConv => {
+            '1 0 0' => '1 m',
+            '2 0 0' => '1.5 m',
+            '3 0 0' => '2 m',
+            '3 0 1' => '2 m - DOF3',
+            '3 0 2' => '2 m - DOF2',
+            '3 0 3' => '2 m - DOF1',
+            '4 0 0' => '2.5 m',
+            '5 0 0' => '5 m',
+            '6 0 0' => '3.5 m',
+            '7 0 0' => '0.3 m',
+            '255 0 0' => 'inf',
+        },
+    },
+    0x009e => { #https://www.dpreview.com/forums/threads/gr-iv-hdf-dng-exif-data.4837151/#post-68693164
+        Name => 'HDF', # (Highlight Diffusion Filter)
+        Writable => 'int8u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'On',
+            2 => 'Red Filter', #forum17904 (GR IV Monochrome)
         },
     },
     0x0200 => { #5
