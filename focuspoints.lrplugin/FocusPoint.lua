@@ -370,7 +370,7 @@ local function showFocusPoint()
     local function inputFieldWidth()
       if     prefs.keyboardInput == FocusPointPrefs.kbdInputInvisible then return 1
       elseif prefs.keyboardInput == FocusPointPrefs.kbdInputSmall     then return 25
-      else                                                                 return 100
+      else                                                                 return 50
       end
     end
 
@@ -536,23 +536,29 @@ local function showFocusPoint()
           elseif string.find(FocusPointPrefs.kbdShortcutsPrev, char, 1, true) then
             closeDialog(view,"previous")
             return true  -- done
+          -- Straighten image
           elseif string.find(FocusPointPrefs.kbdShortcutsStraighten, char, 1, true) then
-            if props.rollAngleAction == rollAngleStraighten then
+            if props.rollAngleActionEnabled then
               straightenAndRefresh(view)
               return true
             end
+          -- Reset straighten image
           elseif string.find(FocusPointPrefs.kbdShortcutsStraightenReset, char, 1, true) then
-            if props.rollAngleAction == rollAngleReset then
+            if props.rollAngleActionEnabled then
               straightenAndRefresh(view)
               return true
             end
           -- Resize plugin window
           elseif string.find(FocusPointPrefs.kbdShortcutsSizeUp, char, 1, true) then
-            FocusPointPrefs.upsizePluginWindow()
-            closeDialog(view,"refresh")
+            if prefs.pluginWindowSize < FocusPointPrefs.pluginWindowSizeMax then
+              FocusPointPrefs.upsizePluginWindow()
+              closeDialog(view,"refresh")
+            end
           elseif string.find(FocusPointPrefs.kbdShortcutsSizeDown, char, 1, true) then
-            FocusPointPrefs.downsizePluginWindow()
-            closeDialog(view,"refresh")
+            if prefs.pluginWindowSize > FocusPointPrefs.pluginWindowSizeMin then
+              FocusPointPrefs.downsizePluginWindow()
+              closeDialog(view,"refresh")
+            end
           -- Display mode Direct
           elseif string.find(FocusPointPrefs.kbdShortcutsDirectMode, char, 1, true) then
             prefs.displayMode = FocusPointPrefs.displayModeDirect
@@ -1058,7 +1064,7 @@ local function showFocusPoint()
       local f = LrView.osFactory()
       local status = {
         { text = rollAngleStraighten, tooltip = "Apply roll angle correction to straighten image (S)", color = LrColor("red") },
-        { text = rollAngleReset,      tooltip = "Undo straightening (R)", color = LrColor(0, 0.66, 0)  },
+        { text = rollAngleReset,      tooltip = "Undo straightening (R)", color = LrColor(0, 0.66, 0) },
         { text = rollAngleStraighten, tooltip = "", color = LrColor("black") },
       }
 
@@ -1067,13 +1073,27 @@ local function showFocusPoint()
       -- Button title, tooltip, and enabled state are all set from condition at dialog-construction time.
       -- Which is fine because the dialog needs to be created freshly for every image.
       local condition = 1
-      if not props.rollAngle then
+      if not props.rollAngle or Utils.floatsEqual(props.rollAngle, 0) then
         condition = 3
-      elseif Utils.floatsEqual(-props.rollAngle, props.cropAngle) then
+      elseif Utils.floatsEqual(props.rollAngle, -props.cropAngle) then
         condition = 2
       end
 
-      props.rollAngleAction = status[condition].text
+      props.rollAngleAction        = status[condition].text
+      props.rollAngleActionEnabled = (condition ~= 3) and not Utils.floatsEqual(props.rollAngle, 0)
+
+      local function transformIndicator()
+        if props.transformSettings ~= nil then
+          return f:static_text {
+            margin = 0,
+            title   = LrView.bind {key = "transformText",    object = props},
+            tooltip = LrView.bind {key = "transformTooltip", object = props},
+            text_color = status[condition].color,
+          }
+        else
+          return LrView.kIgnoredView
+        end
+      end
 
       return f:row {
         margin = 0,
@@ -1090,17 +1110,12 @@ local function showFocusPoint()
           tooltip = LrView.bind {key = "cropAngleTooltip", object = props},
           text_color = status[condition].color,
         },
-        f:static_text {
-          margin = 0,
-          title   = LrView.bind {key = "transformText",    object = props},
-          tooltip = LrView.bind {key = "transformTooltip", object = props},
-          text_color = status[condition].color,
-        },
+        transformIndicator(),
         f:spacer { width = 5 },  -- space before the button
         f:push_button {
           title   = status[condition].text,
           tooltip = status[condition].tooltip,
-          enabled = props.rollAngleText ~= rollAngleNA and not Utils.floatsEqual(props.rollAngle, 0),
+          enabled = props.rollAngleActionEnabled,
           margin  = 0,
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!
@@ -1174,9 +1189,9 @@ local function showFocusPoint()
       local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
       local fileName = Utils.getPhotoFileName(photo)
       local tooltip
-      if prefs.truncateLongText and Utf8.len(fileName) > FocusInfo.maxValueLen then
+      if prefs.truncateLongText and Utf8.len(fileName) > prefs.truncateLimit then
           tooltip  = fileName
-          fileName = string.sub(fileName, 1, FocusInfo.maxValueLen-1) .. utfEllipsis
+          fileName = Utf8.sub(fileName, 1, prefs.truncateLimit-1) .. utfEllipsis
         end
       if #selectedPhotos > 1 then
         fileName = fileName .. " (" .. current .. "/" .. #selectedPhotos .. ")"
@@ -1186,6 +1201,7 @@ local function showFocusPoint()
     end
 
     local function runModalDialog()
+      -- Create static containers for use in dialog
       local kbdShortcutInput = buildKbdShortcutInput()
       local controlPanel     = buildControlPanel()
 
@@ -1194,6 +1210,8 @@ local function showFocusPoint()
         contents = FocusPointDialog.createDialog(
                      photoView, infoView, kbdShortcutInput, whatsNewFAQ(), displayModeSelector()),
         accessoryView = controlPanel,
+--      save_frame = "FocusPointsModalDialogFrame",
+--      resizable  = true,
         actionVerb = "Close",
         cancelVerb = "< exclude >",
       }
@@ -1373,7 +1391,6 @@ local function showFocusPoint()
         -- selection changes or a navigation/keyboard shortcut is used,
         -- otherwise a new window would be stacked on top of the old one
         -- on every iteration of the outer loop.
-
         onShow = function(callForward)
           if myIteration ~= dialogIteration then return end
           floatingDialogClose = callForward and callForward.close

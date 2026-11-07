@@ -164,12 +164,12 @@ end
 
 --[[----------------------------------------------------------------------------
   public boolean
-  hasTransform(LrPhoto photo)
+  hasTransformSettings(table settings)
 
-  Returns whether an Upright or Transform operation has been performed on the photo
+  Returns whether an Upright or Transform operation has been performed
+  based on the supplied develop settings.
 ------------------------------------------------------------------------------]]
-function Straighten.hasTransform(photo)
-  local settings = photo:getDevelopSettings()
+function Straighten.hasTransformSettings(settings)
   return
     (settings.PerspectiveUpright    or 0) ~=   0 or
     (settings.PerspectiveVertical   or 0) ~=   0 or
@@ -179,6 +179,17 @@ function Straighten.hasTransform(photo)
     (settings.PerspectiveScale      or 0) ~= 100 or
     (settings.PerspectiveX          or 0) ~=   0 or
     (settings.PerspectiveY          or 0) ~=   0
+end
+
+--[[----------------------------------------------------------------------------
+  public boolean
+  hasTransform(LrPhoto photo)
+
+  Returns whether an Upright or Transform operation has been performed
+  on the photo.
+------------------------------------------------------------------------------]]
+function Straighten.hasTransform(photo)
+  return Straighten.hasTransformSettings(photo:getDevelopSettings())
 end
 
 --[[----------------------------------------------------------------------------
@@ -234,14 +245,14 @@ end
 function Straighten.resetTransformSettings(photo, title)
   local transformSettings = {}
 
-  transformSettings.PerspectiveUpright    = 0
-  transformSettings.PerspectiveVertical   = 0
-  transformSettings.PerspectiveHorizontal = 0
-  transformSettings.PerspectiveRotate     = 0
-  transformSettings.PerspectiveAspect     = 0
-  transformSettings.PerspectiveScale      = 0
-  transformSettings.PerspectiveX          = 0
-  transformSettings.PerspectiveY          = 0
+  transformSettings.PerspectiveUpright    =   0
+  transformSettings.PerspectiveVertical   =   0
+  transformSettings.PerspectiveHorizontal =   0
+  transformSettings.PerspectiveRotate     =   0
+  transformSettings.PerspectiveAspect     =   0
+  transformSettings.PerspectiveScale      = 100
+  transformSettings.PerspectiveX          =   0
+  transformSettings.PerspectiveY          =   0
 
   photo:applyDevelopSettings(transformSettings, title)
 

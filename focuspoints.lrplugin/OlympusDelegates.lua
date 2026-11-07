@@ -33,6 +33,7 @@
 local OlympusDelegates = {}
 
 -- Imported LR namespaces
+local LrPrefs              = import  'LrPrefs'
 local LrView               = import  'LrView'
 
 -- Required Lua definitions
@@ -177,31 +178,42 @@ function getOMDSAfPoints(photo, metadata)
   local hasSubjectDetectArea   = false
   local hasSubjectDetectDetail = false
   local subjectDetectFrameSize = findValue(metadata, metaKeySubjectDetectFrameSize)
-  if subjectDetectFrameSize and (subjectDetectFrameSize[1] ~= "0 0") then
+  if subjectDetectFrameSize and (subjectDetectFrameSize ~= "0 0") then
 
     local subjectDetectArea   = findValue(metadata, metaKeySubjectDetectArea)
     local subjectDetectDetail = findValue(metadata, metaKeySubjectDetectDetail)
 
-    subjectDetectFrameSize = Utils.split(subjectDetectFrameSize, " ")
-    subjectDetectArea      = Utils.split(subjectDetectArea     , " ")
-    subjectDetectDetail    = Utils.split(subjectDetectDetail   , " ")
+    if subjectDetectArea and subjectDetectDetail then
 
-    if subjectDetectArea[3] ~= "0" and subjectDetectArea[4] ~= "0" then
-      -- area has width and heigth -> add frame to visualize detected subject
-      addFrame(subjectDetectFrameSize[1], subjectDetectFrameSize[2],
-               subjectDetectArea[1], subjectDetectArea[2], subjectDetectArea[3], subjectDetectArea[4],
-               1.2, -- scale slightly bigger to avoid potential overlap with focus frame
-               DefaultDelegates.POINTTYPE_FACE, "Subject detected")
-      hasSubjectDetectArea = true
-    end
+      subjectDetectFrameSize = Utils.split(subjectDetectFrameSize, " ")
+      subjectDetectArea      = Utils.split(subjectDetectArea     , " ")
+      subjectDetectDetail    = Utils.split(subjectDetectDetail   , " ")
 
-    if subjectDetectDetail[3] ~= "0" and subjectDetectDetail[4] ~= "0" then
-      -- area has width and heigth -> add frame to visualize detected subject detail
-      addFrame(subjectDetectFrameSize[1], subjectDetectFrameSize[2],
-               subjectDetectDetail[1], subjectDetectDetail[2], subjectDetectDetail[3], subjectDetectDetail[4],
-               1.2, -- scale slightly bigger to avoid potential overlap with focus frame
-               DefaultDelegates.POINTTYPE_FACE, "Subject detail detected")
-      hasSubjectDetectDetail = true
+      if subjectDetectArea[3] ~= "0" and subjectDetectArea[4] ~= "0" then
+        -- area has width and heigth -> add frame to visualize detected subject
+        addFrame(subjectDetectFrameSize[1], subjectDetectFrameSize[2],
+          subjectDetectArea[1], subjectDetectArea[2], subjectDetectArea[3], subjectDetectArea[4],
+          1.2, -- scale slightly bigger to avoid potential overlap with focus frame
+          DefaultDelegates.POINTTYPE_FACE, "Subject detected")
+        hasSubjectDetectArea = true
+      end
+
+      if subjectDetectDetail[3] ~= "0" and subjectDetectDetail[4] ~= "0" then
+        -- area has width and heigth -> add frame to visualize detected subject detail
+        addFrame(subjectDetectFrameSize[1], subjectDetectFrameSize[2],
+          subjectDetectDetail[1], subjectDetectDetail[2], subjectDetectDetail[3], subjectDetectDetail[4],
+          1.2, -- scale slightly bigger to avoid potential overlap with focus frame
+          DefaultDelegates.POINTTYPE_FACE, "Subject detail detected")
+        hasSubjectDetectDetail = true
+      end
+    else
+      Log.logWarn("Olympus",
+        string.format("Inconsistent metadata found: %s=%s, %s=%s, %s=%s",
+          metaKeySubjectDetectFrameSize, subjectDetectFrameSize,
+          metaKeySubjectDetectArea,      subjectDetectArea,
+          metaKeySubjectDetectDetail,    subjectDetectDetail
+        )
+      )
     end
   end
 
@@ -291,7 +303,8 @@ function getOMDSAfPoints(photo, metadata)
          metaKeyAFFocusArea, metaKeyAfPointSelected))
       local afSearch = findValue(metadata, metaKeyAfSearch)
       if afSearch and afSearch ~= "Ready" then
-        Log.logWarn("Olympus", "Autofocus operations not successful, no confirmation received (green light or beep)")
+        Log.logWarn("Olympus",
+          "Autofocus operations not successful, no confirmation received (green light or beep)")
       end
     end
   end
@@ -622,6 +635,7 @@ end
   Generate a row element to be added to the current view container.
 ------------------------------------------------------------------------------]]
 local function addInfo(title, key, props, metadata)
+  local prefs = LrPrefs.prefsForPlugin(nil)
   local f = LrView.osFactory()
 
   local function escape(text)
@@ -683,7 +697,9 @@ local function addInfo(title, key, props, metadata)
     return FocusInfo.emptyRow()
   end
 
-  if key == metaKeyDriveMode then props[key] = Utils.wrapText(props[key], {';'}, FocusInfo.maxValueLen) end
+  -- wrap values as required
+  if key == metaKeyDriveMode           then props[key] = Utils.wrapText(props[key], {';'}, prefs.truncateLimit) end
+  if key == metaKeySubjectTrackingMode then props[key] = Utils.wrapText(props[key], {';'}, prefs.truncateLimit) end
 
   if key == metaKeyStackedImage and props[key] == "No" then
     return FocusInfo.emptyRow()
@@ -793,8 +809,7 @@ end
 ------------------------------------------------------------------------------]]
 function OlympusDelegates.getImageInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local imageInfo
-  imageInfo = f:column {
+  local imageInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Digital Zoom", metaKeyDigitalZoomRatio, props, metadata),
@@ -811,9 +826,7 @@ end
 ------------------------------------------------------------------------------]]
 function OlympusDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Drive Mode",            metaKeyDriveMode,           props, metadata),
@@ -833,19 +846,17 @@ end
 ------------------------------------------------------------------------------]]
 function OlympusDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {fill = 1, spacing = 2,
-      addInfo("Focus Mode",         metaKeyFocusMode,           props, metadata),
-      addInfo("Face Detection",     metaKeyFacesDetected,       props, metadata),
-      addInfo("Subject Detection",  metaKeySubjectTrackingMode, props, metadata),
-      FocusInfo.addSpace(),
-      FocusInfo.addSeparator(),
-      FocusInfo.addSpace(),
-      addInfo("Focus Distance",     metaKeyFocusDistance,       props, metadata),
-      addInfo("Depth of Field",     metaKeyDepthOfField,        props, metadata),
-      addInfo("Hyperfocal Distance",metaKeyHyperfocalDistance,  props, metadata),
-      }
+    addInfo("Focus Mode",         metaKeyFocusMode,           props, metadata),
+    addInfo("Face Detection",     metaKeyFacesDetected,       props, metadata),
+    addInfo("Subject Detection",  metaKeySubjectTrackingMode, props, metadata),
+    FocusInfo.addSpace(),
+    FocusInfo.addSeparator(),
+    FocusInfo.addSpace(),
+    addInfo("Focus Distance",     metaKeyFocusDistance,       props, metadata),
+    addInfo("Depth of Field",     metaKeyDepthOfField,        props, metadata),
+    addInfo("Hyperfocal Distance",metaKeyHyperfocalDistance,  props, metadata),
+  }
   return focusInfo
 end
 

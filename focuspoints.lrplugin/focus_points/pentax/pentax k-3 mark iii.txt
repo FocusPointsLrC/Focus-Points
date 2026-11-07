@@ -9,7 +9,6 @@ focusPointDimens = {166, 166}
 -- full size image dimensions
 fullSizeDimens = {6192, 4128}
 
-
 A3 = {895, 1680}
 A5 = {895, 2068}
 A7 = {895, 2452}

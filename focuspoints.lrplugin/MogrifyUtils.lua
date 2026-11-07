@@ -204,6 +204,7 @@ function exportPreview(photo, xSize, ySize)
   local timeout   = prefs.previewTimeout
   local thumbRequest
   local callbackReceived
+  local previewAbandoned = false
   local errorText
 
   local previewFileName, thumbName = getImageFileName(photo)
@@ -340,6 +341,10 @@ function exportPreview(photo, xSize, ySize)
   while not previewReady do
     callbackReceived = false
     thumbRequest = photo:requestJpegThumbnail(xSize, ySize, function(data, errorMsg)
+      -- A timeout may already have started an export to the same filename.
+      -- Ignore a late thumbnail callback so it cannot overwrite the export.
+      if previewAbandoned then return end
+
       --[[
         Request a JPEG thumbnail of the current photo.
         Two different situations exist:
@@ -414,17 +419,18 @@ function exportPreview(photo, xSize, ySize)
     end)
 
     while not callbackReceived do
-      if fallback and timeoutReached(startTime, timeout) then
+      if fallback and timeoutReached(startTime, timeout) or timeoutReached(startTime, RETRY_TIMEOUT) then
         Log.logInfo("Mogrify", string.format(
           "Preview timeout reached after %.1f seconds. Using Export.",
           LrDate.currentTime() - startTime))
+        previewAbandoned = true
         return exportPhoto(photo, xSize, ySize)
       end
       LrTasks.sleep(POLL_INTERVAL)
     end
 
     -- The callback has been received and handled. Release the object and the memory allocated to it.
-     thumbRequest = nil
+    thumbRequest = nil
 
     if previewReady then
       return previewFileName, FocusPointPrefs.displayModePreview, errorText
@@ -442,12 +448,16 @@ function exportPreview(photo, xSize, ySize)
         LrTasks.sleep(POLL_INTERVAL)
       end
       if timeoutReached(startTime, RETRY_TIMEOUT) then
+        return exportPhoto(photo, xSize, ySize)
+--[[ @TODO Remove later - behavior changed in V4 PRE 5: return exported image instead of error message
+
         errorText = string.format(
           "Preview could not be obtained within the maximum waiting time of %.1f seconds",
           RETRY_TIMEOUT)
         Log.logInfo("Mogrify", errorText)
         previewReady = true  -- not really, but this is required to make the progress indicator disappear
         return nil, FocusPointPrefs.displayModePreview, errorText
+--]]
       end
     end
   end

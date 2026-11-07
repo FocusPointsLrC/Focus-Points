@@ -111,7 +111,7 @@ my %insvLimit = (
         The tags below are extracted from timed metadata in QuickTime and other
         formats of video files when the ExtractEmbedded option is used.  Although
         most of these tags are combined into the single table below, ExifTool
-        currently reads 122 different types of timed GPS metadata from video files.
+        currently reads 128 different types of timed GPS metadata.
     },
     GPSLatitude  => { PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")', RawConv => '$$self{FoundGPSLatitude} = 1; $val' },
     GPSLongitude => { PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")' },
@@ -1840,7 +1840,7 @@ sub ProcessFreeGPS($$$)
             }
         }
 
-    } elsif ($$dataPt =~ /^(.{16}|.{48}|.{80})LIGOGPSINFO\0/s and length($$dataPt) >= length($1) + 0x84) {
+    } elsif ($$dataPt =~ /^(.{16}|.{48}|.{80}|.{116})LIGOGPSINFO\0/s and length($$dataPt) >= length($1) + 0x84) {
 
         $debug and $et->FoundTag(GPSType => 5);
         my $pos = length $1;
@@ -2496,6 +2496,10 @@ sub ParseTag($$$)
         # read the sample sizes
         my ($sz, $num) = unpack('x4N2', $$dataPt);
         my $size = $$et{ee}{size} = [ ];
+        if ($num > 100000000) {
+            $et->Warn('Maximum sample count exceeded. Not extracting timed metadata');
+            return;
+        }
         if ($tag eq 'stsz') {
             if ($sz == 0) {
                 @$size = ReadValue($dataPt, 12, 'int32u', $num, $dataLen-12);

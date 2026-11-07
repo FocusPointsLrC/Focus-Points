@@ -33,6 +33,7 @@
 local FujifilmDelegates = {}
 
 -- Imported LR namespaces
+local LrPrefs              = import  'LrPrefs'
 local LrStringUtils        = import  'LrStringUtils'
 local LrView               = import  'LrView'
 
@@ -76,6 +77,7 @@ local metaKeyDriveMode                   = "Drive Mode"
 local metaKeyDriveSpeed                  = "Drive Speed"
 local metaKeySequenceNumber              = "Sequence Number"
 local metaKeyImageStabilization          = "Image Stabilization"
+local metaKeyAdvancedFilter              = "Advanced Filter"
 
 --[[----------------------------------------------------------------------------
   public table
@@ -226,6 +228,7 @@ end
   Generate a row element to be added to the current view container.
 ------------------------------------------------------------------------------]]
 local function addInfo(title, key, props, metadata)
+  local prefs = LrPrefs.prefsForPlugin(nil)
   local f = LrView.osFactory()
 
   -- Helper function to create and populate the property corresponding to metadata key
@@ -255,8 +258,8 @@ local function addInfo(title, key, props, metadata)
   if props[key] and props[key] ~= ExifUtils.metaValueNA then
 
     -- wrap values as required
-    if key == metaKeyImageStabilization then props[key] = Utils.wrapText(props[key], {';'}, FocusInfo.maxValueLen) end
-    if key == FaceElementTypes          then props[key] = Utils.wrapText(props[key], {','}, FocusInfo.maxValueLen) end
+    if key == metaKeyImageStabilization then props[key] = Utils.wrapText(props[key], {';'}, prefs.truncateLimit) end
+    if key == FaceElementTypes          then props[key] = Utils.wrapText(props[key], {','}, prefs.truncateLimit) end
 
     -- compose the row to be added
     local result = FocusInfo.addRow(title, props[key])
@@ -383,8 +386,7 @@ end
 ------------------------------------------------------------------------------]]
 function FujifilmDelegates.getImageInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local imageInfo
-  imageInfo = f:column {
+  local imageInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Crop mode", metaKeyCropMode, props, metadata),
@@ -401,15 +403,13 @@ end
 ------------------------------------------------------------------------------]]
 function FujifilmDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
-
+    addInfo("Advanced Filter"    , metaKeyAdvancedFilter    , props, metadata),
     addInfo("Image Stabilization", metaKeyImageStabilization, props, metadata),
-    addInfo("Drive Mode", metaKeyDriveMode, props, metadata),
-    addInfo("Drive Speed", metaKeyDriveSpeed, props, metadata),
+    addInfo("Drive Mode"         , metaKeyDriveMode         , props, metadata),
+    addInfo("Drive Speed"        , metaKeyDriveSpeed        , props, metadata),
   }
   return shootingInfo
 end
@@ -423,22 +423,20 @@ end
 ------------------------------------------------------------------------------]]
 function FujifilmDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode",                    metaKeyFocusMode                    , props, metadata),
-      addInfo("AF Mode",                       metaKeyAfMode                       , props, metadata),
-      addInfo("Focus Warning",                 metaKeyFocusWarning                 , props, metadata),
-      addInfo("Pre AF",                        metaKeyPreAf                        , props, metadata),
-      addInfo("Faces Detected",                FacesDetected                       , props, metadata),
-      addInfo("Subject Element Types",         FaceElementTypes                    , props, metadata),
-      addInfo("AF-C Setting",                  metaKeyAfCSetting                   , props, metadata),
-      addInfo("- Tracking Sensitivity",        metaKeyAfCTrackingSensitivity       , props, metadata),
-      addInfo("- Speed Tracking Sensitivity",  metaKeyAfCSpeedTrackingSensitivity  , props, metadata),
-      addInfo("- Zone Area Switching",         metaKeyAfCZoneAreaSwitching         , props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode",                    metaKeyFocusMode                    , props, metadata),
+    addInfo("AF Mode",                       metaKeyAfMode                       , props, metadata),
+    addInfo("Focus Warning",                 metaKeyFocusWarning                 , props, metadata),
+    addInfo("Pre AF",                        metaKeyPreAf                        , props, metadata),
+    addInfo("Faces Detected",                FacesDetected                       , props, metadata),
+    addInfo("Subject Element Types",         FaceElementTypes                    , props, metadata),
+    addInfo("AF-C Setting",                  metaKeyAfCSetting                   , props, metadata),
+    addInfo("- Tracking Sensitivity",        metaKeyAfCTrackingSensitivity       , props, metadata),
+    addInfo("- Speed Tracking Sensitivity",  metaKeyAfCSpeedTrackingSensitivity  , props, metadata),
+    addInfo("- Zone Area Switching",         metaKeyAfCZoneAreaSwitching         , props, metadata),
+    }
   return focusInfo
 end
 

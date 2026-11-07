@@ -294,8 +294,8 @@ function ExifUtils.cleanup()
   if LrFileUtils.exists(metadataFileName) then
     local _, errorMsg = LrFileUtils.delete( metadataFileName )
     if errorMsg ~= nil then
-      Log.logWarn(string.format(
-        'ExifUtils', "Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
+      Log.logWarn("ExifUtils",
+        string.format("Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
     end
   end
 end
@@ -325,7 +325,10 @@ function ExifUtils.decodeXmpMWGRegions(pointsTable, metadata)
     local regionAppliedToDimW = ExifUtils.findValue(metadata, "Region Applied To Dimensions W")
     local regionAppliedToDimH = ExifUtils.findValue(metadata, "Region Applied To Dimensions H")
 
-    if (regionType and regionAreaX and regionAreaY and regionAreaW and regionAreaH) then
+    if regionType and
+       regionAreaX and regionAreaY and regionAreaW and regionAreaH and
+       regionAppliedToDimW and regionAppliedToDimH then
+
       for i=1, #regionType, 1 do
         -- Scale the normalized region coordinates
         local x = regionAreaX[i] * regionAppliedToDimW

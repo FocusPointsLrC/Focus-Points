@@ -4,6 +4,9 @@
 -- AF System: 11 point
 -- Coordinates represent the CENTER of the AF point
 
+-- full size image dimensions
+fullSizeDimens = {5472, 3648}
+
 -- point dimensions
 focusPointDimens = {112, 112}
 

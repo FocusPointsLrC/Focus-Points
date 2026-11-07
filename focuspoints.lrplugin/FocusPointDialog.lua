@@ -45,7 +45,7 @@ local previewWidth, previewHeight
   Calculates the dimensions of the view element for the current photo. This involves:
   - Cropped dimensions of the image
   - LR application window size (the plugin window cannot go bigger)
-  - Scaling factor corresponding to user-defined plugin windows size S..3XL
+  - Scaling factor corresponding to user-defined plugin windows size XS..4XL
   - On Windows: Display scaling factor (Auto or user-defined)
 ------------------------------------------------------------------------------]]
 function FocusPointDialog.calculatePhotoViewDimens(photo)

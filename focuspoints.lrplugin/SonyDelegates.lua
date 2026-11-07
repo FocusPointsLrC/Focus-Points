@@ -426,9 +426,7 @@ end
 ------------------------------------------------------------------------------]]
 function SonyDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Scene Mode"         , metaKeySceneMode         , props, metadata),
@@ -448,17 +446,14 @@ end
 ------------------------------------------------------------------------------]]
 function SonyDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode"          , metaKeyAfFocusMode      , props, metadata),
-      addInfo("AF Area Mode Setting", metaKeyAfAreaModeSetting, props, metadata),
-      addInfo("AF Area Mode"        , metaKeyAfAreaMode       , props, metadata),
-      addInfo("AF Tracking"         , metaKeyAfTracking       , props, metadata),
---    addInfo("PDAF Point Used"     , metaKeyAfFocalPlaneAFPointsUsed, props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode"          , metaKeyAfFocusMode      , props, metadata),
+    addInfo("AF Area Mode Setting", metaKeyAfAreaModeSetting, props, metadata),
+    addInfo("AF Area Mode"        , metaKeyAfAreaMode       , props, metadata),
+    addInfo("AF Tracking"         , metaKeyAfTracking       , props, metadata),
+  }
   return focusInfo
 end
 

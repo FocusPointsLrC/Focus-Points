@@ -42,7 +42,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::APP12;
 
-$VERSION = '2.93';
+$VERSION = '2.94';
 
 sub PrintLensInfo($$$);
 
@@ -454,6 +454,7 @@ my %olympusCameraTypes = (
     S0121 => 'OM-1MarkII', #forum15652
     S0123 => 'OM-3', #forum17208
     S0130 => 'OM-5MarkII', #forum17465
+    S0131 => 'PEN', #github502
     SR45 => 'D220',
     SR55 => 'D320L',
     SR83 => 'D340L',
@@ -2080,10 +2081,17 @@ my %indexInfo = (
         PrintConv => '$val ? $val : "Auto"',
         PrintConvInv => '$val=~/^\d+$/ ? $val : 0',
     },
-    0x502 => {  #PH/4
+    0x502 => [{  #PH/4
         Name => 'WhiteBalanceBracket',
+        Notes => 'older models',
+        Condition => '$count eq 1',
         Writable => 'int16s',
-    },
+    },{  #github462
+        Name => 'WhiteBalanceFineTune',
+        Notes => '2 values in the range -4 to +4 for blue to amber and magenta to green',
+        Writable => 'int16s',
+        Count => 2,
+    }],
     0x503 => { #PH/4/6
         Name => 'CustomSaturation',
         Writable => 'int16s',

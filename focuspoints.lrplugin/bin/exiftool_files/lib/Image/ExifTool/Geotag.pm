@@ -36,7 +36,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:Public);
 use Image::ExifTool::GPS;
 
-$VERSION = '1.87';
+$VERSION = '1.89';
 
 sub JITTER() { return 2 }       # maximum time jitter
 
@@ -103,12 +103,31 @@ my %fixInfoKeys = (
 
 # category for select keys
 my %keyCategory = (
-    dir => 'orient',
+    track => 'track',
+    speed => 'track',
+    alt   => 'alt',
+    dir   => 'orient',
     pitch => 'orient',
-    roll => 'orient',
-    hdop => 'dop',
-    pdop => 'dop',
-    vdop => 'dop',
+    roll  => 'orient',
+    hdop  => 'dop',
+    pdop  => 'dop',
+    vdop  => 'dop',
+);
+
+# list of tags used when geotagging from image/video files,
+# and the corresponding fix information key
+my %tagKey = (
+    GPSDateTime  => 'time',
+    GPSLatitude  => 'lat',
+    GPSLongitude => 'lon',
+    GPSTrack     => 'track',
+    GPSSpeed     => 'speed',
+    GPSAltitude  => 'alt',
+    TimeStamp    => 'time',
+    # the following are needed to generate Composite GPSDateTime tag
+    # since any tag not listed here is ignored
+    GPSTimeStamp => '',
+    GPSDateStamp => '',
 );
 
 # tags which may exist separately in some formats (eg. CSV)
@@ -163,7 +182,7 @@ sub SplitCSV($$)
 }
 
 #------------------------------------------------------------------------------
-# Load GPS track log file
+# Load GPS track log file or read GPS from image/video file
 # Inputs: 0) ExifTool ref, 1) track log data or file name
 # Returns: geotag hash data reference or error string
 # - the geotag hash has the following members:
@@ -175,7 +194,7 @@ sub SplitCSV($$)
 # - the fix information hash may contain:
 #       lat    - signed latitude (required)
 #       lon    - signed longitude (required)
-#       alt    - signed altitude
+#       alt    - signed altitude (m)
 #       time   - fix time in UTC as XML string
 #       fixtype- type of fix ('none'|'2d'|'3d'|'dgps'|'pps')
 #       pdop   - dilution of precision
@@ -271,13 +290,22 @@ sub LoadTrackLog($$;$)
     my $fix = { };
     my $csvDelim = $et->Options('CSVDelim');
     $csvDelim = ',' unless defined $csvDelim;
-    my (@saveFix, @saveTime, $timeSpan);
+    my (@saveFix, @saveTime, $timeSpan, $doneFix);
     for (;;) {
+        # store our fix if complete
+        if ($doneFix) {
+            $isDate = 1;
+            $$points{$time} = $fix;
+            push @fixTimes, $time;
+            $fix = { };
+            ++$numPoints;
+            undef $doneFix;
+        }
         $raf->ReadLine($_) or last;
         # determine file format
         if (not $format) {
             s/^\xef\xbb\xbf//;          # remove leading BOM if it exists
-            if (/^\xff\xfe|\xfe\xff/) {
+            if (/^(\xff\xfe|\xfe\xff)/) {
                 return "ExifTool doesn't yet read UTF16-format track logs";
             }
             if (/^<(\?xml|gpx)[\s>]/) { # look for XML or GPX header
@@ -380,6 +408,8 @@ sub LoadTrackLog($$;$)
             } elsif (/"(durationMinutesOffsetFromStartTime|startTime)"\s*:/) {
                 $format = 'JSON';   # new Google Takeout JSON format (fixes seem to be in order)
                 $raf->Seek(0,0);    # rewind to start of file
+            } elsif (/\0/) {
+                last; # (could be an image file)
             } else {
                 # search only first 50 lines of file for a valid fix
                 last if ++$skipped > 50;
@@ -532,11 +562,7 @@ sub LoadTrackLog($$;$)
             $$fix{lat} = $1;
             $$fix{lon} = $2;
             $time = Time::Local::timegm($8,$7,$6,$4,$3-1,$5);
-DoneFix:    $isDate = 1;
-            $$points{$time} = $fix;
-            push @fixTimes, $time;
-            $fix = { };
-            ++$numPoints;
+            $doneFix = 1;
             next;
 #
 # Bramor gEO log file
@@ -554,7 +580,8 @@ DoneFix:    $isDate = 1;
             $time = Time::Local::timegm(0,$t[1],$t[0],$d[0],$d[1]-1,$d[2]) + $t[2];
             # set necessary flags for extra available information
             @$has{qw(alt track orient)} = (1,1,1);
-            goto DoneFix;   # save this fix
+            $doneFix = 1;   # save this fix
+            next;
         } elsif ($format eq 'CSV') {
             chomp;
             my @vals = SplitCSV($_, $csvDelim);
@@ -628,7 +655,8 @@ DoneFix:    $isDate = 1;
                 $$has{alt} = 1 if defined $$fix{alt};
                 $$has{track} = 1 if defined $$fix{track};
                 $$has{orient} = 1 if defined $$fix{pitch};
-                goto DoneFix;
+                $doneFix = 1;
+                next;
             }
             next;
         } elsif ($format eq 'JSON') {
@@ -636,7 +664,7 @@ DoneFix:    $isDate = 1;
             if (/"(latitudeE7|longitudeE7|latE7|lngE7|timestamp|startTime|point|durationMinutesOffsetFromStartTime|time)"\s*:\s*"?(.*?)"?,?\s*[\x0d\x0a]/) {
                 if ($1 eq 'timestamp' or $1 eq 'time') {
                     $time = GetTime($2);
-                    goto DoneFix if $time and $$fix{lat} and $$fix{lon};
+                    $time and $$fix{lat} and $$fix{lon} and $doneFix = 1, next;
                 } elsif ($1 eq 'startTime') { # (new format)
                     $startTime = GetTime($2);
                 } elsif ($1 eq 'latitudeE7' or $1 eq 'latE7') {
@@ -650,7 +678,7 @@ DoneFix:    $isDate = 1;
                 } elsif ($1 eq 'durationMinutesOffsetFromStartTime' and defined $startTime) { # (new format)
                     $time = $startTime + $2 * 60;
                     # note: this assumes that "point" comes first, which it does in my sample
-                    goto DoneFix if $time and $$fix{lat} and $$fix{lon};
+                    $time and $$fix{lat} and $$fix{lon} and $doneFix = 1, next;
                 }
             }
             next;
@@ -859,6 +887,71 @@ DoneFix:    $isDate = 1;
         $$points{$time} = $fix;
         push @fixTimes, $time;  # save time of all fixes in order
         ++$numPoints;
+    }
+#
+# If the file wasn't a recognized track log, it could be one of the file types
+# supported for reading metadata, so try to extract GPS tags from it
+#
+    unless ($format) {
+        $raf->Seek(0,0);
+        # load track from metadata in file
+        my $et2 = Image::ExifTool->new;
+        $et2->Options(
+            Sort => 'File',
+            IgnoreTags => 'All',
+            RequestTags => join(',',keys %tagKey),
+            PrintConv => 0,
+            KeepUTCTime => 1,
+            ExtractEmbedded => 3,
+            QuickTimeUTC => $et->Options('QuickTimeUTC')
+        );
+        unless ($et2->ExtractInfo($raf)) {
+            $raf->Close();
+            return "Unrecognized file format '${val}'";
+        }
+        my @tags = $et2->GetTagList();
+        my ($tag, $fix, $time, $name);
+        my ($lastGrp, $lastTag) = ('', '');
+        if (@tags) {
+            push @tags, $tags[-1]; # duplicate last tag to act as an end marker
+            $isDate = 1;
+            $sortFixes = 1; # (fixes may not be in order)
+        }
+        foreach $tag (@tags) {
+            my $grp = $et2->GetGroup($tag, 3);
+            if ($grp ne $lastGrp or $tag eq $lastTag) {
+                # add fix to our lookup
+                if ($time and $$fix{lat} and $$fix{lon}) {
+                    if ($$points{$time}) {
+                        # could possibly happen if time jumps around
+                        $$points{$time}{$_} = $$fix{$_} foreach keys %$fix;
+                    } else {
+                        $$points{$time} = $fix;
+                        # convert speed to knots
+                        $$fix{speed} and $$fix{speed} /= $speedConv{K};
+                        push @fixTimes, $time;  # save time of all fixes in order
+                        ++$numPoints;
+                    }
+                }
+                $lastGrp = $grp;
+                undef $time;
+                $fix = { };
+            }
+            $lastTag = $tag;
+            ($name = $tag) =~ s/ .*//;
+            my $key = $tagKey{$name};
+            unless ($key) {
+                defined $key or $et->Warn("Internal error with tag name $key $name ($tag)");
+                next;
+            }
+            my $val = $et2->GetValue($tag);
+            if ($key eq 'time') {
+                $time = Image::ExifTool::GetUnixTime($val) unless $time;
+            } elsif (not defined $$fix{$key}) {
+                $$fix{$key} = $val;
+                $$has{$keyCategory{$key}} = 1 if $keyCategory{$key};
+            }
+        }
     }
     $raf->Close();
 
@@ -1645,9 +1738,11 @@ This module is used by Image::ExifTool
 This module loads GPS track logs, interpolates to determine position based
 on time, and sets new GPS values for geotagging images.  Currently supported
 formats are GPX, NMEA RMC/GGA/GLL/GSA/ZDA, KML, IGC, Garmin XML and TCX,
-Magellan PMGNTRK, Honeywell PTNTHPR, Bramor gEO, Winplus Beacon text,
-GPS/IMU CSV, DJI/Columbus/ExifTool CSV format and 3 different Google JSON
-formats.
+Magellan PMGNTRK, Honeywell PTNTHPR, Bramor gEO, Winplus Beacon text, Garmin
+FIT, GPS/IMU CSV, DJI/Columbus/ExifTool CSV format and 3 different Google
+JSON formats.  As well, ExifTool can geotag from any supported file or set
+of files containing GPS metadata provided that GPSDateTime, GPSLatitude and
+GPSLongitude are available.
 
 Methods in this module should not be called directly.  Instead, the Geotag
 feature is accessed by writing the values of the ExifTool Geotag, Geosync

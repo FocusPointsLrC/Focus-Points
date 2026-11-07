@@ -43,18 +43,6 @@
 ------------------------------------------------------------------------------]]
 local PentaxDelegates = {}
 
--- Imported LR namespaces
-local LrView               = import  'LrView'
-
--- Required Lua definitions
-local DefaultDelegates     = require 'DefaultDelegates'
-local DefaultPointRenderer = require 'DefaultPointRenderer'
-local ExifUtils            = require 'ExifUtils'
-local FocusInfo            = require 'FocusInfo'
-local Log                  = require 'Log'
-local PointsUtils          = require 'PointsUtils'
-local Utils                = require 'Utils'
-
 -- List of supported models is sorted by date / Pentax version
 -- to potentially support handling of changes in tag usage across models / Pentax versions
 local supportedModels = {
@@ -67,9 +55,22 @@ local supportedModels = {
     "k-3", "k-s1", "k-s2", "k-3 ii",                                            -- Pentax version 11
     "k-70", "k-1", "kp", "k-1 mark ii",                                         -- Pentax version 12
     "gr iii",                                                                   -- Pentax version 13
-    "k-3 mark iii", "gr iii hdf", "gr iiix",                                    -- Pentax version 14
+    "kf", "k-3 mark iii", "gr iii hdf", "gr iiix",                              -- Pentax version 14
     "k-3 mark iii monochrome", "gr iiix hdf", "gr iv", "gr iv monochrome",      -- Pentax version 15
 }
+
+-- Imported LR namespaces
+local LrPrefs              = import  'LrPrefs'
+local LrView               = import  'LrView'
+
+-- Required Lua definitions
+local DefaultDelegates     = require 'DefaultDelegates'
+local DefaultPointRenderer = require 'DefaultPointRenderer'
+local ExifUtils            = require 'ExifUtils'
+local FocusInfo            = require 'FocusInfo'
+local Log                  = require 'Log'
+local PointsUtils          = require 'PointsUtils'
+local Utils                = require 'Utils'
 
 -- Tag indicating that makernotes / AF section exists
 -- Note: There is a "Pentax Version" tag, but it does not exist for pre-2008 models.
@@ -104,6 +105,7 @@ local metaKeyActionAFCContinuous  = "Action In AFC Cont"
 -- Image and Shooting Information relevant tags
 local metaKeyExposureProgram      = "Exposure Program"
 local metaKeyPictureMode          = "Picture Mode"
+local metaKeyImageTone            = "Image Tone"
 local metaKeyDriveMode            = "Drive Mode"
 local metaKeyShotNumber           = "Shot Number"
 local metaKeyShakeReduction       = "Shake Reduction"
@@ -716,6 +718,7 @@ end
   Extract the relevant details from the compound 'DriveMode' tag.
 ------------------------------------------------------------------------------]]
 local function getDriveMode(driveModeValue)
+  local prefs = LrPrefs.prefsForPlugin(nil)
   local result
   local v0 = Utils.get_nth_Word(driveModeValue, 1, ";")
   local v1 = Utils.get_nth_Word(driveModeValue, 2, ";")
@@ -740,7 +743,7 @@ local function getDriveMode(driveModeValue)
   if v2 and v2 ~= "Shutter Button"  then result = result .. "; " .. v2 end
   if v3 and v3 ~= "Single Exposure" then result = result .. "; " .. v3 end
 
-  return Utils.wrapText(result, {";"}, FocusInfo.maxValueLen)
+  return Utils.wrapText(result, {";"}, prefs.truncateLimit)
 end
 
 --[[----------------------------------------------------------------------------
@@ -909,6 +912,18 @@ end
 
 --[[----------------------------------------------------------------------------
   public table
+  function getImageInfo(table photo, table props, table metadata)
+
+  Called by FocusInfo.createInfoView to append maker-specific entries to the
+  'Image Information' section, if applicable; otherwise, returns an empty column.
+------------------------------------------------------------------------------]]
+function PentaxDelegates.getImageInfo(_photo, _props, _metadata)
+  local imageInfo
+  return imageInfo
+end
+
+--[[----------------------------------------------------------------------------
+  public table
   function getShootingInfo(table photo, table props, table metadata)
 
   Called by FocusInfo.createInfoView to append maker-specific entries to the
@@ -916,12 +931,11 @@ end
 ------------------------------------------------------------------------------]]
 function PentaxDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Picture Mode"           , metaKeyPictureMode          , props, metadata),
+    addInfo("Image Tone"             , metaKeyImageTone            , props, metadata),
     addInfo("Shake Reduction"        , metaKeyShakeReduction       , props, metadata),
     addInfo("Drive Mode"             , metaKeyDriveMode            , props, metadata),
   }
@@ -939,18 +953,18 @@ function PentaxDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
 
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode",           metaKeyFocusMode          , props, metadata),
-      addInfo("Focusing Area",        metaKeyAfPointSelected    , props, metadata),
-      addInfo("AF Area Restriction",  metaKeyMaxNumAfPoints     , props, metadata),
-      addInfo("1st Frame Action",     metaKeyFirstFrameActionAFC, props, metadata),
-      addInfo("Action Continuous",    metaKeyActionAFCContinuous, props, metadata),
-      addInfo("AF Hold",              metaKeyAFHold             , props, metadata),
-      addInfo("AF Point Tracking",    metaKeyAFPointTracking    , props, metadata),
-      addInfo("Focus Sensitivity",    metaKeyFocusSensitivity   , props, metadata),
-      addInfo("Subject Recognition",  metaKeySubjectRecognition , props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode",           metaKeyFocusMode          , props, metadata),
+    addInfo("Focusing Area",        metaKeyAfPointSelected    , props, metadata),
+    addInfo("AF Area Restriction",  metaKeyMaxNumAfPoints     , props, metadata),
+    addInfo("1st Frame Action",     metaKeyFirstFrameActionAFC, props, metadata),
+    addInfo("Action Continuous",    metaKeyActionAFCContinuous, props, metadata),
+    addInfo("AF Hold",              metaKeyAFHold             , props, metadata),
+    addInfo("AF Point Tracking",    metaKeyAFPointTracking    , props, metadata),
+    addInfo("Focus Sensitivity",    metaKeyFocusSensitivity   , props, metadata),
+    addInfo("Subject Recognition",  metaKeySubjectRecognition , props, metadata),
+  }
   return focusInfo
 end
 

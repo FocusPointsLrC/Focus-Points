@@ -66,6 +66,11 @@ local metaKeyOneShotAfRelease        = "One Shot AF Release"
 local metaKeySubjectToDetect         = "Subject To Detect"
 local metaKeySubjectSwitching        = "Subject Switching"
 local metaKeyEyeDetection            = "Eye Detection"
+local metaKeyAfDetectedSubject       = "AF Detected Subject"
+local metaKeyAfTrackingTarget        = "AF Tracking Target"
+local metaKeyAfDetectedParts         = "AF Detected Parts"
+local metaKeyAfTrackingArea          = "AF Tracking Area"
+local metaKeyAfEyeUsed               = "AF Eye Used"
 local metaKeyAfConfigPreset          = "AF Config Tool"
 local metaKeyServoAfCharacteristics  = "Servo AF Characteristics"
 local metaKeyCaseAutoSetting         = "Case Auto Setting"
@@ -85,7 +90,9 @@ local metaKeyHyperfocalDistance      = "Hyperfocal Distance"
 -- Image and Shooting Information relevant tags
 local metaKeyAspectRatio             = "Aspect Ratio"
 local metaKeyContinuousDrive         = "Continuous Drive"
+local metaKeyBurstShotNumber         = "Burst Shot Number"
 local metaKeyImageStabilization      = "Image Stabilization"
+
 
 -- Relevant metadata values
 local metaValueOneShotAf             = "One-shot AF"
@@ -112,8 +119,9 @@ function CanonDelegates.getAfPoints(photo, metadata)
     imageHeight = ExifUtils.findFirstMatchingValue(metadata,{ metaKeyAfImageHeight   , metaKeyExifImageHeight })
   end
   if imageWidth == nil or imageHeight == nil then
-    Log.logError(string.format("Canon", "Required image size tags '%s' / '%s' not found",
-      metaKeyExifImageWidth, metaKeyExifImageHeight))
+    Log.logError("Canon",
+      string.format("Required image size tags '%s' / '%s' not found",
+        metaKeyExifImageWidth, metaKeyExifImageHeight))
     Log.logWarn("Canon", FocusInfo.msgImageFileNotOoc)
     FocusInfo.makerNotesFound = false
     return nil
@@ -191,6 +199,7 @@ function CanonDelegates.getAfPoints(photo, metadata)
     yDirection = 1
   end
 
+  -- Loop over all given focus points or positions
   for key, _ in pairs(afAreaXPositions) do
     local x = (imageWidth/2 + afAreaXPositions[key]) * xScale     -- On Canon, everything is referenced from the center,
     local y = (imageHeight/2 + (afAreaYPositions[key] * yDirection)) * yScale
@@ -237,6 +246,28 @@ function CanonDelegates.getAfPoints(photo, metadata)
       end
     end
   end
+
+  -- Let's see if an AFTrackingArea is given
+  local afTrackingArea = ExifUtils.findValue(metadata, metaKeyAfTrackingArea )
+  if afTrackingArea then
+    Log.logInfo("Canon",
+      string.format("AF Tracking Area found: '%s'", afTrackingArea))
+    --
+    local x, y, w, h = afTrackingArea:match("(%S+)%s+(%S+)%s+(%S+)%s+(%S+)")
+    x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
+
+    if x and y and w and h and x>0 and y>0 and w>0 and h>0 then
+      table.insert(result.points, {
+        pointType = DefaultDelegates.POINTTYPE_FACE,
+        x = x,
+        y = y,
+        width = w,
+        height = h
+      })
+    else
+      Log.logError("Canon", "Invalid AFTrackingArea content, should be 'x y width height'")
+    end
+  end
   return result
 end
 
@@ -257,6 +288,12 @@ local function addInfo(title, key, props, metadata)
   -- returns true if focus mode is One-shot AF
   local function isOneShotAF()
     return (props[metaKeyFocusMode]:match("One-shot"))
+  end
+
+
+  -- Only add the 'title' as left aligned text (header)
+  if not props then
+    return FocusInfo.addRow(title)
   end
 
   -- Creates and populates the property corresponding to metadata key
@@ -300,6 +337,19 @@ local function addInfo(title, key, props, metadata)
       -- only relevant for Servo AF modes
       props[key] = ExifUtils.metaValueNA
 
+    -- don't display the followong entries if they don't contain relevant information
+    elseif key == metaKeyActionPriority and value == "Off" then
+      props[key] = ExifUtils.metaValueNA
+
+    elseif key == metaKeyAfDetectedSubject and value == "None" then
+      props[key] = ExifUtils.metaValueNA
+
+    elseif key == metaKeyAfTrackingTarget and value == "None" then
+      props[key] = ExifUtils.metaValueNA
+
+    elseif key == metaKeyBurstShotNumber and tonumber(value) < 1 then
+      props[key] = ExifUtils.metaValueNA
+
     -- everything else is the default case!
     else
       props[key] = value
@@ -329,10 +379,15 @@ local function addInfo(title, key, props, metadata)
         fill = 1, spacing = 2, result,
         addInfo("- Case Auto Setting", metaKeyCaseAutoSetting, props, metadata) }
 
-    elseif (key == metaKeyActionPriority) and props[key] ~= "Off"then
+    elseif (key == metaKeyActionPriority) and props[key] ~= "Off" then
       return f:column{
         fill = 1, spacing = 2, result,
         addInfo("Sport Events", metaKeySportEvents, props, metadata) }
+
+    elseif (key == metaKeyContinuousDrive) and not props[key]:find("Single", 1, true) then
+      return f:column{
+        fill = 1, spacing = 2, result,
+        addInfo("Burst Shot Number"  , metaKeyBurstShotNumber , props, metadata) }
 
     else
       -- add row as composed
@@ -399,8 +454,7 @@ end
 ------------------------------------------------------------------------------]]
 function CanonDelegates.getImageInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local imageInfo
-  imageInfo = f:column {
+  local imageInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Crop Mode", metaKeyAspectRatio, props, metadata),
@@ -417,14 +471,12 @@ end
 ------------------------------------------------------------------------------]]
 function CanonDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-    shootingInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Image Stabilization", metaKeyImageStabilization, props, metadata),
-      addInfo("Continuous Drive", metaKeyContinuousDrive, props, metadata),
-    }
+  local shootingInfo = f:column {
+    fill = 1,
+    spacing = 2,
+    addInfo("Image Stabilization", metaKeyImageStabilization, props, metadata),
+    addInfo("Continuous Drive"   , metaKeyContinuousDrive   , props, metadata),
+  }
   return shootingInfo
 end
 
@@ -437,35 +489,37 @@ end
 ------------------------------------------------------------------------------]]
 function CanonDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode"               , metaKeyFocusMode             , props, metadata),
-      addInfo("AF Area Mode"             , metaKeyAfAreaMode            , props, metadata),
-      addInfo("One Shot AF Release"      , metaKeyOneShotAfRelease      , props, metadata),
-      addInfo("Servo First Image"        , metaKeyServoFirstImage       , props, metadata),
-      addInfo("Servo Second Image"       , metaKeyServoSecondImage      , props, metadata),
-      addInfo("Servo AF Preset"          , metaKeyAfConfigPreset        , props, metadata),
-      addInfo("Servo AF Characteristics" , metaKeyServoAfCharacteristics, props, metadata),
-      addInfo("- Tracking Sensitivity"   , metaKeyTrackingSensitivity   , props, metadata),
-      addInfo("- Accel/Decel Tracking"   , metaKeyAccelDecelTracking    , props, metadata),
-      addInfo("Subject To Detect"        , metaKeySubjectToDetect       , props, metadata),
-      addInfo("Subject Switching"        , metaKeySubjectSwitching      , props, metadata),
-      addInfo("Eye Detection"            , metaKeyEyeDetection          , props, metadata),
-      addInfo("AF Point Auto-Switching"  , metaKeyAfPointSwitching      , props, metadata),
-      addInfo("Action Priority"          , metaKeyActionPriority        , props, metadata),
-      addInfo("Whole Area Tracking"      , metaKeyWholeAreaTracking     , props, metadata),
-
-      FocusInfo.addSpace(),
-      FocusInfo.addSeparator(),
-      FocusInfo.addSpace(),
-      addInfo("Focus Distance (Upper)"   , metaKeyFocusDistanceUpper    , props, metadata),
-      addInfo("Focus Distance (Lower)"   , metaKeyFocusDistanceLower    , props, metadata),
-      addInfo("Depth of Field"           , metaKeyDepthOfField          , props, metadata),
-      addInfo("Hyperfocal Distance"      , metaKeyHyperfocalDistance    , props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode"               , metaKeyFocusMode             , props, metadata),
+    addInfo("AF Area Mode"             , metaKeyAfAreaMode            , props, metadata),
+    addInfo("One Shot AF Release"      , metaKeyOneShotAfRelease      , props, metadata),
+    addInfo("Servo First Image"        , metaKeyServoFirstImage       , props, metadata),
+    addInfo("Servo Second Image"       , metaKeyServoSecondImage      , props, metadata),
+    addInfo("Servo AF Preset"          , metaKeyAfConfigPreset        , props, metadata),
+    addInfo("Servo AF Characteristics" , metaKeyServoAfCharacteristics, props, metadata),
+    addInfo("- Tracking Sensitivity"   , metaKeyTrackingSensitivity   , props, metadata),
+    addInfo("- Accel/Decel Tracking"   , metaKeyAccelDecelTracking    , props, metadata),
+    addInfo("Subject To Detect"        , metaKeySubjectToDetect       , props, metadata),
+    addInfo("Subject Switching"        , metaKeySubjectSwitching      , props, metadata),
+    addInfo("Eye Detection"            , metaKeyEyeDetection          , props, metadata),
+    addInfo("AF Point Auto-Switching"  , metaKeyAfPointSwitching      , props, metadata),
+    addInfo("Action Priority"          , metaKeyActionPriority        , props, metadata),
+--  addInfo("Whole Area Tracking"      , metaKeyWholeAreaTracking     , props, metadata),
+    addInfo("AF Tracking"),
+    addInfo("- Detected Subject"       , metaKeyAfDetectedSubject     , props, metadata),
+    addInfo("- Detected Parts"         , metaKeyAfDetectedParts       , props, metadata),
+    addInfo("- Tracking Target"        , metaKeyAfTrackingTarget      , props, metadata),
+    addInfo("- Eye Used"               , metaKeyAfEyeUsed             , props, metadata),
+    FocusInfo.addSpace(),
+    FocusInfo.addSeparator(),
+    FocusInfo.addSpace(),
+    addInfo("Focus Distance (Upper)"   , metaKeyFocusDistanceUpper    , props, metadata),
+    addInfo("Focus Distance (Lower)"   , metaKeyFocusDistanceLower    , props, metadata),
+    addInfo("Depth of Field"           , metaKeyDepthOfField          , props, metadata),
+    addInfo("Hyperfocal Distance"      , metaKeyHyperfocalDistance    , props, metadata),
+    }
   return focusInfo
 end
 

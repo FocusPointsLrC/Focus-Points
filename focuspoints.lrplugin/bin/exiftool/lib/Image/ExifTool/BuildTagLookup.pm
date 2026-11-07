@@ -35,7 +35,7 @@ use Image::ExifTool::Sony;
 use Image::ExifTool::Validate;
 use Image::ExifTool::MacOS;
 
-$VERSION = '3.67';
+$VERSION = '3.69';
 @ISA = qw(Exporter);
 
 sub NumbersFirst($$);
@@ -273,11 +273,11 @@ tags remain.
 
 The table below lists all EXIF tags.  Also listed are TIFF, DNG, HDP and
 other tags which are not part of the EXIF specification, but may co-exist
-with EXIF tags in some images.  Tags which are part of the EXIF 3.0
+with EXIF tags in some images.  Tags which are part of the EXIF 3.1
 specification have an underlined B<Tag Name> in the HTML version of this
 documentation.  See
-L<https://www.cipa.jp/std/documents/download_e.html?CIPA_DC-008-2024-E>
-for the official EXIF 3.0 specification.
+L<https://www.cipa.jp/std/documents/download_e.html?CIPA_DC-008-2026-E>
+for the official EXIF 3.1 specification.
 },
     GPS => q{
 These GPS tags are part of the EXIF standard, and are stored in a separate
@@ -481,7 +481,7 @@ assume these values are properly stored as UTC, and will convert them to
 local time when extracting.
 
 When writing string-based date/time tags, the system time zone is added if
-the PrintConv option is enabled and no time zone is specified.  This is
+the L<PrintConv|../ExifTool.html#PrintConv> option is enabled and no time zone is specified.  This is
 because Apple software may display crazy values if the time zone is missing
 for some tags.
 
@@ -587,8 +587,8 @@ The following tags are decoded in unsupported maker notes.  Use the L<Unknown|..
 The tags listed in the PDF tables below are those which are used by ExifTool
 to extract meta information, but they are only a small fraction of the total
 number of available PDF tags.  See
-L<http://www.adobe.com/devnet/pdf/pdf_reference.html> for the official PDF
-specification.
+L<https://web.archive.org/web/20210125064408/https://www.adobe.com/devnet/pdf/pdf_reference.html>
+for the official PDF specification.
 
 ExifTool supports reading and writing PDF documents up to version 2.0,
 including support for RC4, AES-128 and AES-256 encryption.  A
@@ -993,7 +993,8 @@ TagID:  foreach $tagID (@keys) {
                             }
                         }
                     } elsif ($$tagInfo{Hook} or ($$tagInfo{RawConv} and
-                             $$tagInfo{RawConv} =~ /\$self(->)?\{\w+\}\s*=(?!~)/))
+                            # (special case for Canon::FindFirmVer() function when a $lkup is used)
+                             $$tagInfo{RawConv} =~ /\$self(->)?\{\w+\}\s*=(?!~)|FindFirmVer.*\$lkup/))
                     {
                         $datamember{$tagID} = $name;
                     }
@@ -2301,12 +2302,13 @@ sub WriteTagNames($$)
                 for ($r=0; $r<$rows; ++$r) {
                     print HTMLFILE '<tr>';
                     for ($c=0; $c<$cols; ++$c) {
-                        my ($key, $val, $index, $prt);
+                        my ($key, $val, $index, $prt, $bit);
                         my $n = $r + $c * $rows;
                         if ($n < @keys) {
                             $key = $keys[$n];
                             $val = $$printConv{$key};
                         } elsif ($n < $items) {
+                            $bit = 1;
                             $key = 'Bit ' . $bits[$n - @keys];
                             $val = $$bits{$bits[$n - @keys]};
                         }
@@ -2321,7 +2323,8 @@ sub WriteTagNames($$)
                             } elsif ($$printConv{PrintString} or
                                 $index !~ /^[+-]?(?=\d|\.\d)\d*(\.\d*)?$/)
                             {
-                                $index = "'" . EscapeHTML($index) . "'";
+                                $index = EscapeHTML($index);
+                                $index = "'${index}'" unless $bit;
                             }
                         } else {
                             $index = $prt = '&nbsp;';

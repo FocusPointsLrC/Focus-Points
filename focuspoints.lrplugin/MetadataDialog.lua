@@ -25,8 +25,11 @@ local MetadataDialog = {}
 
 -- Imported LR namespaces
 local LrFunctionContext = import  'LrFunctionContext'
+local LrColor           = import  'LrColor'
 local LrDialogs         = import  'LrDialogs'
+local LrHttp            = import  'LrHttp'
 local LrPrefs           = import  'LrPrefs'
+local LrTasks           = import  'LrTasks'
 local LrView            = import  'LrView'
 local LrBinding         = import  'LrBinding'
 
@@ -217,6 +220,15 @@ function MetadataDialog.showDialog(
     local filterHint = f:static_text {
       title = hintText,
       alignment = "right",
+      text_color = LrColor(0, 0.25, 1),
+      immediate = true,
+      mouse_down = function()
+        LrTasks.startAsyncTask(function()
+          LrHttp.openUrlInBrowser(
+            FocusPointPrefs.urlUserManual  .. "#23-metadata-viewer")
+        end)
+      end,
+
     }
 
     filters = f:row{

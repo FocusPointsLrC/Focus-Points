@@ -60,7 +60,11 @@ local WINDOW_SIZES = {
     { scale = 0.75, name = "XL/XXL" },
     { scale = 0.80, name = "XXL"    },
     { scale = 0.85, name = "3XL"    },
+    { scale = 0.90, name = "4XL"    },
 }
+
+FocusPointPrefs.pluginWindowSizeMin = 1
+FocusPointPrefs.pluginWindowSizeMax = #WINDOW_SIZES
 
 -- Scaling values for size of 'pixel focus' box, relative to focus point window size
 FocusPointPrefs.focusBoxSize = { 0, 0.04, 0.1 }
@@ -119,7 +123,7 @@ local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboa
 local urlHelpOnDisplayMode          = FocusPointPrefs.urlNewFeatures .. "#2-display-modes"
 local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
 local urlHelpOnSecondScreenMode     = FocusPointPrefs.urlNewFeatures .. "#1-second-screen-mode"
-local urlHelpOnPluginWindowScale     = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
+local urlHelpOnPluginWindowScale    = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
 local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
 local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
 local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
@@ -199,6 +203,8 @@ function FocusPointPrefs.InitializePrefs(prefs)
   if     prefs.previewShowProgress       == nil then prefs.previewShowProgress        = true      end
   if not prefs.previewProgressDelay             then prefs.previewProgressDelay       = 0.5       end
 
+  if not prefs.windowFrame               == nil then prefs.windowFrame                = "1234"    end
+
   -- Check if the most recently used display for the plugin is still valid
   -- E.g. if a secondary display has been removed from the setup
   local displays = LrSystemInfo.displayInfo()
@@ -263,8 +269,8 @@ local function getWinScalingFactor()
     result = 100 / scale
     Log.logDebug("System", string.format("DPI scaling level %s = %sdpi ~ %s%%", dpiValue, tonumber(dpiValue), scale))
   else
-    result = 100 / 125
-    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 125% instead")
+    result = 100 / 100
+    Log.logWarn("System", "Unable to retrieve Windows scaling level, using 100% instead")
   end
 
   -- Clean up: remove the temp file
@@ -314,7 +320,7 @@ end
   public float
   getPluginWindowSize()
 
-  Returns the sizing factor for supported plugin window sizes S..3XL
+  Returns the sizing factor for supported plugin window sizes XS..4XL
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getPluginWindowSize()
   local prefs = LrPrefs.prefsForPlugin( nil )
@@ -703,7 +709,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           value = bind("screenScaling"),
           width_in_chars = dropDownWidth,
           items = {
---          { title = "Auto", value = 0    },   -- for later use when floating dialog can automatically resize
+            { title = "Auto", value = 0    },   -- for later use when floating dialog can automatically resize
             { title = "100%", value = 1.0  },
             { title = "125%", value = 0.8  },
             { title = "150%", value = 0.67 },
