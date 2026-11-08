@@ -1154,23 +1154,28 @@ Supported features:
 
 Supported camera models:
 
-* **Mirrorless with phase-detection AF**: Q2, Q3, SL2, SL3, CL
+* **Confirmed**: Q3 (firmware 4.x, fully validated on 95+ DNG files)
+* **Preliminary** (same MakerNotes structure assumed, unverified): Q2, SL2, SL3, CL
 * **Not supported**: M-series (M10, M11, etc.) — manual focus only
 
-The Leica Q3 (and similar models) stores the active AF point as a pair of normalized coordinates in the proprietary MakerNotes section. These coordinates are not decoded by ExifTool by name, but are accessible using ExifTool's unknown-tag mode (`-u`). The plugin reads these directly.
+The Leica Q3 stores the active AF point as a pair of normalized coordinates in a proprietary MakerNotes tag (`0x044d`), not decoded by ExifTool by name. The plugin reads it using ExifTool's unknown-tag mode (`-u`). This tag was introduced with firmware 4.x — it is absent in firmware 3.x and below.
 
-The AF point location is valid for all autofocus modes: Spot, Large Area, Multi Zone and Tracking. When manual focus is used, the camera writes a sentinel value instead of coordinates and the plugin displays no focus point.
+The AF point location is valid for all autofocus modes: Spot, Field, Zone, Multi-Field and Tracking. When manual focus is used, the camera writes a sentinel value instead of coordinates and the plugin displays no focus point.
 
 The **Focus Information** panel displays:
 
-| Field          | Values                                         |
-|----------------|------------------------------------------------|
-| Focus Distance | Distance to the focused subject                |
-| Focus Mode     | AF-S / AF-C / iAF                              |
-| AF Area        | Spot / Large / Multi Zone / Tracking           |
-| Detection      | People / Face+Eye / Animal / Animal+Eye        |
+| Field          | Values                                               |
+|----------------|------------------------------------------------------|
+| Focus Distance | Distance to the focused subject                      |
+| Focus Mode     | AF-S / AF-C / iAF                                    |
+| AF Area        | Spot / Field / Zone / Multi-Field / Tracking         |
+| Detection      | People / Face+Eye / Animal / Animal+Eye              |
+
+AF area mode names match the English Leica Q3 instruction manual. Note that Field, Zone and Multi-Field modes record only the final focus position — the size of the selected area is not stored in the metadata.
 
 When subject detection is active, the focus point is displayed in **yellow** because the camera focused on the detected subject. The yellow marker shows where the camera locked onto the person, face, eye or animal.
+
+**Firmware requirement:** Tag `0x044d` is confirmed present in firmware 4.x and confirmed absent in firmware 3.x and below. Photos taken with older firmware will show "No focus points recorded" — this is a graceful fallback, not a crash.
 
 
 <br>
