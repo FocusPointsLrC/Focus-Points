@@ -60,10 +60,10 @@ return {
 
   VERSION = {
       major      = 3,
-      minor      = 4,
-      revision   = 5,
-      build      = 1000,
-      display    = "3.4.5",
+      minor      = 5,
+      revision   = 0,
+      build      = 9000,
+      display    = "3.5 (pre)",
       -- custom additions:
       channel    = "release",
       branch     = "master",

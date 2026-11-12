@@ -53,8 +53,6 @@ FocusInfo.msgImageFileNotOoc        = "Image file not created in-camera"
 
 FocusInfo.cropMode                  = false
 
-FocusInfo.maxValueLen               = LrPrefs.prefsForPlugin(nil).truncateLimit
-
 -- Local variables -------------------------------------------------------------
 
 
@@ -137,8 +135,8 @@ local metaKeyIsoSpeedRating         = "isoSpeedRating"
 
 -- Keywords for retrieving language-dependent items from English EXIF metadata
 local metaKeyExposureBias           = "Exposure Compensation"
-local metaKeyExposureProgram        = "Exposure Mode Custom"
-local metaKeyMeteringMode           = "Metering Mode Custom"
+local metaKeyExposureProgram        = "Exposure Program"
+local metaKeyMeteringMode           = "Metering Mode FP"
 local metaKeyExposureTime           = "Exposure Time"
 local metaKeyFNumber                = "F Number"
 
@@ -221,32 +219,27 @@ end
 ------------------------------------------------------------------------------]]
 function FocusInfo.addRow(key, value)
 
-  -- Truncate value string if it is too long and provide the full text in a tooltip
-  local prefs = LrPrefs.prefsForPlugin( nil )
-  local tooltip
-  if prefs.truncateLongText and Utf8.len(value) > FocusInfo.maxValueLen then
-    if string.find(value, "\n") then
-      -- do not truncate text that has already been wrapped across multiple lines.
-    else
-      tooltip = value
-      value   = string.sub(value, 1, FocusInfo.maxValueLen-1) .. utfEllipsis
-    end
-  end
-
-  -- Construct and return the row container
   local f = LrView.osFactory()
-  return f:row {
-    f:column {
-      f:static_text{
-        title = key .. ":",
-        font="<system>",
-        alignment="left",
-        mouse_down = function() return true end,
-        mouse_up   = function() return true end,
-      }
-    },
-    f:spacer{ fill_horizontal = 1 },
-    f:column{
+  local keyText, valueText
+
+  -- Construct the right column part, if 'value' is given
+  if value ~= nil then
+    key = key .. ":"
+
+    -- Truncate value string if it is too long and provide the full text in a tooltip
+    local prefs = LrPrefs.prefsForPlugin( nil )
+    local tooltip
+    if prefs.truncateLongText and Utf8.len(value) > prefs.truncateLimit then
+      if string.find(value, "\n") then
+        -- do not truncate text that has already been wrapped across multiple lines.
+      else
+        tooltip = value
+        value   = Utf8.sub(value, 1, prefs.truncateLimit-1) .. utfEllipsis
+      end
+    end
+
+    -- Right column
+    valueText = f:column{
       f:static_text{
         title = value,
         tooltip = tooltip,
@@ -255,8 +248,32 @@ function FocusInfo.addRow(key, value)
         mouse_down = function() return true end,
         mouse_up   = function() return true end,
       },
-    },
+    }
+  end
+
+  -- Left column
+  keyText = f:column{
+    f:static_text{
+    title = key,
+      font="<system>",
+      alignment="left",
+      mouse_down = function() return true end,
+      mouse_up   = function() return true end,
+    }
   }
+
+  -- Return the row container
+  if value ~= nil then
+    return f:row {
+      keyText,
+      f:spacer{ fill_horizontal = 1 },
+      valueText
+    }
+  else
+    return f:row {
+      keyText
+    }
+  end
 end
 
 --[[----------------------------------------------------------------------------

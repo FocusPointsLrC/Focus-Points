@@ -27,7 +27,6 @@
 local ExifUtils = {}
 
 -- Imported LR namespaces
-local LrErrors          = import  'LrErrors'
 local LrFileUtils       = import  'LrFileUtils'
 local LrPathUtils       = import  'LrPathUtils'
 local LrStringUtils     = import  'LrStringUtils'
@@ -170,9 +169,9 @@ end
 
 --[[----------------------------------------------------------------------------
   public string
-  getPhotoFileName(table photo)
+  getMetadataFileName()
 
-  Retrieve the name of the current photo, used by centralized error handling
+  Returns the name of the temporary file used to store the output of ExifTool.
 ------------------------------------------------------------------------------]]
 function ExifUtils.getMetadataFileName()
   return metadataFileName
@@ -180,9 +179,9 @@ end
 
 --[[----------------------------------------------------------------------------
   public string
-  getPhotoFileName(table photo)
+  filterInput(string str)
 
-  Retrieve the name of the current photo, used by centralized error handling
+  TODO
 ------------------------------------------------------------------------------]]
 function ExifUtils.filterInput(str)
   local result = string.gsub(str, "[^a-zA-Z0-9 ,\\./;'\\<>\\?:\\\"\\{\\}\\|!@#\\$%\\^\\&\\*\\(\\)_\\+\\=-\\[\\]~`]", "?");
@@ -190,9 +189,8 @@ function ExifUtils.filterInput(str)
 end
 
 --[[----------------------------------------------------------------------------
-@TODO
   public string cmd, string outputFileName
-  getPhotoFileName(table photo)
+  getExifCmd(table targetPhoto, boolean includeGroupNames)
 
   Depending on the OS (WIN or MAC), the ExifTool command line is built to read
   metadata from the photo's image file and write the output to a text file.
@@ -234,7 +232,7 @@ end
 
 --[[----------------------------------------------------------------------------
   public string
-  readMetadata(table photo)
+  readMetadata(table targetPhoto, boolean includeGroupNames)
 
   Use the ExifTool command to read the metadata from the image file and write the
   output to a text file.
@@ -248,8 +246,7 @@ function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
     -- something went wrong
     local errorText = "FATAL error: unable to read photo metadata (ExifTool rc=" .. rc .. ")"
     Log.logError("ExifUtils", errorText)
-    LrErrors.throwUserError(
-      string.format("%s\n\n%s", Utils.getPhotoFileName(targetPhoto), errorText))
+    return nil
   else
     local fileInfo = LrFileUtils.readFile(outputFileName)
     return fileInfo
@@ -258,7 +255,7 @@ end
 
 --[[----------------------------------------------------------------------------
   public table
-  readMetadataAsTable(table photo)
+  readMetadataAsTable(table targetPhoto)
 
   Transforms the output of readMetadata() and returns a key/value table
 ------------------------------------------------------------------------------]]
@@ -297,8 +294,8 @@ function ExifUtils.cleanup()
   if LrFileUtils.exists(metadataFileName) then
     local _, errorMsg = LrFileUtils.delete( metadataFileName )
     if errorMsg ~= nil then
-      Log.logWarn(string.format(
-        'ExifUtils', "Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
+      Log.logWarn("ExifUtils",
+        string.format("Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
     end
   end
 end
@@ -328,7 +325,10 @@ function ExifUtils.decodeXmpMWGRegions(pointsTable, metadata)
     local regionAppliedToDimW = ExifUtils.findValue(metadata, "Region Applied To Dimensions W")
     local regionAppliedToDimH = ExifUtils.findValue(metadata, "Region Applied To Dimensions H")
 
-    if (regionType and regionAreaX and regionAreaY and regionAreaW and regionAreaH) then
+    if regionType and
+       regionAreaX and regionAreaY and regionAreaW and regionAreaH and
+       regionAppliedToDimW and regionAppliedToDimH then
+
       for i=1, #regionType, 1 do
         -- Scale the normalized region coordinates
         local x = regionAreaX[i] * regionAppliedToDimW

@@ -269,9 +269,7 @@ end
 ------------------------------------------------------------------------------]]
 function AppleDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Image Capture Type", metaKeyImageCaptureType, props, metadata),
@@ -290,16 +288,14 @@ end
 ------------------------------------------------------------------------------]]
 function AppleDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
---    addInfo("Focus Distance Range", metaKeyFocusDistanceRange, props, metadata),
---    addInfo("AF Measured Depth"  , metaKeyAfMeasuredDepth    , props, metadata),
-      addInfo("AF Stable"     , metaKeyAfStable      , props, metadata),
---    addInfo("AF Confidence"      , metaKeyAfConfidence       , props, metadata),
---    addInfo("AF Performance"     , metaKeyAfPerformance      , props, metadata),
+    fill = 1,
+    spacing = 2,
+--  addInfo("Focus Distance Range", metaKeyFocusDistanceRange, props, metadata),
+--  addInfo("AF Measured Depth"  , metaKeyAfMeasuredDepth    , props, metadata),
+    addInfo("AF Stable"     , metaKeyAfStable      , props, metadata),
+--  addInfo("AF Confidence"      , metaKeyAfConfidence       , props, metadata),
+--  addInfo("AF Performance"     , metaKeyAfPerformance      , props, metadata),
   }
   return focusInfo
 end

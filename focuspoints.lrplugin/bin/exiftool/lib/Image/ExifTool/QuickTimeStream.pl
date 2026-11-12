@@ -1645,8 +1645,7 @@ sub ProcessFreeGPS($$$)
     return 0 if $dirLen < 82;
 
     my $debug = $et->Options('Debug');
-    my $oldOrder = GetByteOrder();
-    SetByteOrder('II');
+    my $oldOrder = SetByteOrder('II');
     $$et{FoundEmbedded} = 1;
 
     if (substr($$dataPt,18,8) eq "\xaa\xaa\xf2\xe1\xf0\xee\x54\x54") {
@@ -2496,6 +2495,10 @@ sub ParseTag($$$)
         # read the sample sizes
         my ($sz, $num) = unpack('x4N2', $$dataPt);
         my $size = $$et{ee}{size} = [ ];
+        if ($num > 100000000) {
+            $et->Warn('Maximum sample count exceeded. Not extracting timed metadata');
+            return;
+        }
         if ($tag eq 'stsz') {
             if ($sz == 0) {
                 @$size = ReadValue($dataPt, 12, 'int32u', $num, $dataLen-12);

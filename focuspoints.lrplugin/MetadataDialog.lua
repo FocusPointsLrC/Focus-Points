@@ -25,7 +25,11 @@ local MetadataDialog = {}
 
 -- Imported LR namespaces
 local LrFunctionContext = import  'LrFunctionContext'
+local LrColor           = import  'LrColor'
 local LrDialogs         = import  'LrDialogs'
+local LrHttp            = import  'LrHttp'
+local LrPrefs           = import  'LrPrefs'
+local LrTasks           = import  'LrTasks'
 local LrView            = import  'LrView'
 local LrBinding         = import  'LrBinding'
 
@@ -59,7 +63,7 @@ function MetadataDialog.showDialog(
     local properties = LrBinding.makePropertyTable( context )
     local delimiter = "\r"  -- carriage return; used to separate individual entries in column1 and column2 strings
 
-    local windowSize    = FocusPointPrefs.getPluginWindowSize()  -- sizing factor for S..3XL
+    local windowSize    = FocusPointPrefs.getPluginWindowScale()
     local contentHeight = GlobalDefs.appHeight * windowSize
     local contentWidth  = contentHeight * 0.7                    -- minimum width of dialog window
 
@@ -210,6 +214,15 @@ function MetadataDialog.showDialog(
     local filterHint = f:static_text {
       title = hintText,
       alignment = "right",
+      text_color = LrColor(0, 0.25, 1),
+      immediate = true,
+      mouse_down = function()
+        LrTasks.startAsyncTask(function()
+          LrHttp.openUrlInBrowser(
+            FocusPointPrefs.urlUserManual  .. "#23-metadata-viewer")
+        end)
+      end,
+
     }
 
     filters = f:row{

@@ -60,6 +60,7 @@ local supportedModels = {
 }
 
 -- Imported LR namespaces
+local LrPrefs              = import  'LrPrefs'
 local LrView               = import  'LrView'
 
 -- Required Lua definitions
@@ -104,6 +105,7 @@ local metaKeyActionAFCContinuous  = "Action In AFC Cont"
 -- Image and Shooting Information relevant tags
 local metaKeyExposureProgram      = "Exposure Program"
 local metaKeyPictureMode          = "Picture Mode"
+local metaKeyImageTone            = "Image Tone"
 local metaKeyDriveMode            = "Drive Mode"
 local metaKeyShotNumber           = "Shot Number"
 local metaKeyShakeReduction       = "Shake Reduction"
@@ -716,6 +718,7 @@ end
   Extract the relevant details from the compound 'DriveMode' tag.
 ------------------------------------------------------------------------------]]
 local function getDriveMode(driveModeValue)
+  local prefs = LrPrefs.prefsForPlugin(nil)
   local result
   local v0 = Utils.get_nth_Word(driveModeValue, 1, ";")
   local v1 = Utils.get_nth_Word(driveModeValue, 2, ";")
@@ -740,7 +743,7 @@ local function getDriveMode(driveModeValue)
   if v2 and v2 ~= "Shutter Button"  then result = result .. "; " .. v2 end
   if v3 and v3 ~= "Single Exposure" then result = result .. "; " .. v3 end
 
-  return Utils.wrapText(result, {";"}, FocusInfo.maxValueLen)
+  return Utils.wrapText(result, {";"}, prefs.truncateLimit)
 end
 
 --[[----------------------------------------------------------------------------
@@ -928,12 +931,11 @@ end
 ------------------------------------------------------------------------------]]
 function PentaxDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Picture Mode"           , metaKeyPictureMode          , props, metadata),
+    addInfo("Image Tone"             , metaKeyImageTone            , props, metadata),
     addInfo("Shake Reduction"        , metaKeyShakeReduction       , props, metadata),
     addInfo("Drive Mode"             , metaKeyDriveMode            , props, metadata),
   }
@@ -951,18 +953,18 @@ function PentaxDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
 
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode",           metaKeyFocusMode          , props, metadata),
-      addInfo("Focusing Area",        metaKeyAfPointSelected    , props, metadata),
-      addInfo("AF Area Restriction",  metaKeyMaxNumAfPoints     , props, metadata),
-      addInfo("1st Frame Action",     metaKeyFirstFrameActionAFC, props, metadata),
-      addInfo("Action Continuous",    metaKeyActionAFCContinuous, props, metadata),
-      addInfo("AF Hold",              metaKeyAFHold             , props, metadata),
-      addInfo("AF Point Tracking",    metaKeyAFPointTracking    , props, metadata),
-      addInfo("Focus Sensitivity",    metaKeyFocusSensitivity   , props, metadata),
-      addInfo("Subject Recognition",  metaKeySubjectRecognition , props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode",           metaKeyFocusMode          , props, metadata),
+    addInfo("Focusing Area",        metaKeyAfPointSelected    , props, metadata),
+    addInfo("AF Area Restriction",  metaKeyMaxNumAfPoints     , props, metadata),
+    addInfo("1st Frame Action",     metaKeyFirstFrameActionAFC, props, metadata),
+    addInfo("Action Continuous",    metaKeyActionAFCContinuous, props, metadata),
+    addInfo("AF Hold",              metaKeyAFHold             , props, metadata),
+    addInfo("AF Point Tracking",    metaKeyAFPointTracking    , props, metadata),
+    addInfo("Focus Sensitivity",    metaKeyFocusSensitivity   , props, metadata),
+    addInfo("Subject Recognition",  metaKeySubjectRecognition , props, metadata),
+  }
   return focusInfo
 end
 

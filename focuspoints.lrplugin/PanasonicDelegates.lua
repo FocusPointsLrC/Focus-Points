@@ -299,9 +299,7 @@ end
 ------------------------------------------------------------------------------]]
 function PanasonicDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Shooting Mode"      , metaKeyShootingMode      , props, metadata),
@@ -320,16 +318,14 @@ end
 ------------------------------------------------------------------------------]]
 function PanasonicDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode",        metaKeyFocusMode         , props, metadata),
-      addInfo("AF Area Mode",      metaKeyAfAreaMode        , props, metadata),
-      addInfo("Subject Detection", metaKeyAfSubjectDetection, props, metadata),
-      addInfo("Faces Detected",    metaKeyAfFacesDetected   , props, metadata)
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode",        metaKeyFocusMode         , props, metadata),
+    addInfo("AF Area Mode",      metaKeyAfAreaMode        , props, metadata),
+    addInfo("Subject Detection", metaKeyAfSubjectDetection, props, metadata),
+    addInfo("Faces Detected",    metaKeyAfFacesDetected   , props, metadata)
+  }
   return focusInfo
 end
 

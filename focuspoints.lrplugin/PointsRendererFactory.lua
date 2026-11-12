@@ -30,6 +30,8 @@ local CanonDelegates       = require 'CanonDelegates'
 local DefaultDelegates     = require 'DefaultDelegates'
 local DefaultPointRenderer = require 'DefaultPointRenderer'
 local FujifilmDelegates    = require 'FujifilmDelegates'
+local HasselbladDelegates  = require 'HasselbladDelegates'
+local LeicaDelegates       = require 'LeicaDelegates'
 local Log                  = require 'Log'
 local NikonDelegates       = require 'NikonDelegates'
 local NikonDuplicates      = require 'NikonDuplicates'
@@ -157,21 +159,41 @@ function PointsRendererFactory.createRenderer(photo)
     DefaultPointRenderer.funcGetShootingInfo = OlympusDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = OlympusDelegates.getFocusInfo
 
-  elseif (string.find(cameraMake, "panasonic", 1, true)) then
+  elseif (cameraMake == "hasselblad") then
+    DefaultPointRenderer.funcModelSupported  = HasselbladDelegates.modelSupported
+    DefaultPointRenderer.funcMakerNotesFound = HasselbladDelegates.makerNotesFound
+    DefaultPointRenderer.funcManualFocusUsed = HasselbladDelegates.manualFocusUsed
+    DefaultPointRenderer.funcGetAfPoints     = HasselbladDelegates.getAfPoints
+    DefaultPointRenderer.funcGetImageInfo    = HasselbladDelegates.getImageInfo
+    DefaultPointRenderer.funcGetShootingInfo = HasselbladDelegates.getShootingInfo
+    DefaultPointRenderer.funcGetFocusInfo    = HasselbladDelegates.getFocusInfo
+
+  elseif (string.find(cameraMake,  "panasonic", 1, true))
+      or (string.find(cameraMake,  "leica", 1, true)) and
+          LeicaDelegates.hasPanasonicMetadata(cameraModel) then
     DefaultPointRenderer.funcModelSupported  = PanasonicDelegates.modelSupported
     DefaultPointRenderer.funcMakerNotesFound = PanasonicDelegates.makerNotesFound
     DefaultPointRenderer.funcManualFocusUsed = PanasonicDelegates.manualFocusUsed
     DefaultPointRenderer.funcGetAfPoints     = PanasonicDelegates.getAfPoints
-    DefaultPointRenderer.funcGetImageInfo    = nil
+    DefaultPointRenderer.funcGetImageInfo    = PanasonicDelegates.getImageInfo
     DefaultPointRenderer.funcGetShootingInfo = PanasonicDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = PanasonicDelegates.getFocusInfo
+
+  elseif (string.find(cameraMake, "leica", 1, true)) then
+    DefaultPointRenderer.funcModelSupported  = LeicaDelegates.modelSupported
+    DefaultPointRenderer.funcMakerNotesFound = LeicaDelegates.makerNotesFound
+    DefaultPointRenderer.funcManualFocusUsed = LeicaDelegates.manualFocusUsed
+    DefaultPointRenderer.funcGetAfPoints     = LeicaDelegates.getAfPoints
+    DefaultPointRenderer.funcGetImageInfo    = LeicaDelegates.getImageInfo
+    DefaultPointRenderer.funcGetShootingInfo = LeicaDelegates.getShootingInfo
+    DefaultPointRenderer.funcGetFocusInfo    = LeicaDelegates.getFocusInfo
 
   elseif (cameraMake == "pentax") then
     DefaultPointRenderer.funcModelSupported  = PentaxDelegates.modelSupported
     DefaultPointRenderer.funcMakerNotesFound = PentaxDelegates.makerNotesFound
     DefaultPointRenderer.funcManualFocusUsed = PentaxDelegates.manualFocusUsed
     DefaultPointRenderer.funcGetAfPoints     = PentaxDelegates.getAfPoints
-    DefaultPointRenderer.funcGetImageInfo    = nil
+    DefaultPointRenderer.funcGetImageInfo    = PentaxDelegates.getImageInfo
     DefaultPointRenderer.funcGetShootingInfo = PentaxDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = PentaxDelegates.getFocusInfo
 

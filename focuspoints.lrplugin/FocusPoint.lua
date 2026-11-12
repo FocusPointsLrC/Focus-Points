@@ -158,7 +158,7 @@ local function showFocusPoint()
       -- Application and plugin windows sizes
       Log.logInfo("System", string.format(
        "Application window size: %s x %s. Plugin window size: %sx",
-          GlobalDefs.appWidth, GlobalDefs.appHeight, prefs.pluginWindowScaling))
+          GlobalDefs.appWidth, GlobalDefs.appHeight, prefs.pluginWindowSize))
     end
 
     -- Get the active photo plus additionally selected photos
@@ -450,6 +450,17 @@ local function showFocusPoint()
             if props.rollAngleActionEnabled then
               straightenAndRefresh(view)
               return true
+            end
+          -- Resize plugin window
+          elseif string.find(FocusPointPrefs.kbdShortcutsSizeUp, char, 1, true) then
+            if prefs.pluginWindowSize < FocusPointPrefs.pluginWindowSizeMax then
+              FocusPointPrefs.upsizePluginWindow()
+              closeDialog(view,"refresh")
+            end
+          elseif string.find(FocusPointPrefs.kbdShortcutsSizeDown, char, 1, true) then
+            if prefs.pluginWindowSize > FocusPointPrefs.pluginWindowSizeMin then
+              FocusPointPrefs.downsizePluginWindow()
+              closeDialog(view,"refresh")
             end
           -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
@@ -1003,9 +1014,9 @@ local function showFocusPoint()
       local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
       local fileName = Utils.getPhotoFileName(photo)
       local tooltip
-      if prefs.truncateLongText and Utf8.len(fileName) > FocusInfo.maxValueLen then
+      if prefs.truncateLongText and Utf8.len(fileName) > prefs.truncateLimit then
           tooltip  = fileName
-          fileName = string.sub(fileName, 1, FocusInfo.maxValueLen-1) .. utfEllipsis
+          fileName = Utf8.sub(fileName, 1, prefs.truncateLimit-1) .. utfEllipsis
         end
       if #selectedPhotos > 1 then
         fileName = fileName .. " (" .. current .. "/" .. #selectedPhotos .. ")"
@@ -1064,18 +1075,22 @@ local function showFocusPoint()
       photoView = nil
       infoView  = nil
       errorMsg  = nil
-      if (targetPhoto:checkPhotoAvailability()) then
+      if targetPhoto:checkPhotoAvailability() then
         local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
         rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
         if rendererTable then
           metadata  = ExifUtils.readMetadataAsTable(targetPhoto)
-          photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
-          infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
-          if not (photoView and infoView) then
-            errorMsg = "Internal error: Unable to create main window"
+          if metadata then
+            photoView = rendererTable.createPhotoView(targetPhoto, photoW, photoH, metadata)
+            infoView  = rendererTable.createInfoView(targetPhoto, props, metadata)
+            if not (photoView and infoView) then
+              errorMsg = "Internal error: Unable to create main window"
+            end
+            -- Update the roll and crop angle display
+            initializeStraightenControl(targetPhoto)
+          else
+            errorMsg = "Unable to read the photo's metadata using ExifTool"
           end
-          -- Update the roll and crop angle display
-          initializeStraightenControl(targetPhoto)
         else
           -- just to have this case covered - normally this condition should not occur
           errorMsg = "Internal error: Unmapped points renderer"

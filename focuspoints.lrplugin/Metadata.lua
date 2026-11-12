@@ -78,26 +78,33 @@ local function showMetadata()
       LrFunctionContext.callWithContext("function", function(_dialogContext)
         local column1, column2, column3, column1Length, column2Length, column3Length, numLines
 
+--      if debug then Debug.pauseIfAsked() end
+
         -- Read metadata from image file.
-        -- The 'Loading Data' dialog has been removed.
         local metadata = ExifUtils.readMetadata(targetPhoto, true)
-        metadata = ExifUtils.filterInput(metadata)
+        if metadata then
 
-        -- Split the text output into two columns, one for the labels and one for the values.
-        column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
+          metadata = ExifUtils.filterInput(metadata)
 
-        -- Present metadata in dialog
-        local result = MetadataDialog.showDialog(
-          targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
+          -- Split the text output into two columns, one for the labels and one for the values.
+          column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
 
-        -- Check whether dialog has been left by pressing "Open as text"
-        local metadataFileName = ExifUtils.getMetadataFileName()
-        if result == "other" then
-          -- if so, open metadata file in default application (and keep it)
-          Utils.openFileInApp(metadataFileName)
+          -- Present metadata in dialog
+          local result = MetadataDialog.showDialog(
+            targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
+
+          -- Check whether dialog has been left by pressing "Open as text"
+          local metadataFileName = ExifUtils.getMetadataFileName()
+          if result == "other" then
+            -- if so, open metadata file in default application (and keep it)
+            Utils.openFileInApp(metadataFileName)
+          else
+            -- otherwise remove the temp file
+            ExifUtils.cleanup()
+          end
         else
-          -- otherwise remove the temp file
-          ExifUtils.cleanup()
+          LrDialogs.message(
+            "Error reading metadata from image file", targetPhoto:getRawMetadata("path"), "critical")
         end
       end)
     end)
@@ -115,9 +122,9 @@ end
 function splitForColumns(metadata)
 
   local parts = createParts(metadata)
-  local groups = ""
-  local labels = ""
-  local values = ""
+  local groups = {}
+  local labels = {}
+  local values = {}
   local maxGroupLength = 0
   local maxLabelLength = 0
   local maxValueLength = 0
@@ -127,12 +134,12 @@ function splitForColumns(metadata)
   local limitValueLength = 128   -- to avoid super-long value strings that whill slow down display
   local utfEllipsis = string.char(0xE2, 0x80, 0xA6)
 
-  for k in pairs(parts) do
+  for k, part in ipairs(parts) do
 
     -- Get next group/label/value pair
-    local g = parts[k].group or ""
-    local l = parts[k].label or ""
-    local v = parts[k].value or ""
+    local g = part.group or ""
+    local l = part.label or ""
+    local v = part.value or ""
 
     -- Limit length of a displayed value string, indicate spillover by ellipsis dots.
     -- The original text can still be examined by opening the metadata text file in an editor
@@ -153,9 +160,17 @@ function splitForColumns(metadata)
     numOfLines = numOfLines + 1
 
     -- Append current label/value pair to the table columns
-    groups = groups .. g .. "\r"
-    labels = labels .. l .. "\r"
-    values = values .. v .. "\r"
+    groups[k] = g
+    labels[k] = l
+    values[k] = v
+  end
+
+  if numOfLines > 0 then
+    groups = table.concat(groups, "\r") .. "\r"
+    labels = table.concat(labels, "\r") .. "\r"
+    values = table.concat(values, "\r") .. "\r"
+  else
+    groups, labels, values = "", "", ""
   end
 
   Log.logDebug("ShowMetadata", "splitForColumns: Groups: " .. groups)

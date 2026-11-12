@@ -45,14 +45,23 @@ local Log             = require 'Log'
 local Utils           = require 'Utils'
 
 -- Important plugin definitions and settings -----------------------------------
+local PLUGIN_WINDOW_SIZE_DEFAULT = 5
 
--- Size options for plugin window
-FocusPointPrefs.pluginWindow3XL    = 0.9
-FocusPointPrefs.pluginWindowXXL    = 0.8
-FocusPointPrefs.pluginWindowXL     = 0.7
-FocusPointPrefs.pluginWindowL      = 0.6
-FocusPointPrefs.pluginWindowM      = 0.5
-FocusPointPrefs.pluginWindowS      = 0.4
+local WINDOW_SIZES = {
+    { scale = 0.40, name = "XS"     },
+    { scale = 0.45, name = "S"      },
+    { scale = 0.50, name = "M"      },
+    { scale = 0.55, name = "M/L"    },
+    { scale = 0.60, name = "L"      },
+    { scale = 0.65, name = "L/XL"   },
+    { scale = 0.70, name = "XL"     },
+    { scale = 0.75, name = "XL/XXL" },
+    { scale = 0.80, name = "XXL"    },
+    { scale = 0.85, name = "3XL"    },
+    { scale = 0.90, name = "4XL"    },
+}
+FocusPointPrefs.pluginWindowSizeMin = 1
+FocusPointPrefs.pluginWindowSizeMax = #WINDOW_SIZES
 
 -- Scaling values for size of 'pixel focus' box, relative to focus point window size
 FocusPointPrefs.focusBoxSize = { 0, 0.04, 0.1 }
@@ -103,7 +112,7 @@ local urlHelpOnStraightenControls   = FocusPointPrefs.urlUserManual  .. "#enable
 local urlHelpOnTaggingControls      = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-tagging"
 local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboard-layout"
 local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
-local urlHelpOnPluginWindowScaling  = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
+local urlHelpOnPluginWindowSize     = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
 local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
 local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
 local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
@@ -112,7 +121,9 @@ local urlHelpOnStraighteningOptions = FocusPointPrefs.urlUserManual  .. "#straig
 FocusPointPrefs.urlKofi             = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
-FocusPointPrefs.kbdShortcutsPrev            = "-<"
+FocusPointPrefs.kbdShortcutsSizeDown        = "<"
+FocusPointPrefs.kbdShortcutsSizeUp          = ">"
+FocusPointPrefs.kbdShortcutsPrev            = "-"
 FocusPointPrefs.kbdShortcutsNext            = " +"
 FocusPointPrefs.kbdShortcutsPick            = "p"
 FocusPointPrefs.kbdShortcutsUnflag          = "u"
@@ -145,7 +156,8 @@ local bind = LrView.bind
 function FocusPointPrefs.InitializePrefs(prefs)
   -- Set any undefined properties to their default values
   if not prefs.screenScaling                    then prefs.screenScaling              = 0 end
-  if not prefs.pluginWindowScaling              then prefs.pluginWindowScaling        = FocusPointPrefs.pluginWindowL end
+  if not prefs.pluginWindowSize                 then prefs.pluginWindowSize           = PLUGIN_WINDOW_SIZE_DEFAULT end
+
   if     prefs.truncateLongText          == nil then prefs.truncateLongText           = true      end
   if not prefs.truncateLimit                    then prefs.truncateLimit              = 32        end
   if     prefs.hideKofiControl           == nil then prefs.hideKofiControl            = false     end
@@ -271,11 +283,32 @@ end
   public float
   getPluginWindowSize()
 
-  Returns the sizing factor for supported plugin window sizes S..3XL
+  Returns the sizing factor for supported plugin window sizes XS..4XL
 ------------------------------------------------------------------------------]]
 function FocusPointPrefs.getPluginWindowSize()
   local prefs = LrPrefs.prefsForPlugin( nil )
-  return prefs.pluginWindowScaling
+  return WINDOW_SIZES[prefs.pluginWindowSize].name
+end
+
+function FocusPointPrefs.getPluginWindowScale()
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  return WINDOW_SIZES[prefs.pluginWindowSize].scale
+end
+
+function FocusPointPrefs.upsizePluginWindow()
+  local prefs = LrPrefs.prefsForPlugin( nil )
+  prefs.pluginWindowSize = math.min(
+    (prefs.pluginWindowSize or 1) + 1,
+    #WINDOW_SIZES
+  )
+end
+
+function FocusPointPrefs.downsizePluginWindow()
+  local prefs = LrPrefs.prefsForPlugin(nil)
+  prefs.pluginWindowSize = math.max(
+    (prefs.pluginWindowSize or 1) - 1,
+    1
+  )
 end
 
 --[[----------------------------------------------------------------------------
@@ -721,23 +754,29 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         bind_to_object = prefs,
         spacing = f:control_spacing(),
         f:popup_menu {
-          title = "pluginWindowScaling",
-          value = bind("pluginWindowScaling"),
+          title = "pluginWindowSize",
+          value = bind("pluginWindowSize"),
           width_in_chars = dropDownWidth,
-          items = {
-            { title = "3XL", value = FocusPointPrefs.pluginWindow3XL },
-            { title = "XXL", value = FocusPointPrefs.pluginWindowXXL },
-            { title = "XL",  value = FocusPointPrefs.pluginWindowXL  },
-            { title = "L",   value = FocusPointPrefs.pluginWindowL   },
-            { title = "M",   value = FocusPointPrefs.pluginWindowM   },
-            { title = "S",   value = FocusPointPrefs.pluginWindowS   },
-          }
+          items = (function()
+            local items = {}
+            for i, size in ipairs(WINDOW_SIZES) do
+              items[#items + 1] = {
+                title = size.name,
+                value = i,
+              }
+            end
+            return items
+          end)(),
         },
         f:static_text {
-          title = "Size of plugin window"
+            title = "Size of plugin window"
         },
-        clickForHelp( urlHelpOnPluginWindowScaling ),
+        clickForHelp( urlHelpOnPluginWindowSize ),
       },
+
+      --------------------------------------------------------------------------
+      -- Keyboard input
+      --------------------------------------------------------------------------
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -756,6 +795,9 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
         },
         clickForHelp( urlHelpOnKeyboardInput ),
       },
+      --------------------------------------------------------------------------
+      -- Truncate long text
+      --------------------------------------------------------------------------
       f:row {
         bind_to_object = prefs,
         spacing = f:control_spacing(),
@@ -768,20 +810,26 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
+        f:row {
+          spacing = 0,
+          f:static_text {
             title = "Truncate or wrap strings after"
+          },
+          f:edit_field {
+            value = bind("truncateLimit"),
+            width_in_chars = 3,
+            min = 10,
+            max = 100,
+            alignment = "center",
+            precision = 0,
+          },
+          f:static_text {
+            title = "  characters",
+          },
         },
-        f:edit_field {
-          value = bind("truncateLimit"),
-          width_in_chars = 3,
-          min = 10,
-          max = 100,
-          precision = 0,
+        f:row {
+          clickForHelp(urlHelpOnTruncateLongText),
         },
-        f:static_text {
-          title = "characters",
-        },
-        clickForHelp( urlHelpOnTruncateLongText ),
       },
       straightenControlsSetting(), -- empty for LR5
       taggingControlsSetting(),    -- empty for LR5
@@ -940,28 +988,33 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
-          title = "Apply straightening only for angles between"
-        },
-        f:edit_field {
-          value = bind("straightenLimitLow"),
-          width_in_chars = 3,
-          min = 0,
-          max = 45,
-          precision = 1,
-        },
-        f:static_text {
-          title = "and",
-        },
-        f:edit_field {
-          value = bind("straightenLimitHigh"),
-          width_in_chars = 3,
-          min = 0,
-          max = 45,
-          precision = 1,
-        },
-        f:static_text {
-          title = "degrees (in any direction)",
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Apply straightening only for angles between"
+          },
+          f:edit_field {
+            value = bind("straightenLimitLow"),
+            width_in_chars = 3,
+            min = 0,
+            max = 45,
+            alignment ="center",
+            precision = 1,
+          },
+          f:static_text {
+            title = "  and",
+          },
+          f:edit_field {
+            value = bind("straightenLimitHigh"),
+            width_in_chars = 3,
+            min = 0,
+            max = 45,
+            alignment ="center",
+            precision = 1,
+          },
+          f:static_text {
+            title = "  degrees (in any direction)",
+          },
         },
       },
       f:row {
@@ -976,18 +1029,22 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
             { title = "Off", value = false },
           },
         },
-        f:static_text {
-          title = "Apply calibration offset of"
-        },
-        f:edit_field {
-          value = bind("straightenBias"),
-          width_in_chars = 4,
-          min = -5,
-          max = 5,
-          precision = 2,
-        },
-        f:static_text {
-          title = "degrees to roll angle",
+        f:row {
+          spacing = 0,
+          f:static_text {
+            title = "Apply calibration offset of"
+          },
+          f:edit_field {
+            value = bind("straightenBias"),
+            width_in_chars = 4,
+            min = -5,
+            max = 5,
+            alignment ="center",
+            precision = 2,
+          },
+          f:static_text {
+            title = "  degrees to roll angle",
+          },
         },
       },
       f:row {

@@ -612,9 +612,7 @@ end
 ------------------------------------------------------------------------------]]
 function NikonDelegates.getShootingInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-  local shootingInfo
-  -- append maker specific entries to the "Shooting Information" section
-  shootingInfo = f:column {
+  local shootingInfo = f:column {
     fill = 1,
     spacing = 2,
     addInfo("Shooting Mode", metaKeyShootingMode, props, metadata),
@@ -631,27 +629,25 @@ end
 ------------------------------------------------------------------------------]]
 function NikonDelegates.getFocusInfo(_photo, props, metadata)
   local f = LrView.osFactory()
-
-  -- Create the "Focus Information" section
   local focusInfo = f:column {
-      fill = 1,
-      spacing = 2,
-      addInfo("Focus Mode",             metaKeyFocusMode,           props, metadata),
-      addInfo("Focus Result",           metaKeyFocusResult,         props, metadata),
-      addInfo("AF Area Mode",           metaKeyAfAreaMode,          props, metadata),
-      addInfo("AF Detection Method",    metaKeyAfDetectionMethod,   props, metadata),
-      addInfo("Subject Detection",      metaKeySubjectDetection,    props, metadata),
-      addInfo("Subject Motion",         metaKeySubjectMotion,       props, metadata),
-      addInfo("3D-Tracking Watch Area", metaKey3DTrackingWatchArea, props, metadata),
-      addInfo("AF Activation",          metaKeyAfActivation,        props, metadata),
-      addInfo("Number of Focus Points", metaKeyNumberOfFocusPoints, props, metadata),
-      FocusInfo.addSpace(),
-      FocusInfo.addSeparator(),
-      FocusInfo.addSpace(),
-      addInfo("Focus Distance",         metaKeyFocusDistance,       props, metadata),
-      addInfo("Depth of Field",         metaKeyDepthOfField,        props, metadata),
-      addInfo("Hyperfocal Distance",    metaKeyHyperfocalDistance,  props, metadata),
-      }
+    fill = 1,
+    spacing = 2,
+    addInfo("Focus Mode",             metaKeyFocusMode,           props, metadata),
+    addInfo("Focus Result",           metaKeyFocusResult,         props, metadata),
+    addInfo("AF Area Mode",           metaKeyAfAreaMode,          props, metadata),
+    addInfo("AF Detection Method",    metaKeyAfDetectionMethod,   props, metadata),
+    addInfo("Subject Detection",      metaKeySubjectDetection,    props, metadata),
+    addInfo("Subject Motion",         metaKeySubjectMotion,       props, metadata),
+    addInfo("3D-Tracking Watch Area", metaKey3DTrackingWatchArea, props, metadata),
+    addInfo("AF Activation",          metaKeyAfActivation,        props, metadata),
+    addInfo("Number of Focus Points", metaKeyNumberOfFocusPoints, props, metadata),
+    FocusInfo.addSpace(),
+    FocusInfo.addSeparator(),
+    FocusInfo.addSpace(),
+    addInfo("Focus Distance",         metaKeyFocusDistance,       props, metadata),
+    addInfo("Depth of Field",         metaKeyDepthOfField,        props, metadata),
+    addInfo("Hyperfocal Distance",    metaKeyHyperfocalDistance,  props, metadata),
+  }
   return focusInfo
 end
 

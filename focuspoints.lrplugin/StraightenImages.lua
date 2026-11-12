@@ -250,18 +250,13 @@ local function straightenImages()
         break
       end
 
-      if cropAngle ~= 0 then
-        -- Reset existing crop before "overwriting" crop angle
-        catalog:withWriteAccessDo("Straighten Images", function()
-          Crop.photoReset(photo)
-        end)
-      end
-
-      -- Reset existing Transform settings and crop angle before straightening
+      -- Reset existing crop angle and Transform settings before straightening
       catalog:withWriteAccessDo("Straighten Images", function()
+        -- Reset existing crop before "overwriting" crop angle      
         if cropAngle ~= 0 then
           Crop.photoReset(photo)
         end
+        -- Reset Transform settings
         if photoTransformed then
           Straighten.resetTransformSettings(photo)
         end
