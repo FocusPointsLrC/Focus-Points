@@ -17,7 +17,7 @@
 
 ### [Display of Focus Points](#3-display-of-focus-points)
 
-* Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fuji](#34-fuji), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Pentax](#38-pentax), [Ricoh](#39-ricoh), [Apple](#310-apple)
+* Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fuji](#34-fuji), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Leica](#38-leica), [Hasselblad](#39-hasselblad), [Pentax](#310-pentax), [Ricoh](#311-ricoh), [Apple](#312-apple)
 
 ### [Status Messages and Warnings](Troubleshooting_FAQ.md#status-messages-and-warnings)
 
@@ -410,7 +410,7 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Action                                      | Keyboard shortcuts |
 |---------------------------------------------|--------------------|
 | **Navigation**                              | &nbsp;             | 
-| Previous image                              | `-`, `<`           |
+| Previous image                              | `-`                |
 | Next image                                  | `+`, `Spacebar`    |
 | **Flagging**                                | &nbsp;             |
 | Flag photo as a pick                        | `P`                |
@@ -436,6 +436,8 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Preview Image                               | `V`                |
 | Export Image                                | `E`                | 
 | **Miscellaneous**                           | &nbsp;             |
+| Downsize Window by one size                 | `<`                |
+| Upsize Window by one size                   | `>`                |
 | Open User Manual                            | `M`                |
 | Open Troubleshooting Information (Help)     | `?`, `H`           |
 | Check Log                                   | `L`                |
@@ -1160,7 +1162,33 @@ Panasonic also supports face detection identification in EXIF metadata. This inf
 Panasonic doesn't support a "focus distance" specification in the metadata, so there is not much to go on other than the focus mode and AF area mode listed in the focus information section.
 
 
-## 3.8 Pentax
+## 3.8 Leica
+
+Supported features:
+
+|                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
+|:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
+|  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>  |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>  | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
+
+<sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+
+Examples
+
+
+## 3.9 Hasselblad
+
+Supported features:
+
+|                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
+|:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
+|  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>  |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>  | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
+
+<sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+
+Examples
+
+
+## 3.10 Pentax
 
 Supported features:
 
@@ -1217,7 +1245,7 @@ K-01 image taken with viewfinder using "Multiple AF Points".<br><br>
 <img src="images/Pentax 10.jpg" alt="Pentax 10" style="width: 750px;"/><br>
 Support for Pentax DSLRs dates back to the *ist D models introduced in 2003. However, due to the established focus-and-pan method on older DSLRs with only a few AF points, the use of the plugin for these cameras will be limited.<br><br>
 
-## 3.9 Ricoh
+## 3.11 Ricoh
 
 Supported features:
 
@@ -1242,7 +1270,7 @@ Multiple focus points from "Auto Area" selection used to focus the image.<br><br
 Detection of multiple faces and eyes.
 
 
-## 3.10 Apple
+## 3.12 Apple
 
 Supported features:
 
