@@ -874,6 +874,7 @@ Supported features:
 |                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
 |:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
 |  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>  |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>  | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
+|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white       | User-selected AF point                                                    |
 | <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/> | <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/> |      gray       | Inactive AF point. Part of DSLR AF points but not used for the image |
 
 <sup>1</sup> AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
