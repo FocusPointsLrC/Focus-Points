@@ -1,3 +1,7 @@
+local debug    = true
+local profiler = false
+local Require  = require "Require".path ("../debuggingtoolkit.lrdevplugin")
+local Debug    = require "Debug".init ()
 --[[
   Original work © Whizzbang Inc
   Ongoing maintenance and modifications © 2026 Karsten Gieselmann
@@ -66,7 +70,9 @@ local Utils                 = require 'Utils'
 ------------------------------------------------------------------------------]]
 local function showFocusPoint()
 
-  LrFunctionContext.callWithContext("showFocusPointDialog", function(context)
+  Debug.callWithContext("showFocusPointDialog", function(context)
+
+    if debug then Debug.pauseIfAsked() end
 
     local catalog = LrApplication.activeCatalog()
     local current
@@ -345,6 +351,8 @@ local function showFocusPoint()
 
     -- Log applicaton level information (includes scale factor and app window size)
     logAppInfo()
+
+    if profiler then require('Profiler').init() end
 
     -- only on WIN (issue #199):
     -- if launched in Develop module switch to Library to enforce that a preview of the image is available
@@ -1480,7 +1488,7 @@ local function showFocusPoint()
       errorMsg  = nil
 
       repeat
-        if (targetPhoto:checkPhotoAvailability()) then
+        if targetPhoto:checkPhotoAvailability() then
           local photoW, photoH = FocusPointDialog.calculatePhotoViewDimens(targetPhoto)
 
           rendererTable = PointsRendererFactory.createRenderer(targetPhoto)
@@ -1502,7 +1510,6 @@ local function showFocusPoint()
               end
 
               infoView = rendererTable.createInfoView(targetPhoto, props, metadata)
-
               if not (photoView and infoView) then
                 errorMsg = "Internal error: Unable to create main window"
               end
@@ -1557,6 +1564,16 @@ local function showFocusPoint()
           stopTimer-startTimer,
           FocusPointPrefs.displayModeName[prefs.displayMode],
           FocusPointPrefs.displayModeName[rendererTable.imageSource]))
+
+        -- Output profiling results, if profiling was active
+        if profiler then
+          local Profiler = require('Profiler')
+          if Profiler.profilerActive then
+            Log.logInfo("Profiler", Profiler.sortResults(Debug.profileResults (), true))
+          end
+          -- Reset the table
+          Profiler.init()
+        end
 
         clicked = false
 

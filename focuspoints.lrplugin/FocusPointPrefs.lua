@@ -122,8 +122,8 @@ local urlHelpOnTaggingControls      = FocusPointPrefs.urlUserManual  .. "#enable
 local urlHelpOnKeyboardLayout       = FocusPointPrefs.urlUserManual  .. "#keyboard-layout"
 local urlHelpOnDisplayMode          = FocusPointPrefs.urlNewFeatures .. "#2-display-modes"
 local urlHelpOnPerformanceControl   = FocusPointPrefs.urlUserManual  .. "#performance-control"
+local urlHelpOnPluginWindowSize     = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
 local urlHelpOnSecondScreenMode     = FocusPointPrefs.urlNewFeatures .. "#1-second-screen-mode"
-local urlHelpOnPluginWindowScale    = FocusPointPrefs.urlUserManual  .. "#size-of-plugin-window"
 local urlHelpOnKeyboardInput        = FocusPointPrefs.urlUserManual  .. "#text-input-field-for-keyboard shortcuts"
 local urlHelpOnTruncateLongText     = FocusPointPrefs.urlUserManual  .. "#truncate-or-wrap-long-strings"
 local urlHelpOnViewingOptions       = FocusPointPrefs.urlUserManual  .. "#viewing-options"
@@ -952,6 +952,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               end,
             },
           },
+          clickForHelp( urlHelpOnPluginWindowSize ),
         },
       },
       --------------------------------------------------------------------------

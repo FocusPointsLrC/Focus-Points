@@ -78,27 +78,33 @@ local function showMetadata()
       LrFunctionContext.callWithContext("function", function()
         local column1, column2, column3, column1Length, column2Length, column3Length, numLines
 
+--      if debug then Debug.pauseIfAsked() end
 
         -- Read metadata from image file.
-        -- The 'Loading Data' dialog has been removed.
         local metadata = ExifUtils.readMetadata(targetPhoto, true)
-        metadata = ExifUtils.filterInput(metadata)
+        if metadata then
 
-        -- Split the text output into two columns, one for the labels and one for the values.
-        column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
+          metadata = ExifUtils.filterInput(metadata)
 
-        -- Present metadata in dialog
-        local result = MetadataDialog.showDialog(
-          targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
+          -- Split the text output into two columns, one for the labels and one for the values.
+          column1, column2, column3, column1Length, column2Length, column3Length, numLines = splitForColumns(metadata)
 
-        -- Check whether dialog has been left by pressing "Open as text"
-        local metadataFileName = ExifUtils.getMetadataFileName()
-        if result == "other" then
-          -- if so, open metadata file in default application (and keep it)
-          Utils.openFileInApp(metadataFileName)
+          -- Present metadata in dialog
+          local result = MetadataDialog.showDialog(
+            targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
+
+          -- Check whether dialog has been left by pressing "Open as text"
+          local metadataFileName = ExifUtils.getMetadataFileName()
+          if result == "other" then
+            -- if so, open metadata file in default application (and keep it)
+            Utils.openFileInApp(metadataFileName)
+          else
+            -- otherwise remove the temp file
+            ExifUtils.cleanup()
+          end
         else
-          -- otherwise remove the temp file
-          ExifUtils.cleanup()
+          LrDialogs.message(
+            "Error reading metadata from image file", targetPhoto:getRawMetadata("path"), "critical")
         end
       end)
     end)

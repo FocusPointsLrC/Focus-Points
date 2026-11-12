@@ -48,6 +48,8 @@ local metaKeyAfInfoSection           = "Canon Firmware Version"
 
 -- AF-relevant tags
 local metaKeyAfPointsInFocus         = "AF Points In Focus"
+local metaKeyAfPointsSelected        = "AF Points Selected"
+local metaKeyValidAfPoints           = "Valid AF Points"
 local metaKeyAfAreaWidth             = "AF Area Width"
 local metaKeyAfAreaHeight            = "AF Area Height"
 local metaKeyAfAreaWidths            = "AF Area Widths"
@@ -79,7 +81,6 @@ local metaKeyAccelDecelTracking      = "AF Accel/Decel Tracking"
 local metaKeyAfPointSwitching        = "AF Point Switching"
 local metaKeyActionPriority          = "Action Priority"
 local metaKeySportEvents             = "Sport Events"
-local metaKeyWholeAreaTracking       = "Whole Area Tracking"
 local metaKeyServoFirstImage         = "AI Servo First Image"
 local metaKeyServoSecondImage        = "AI Servo Second Image"
 local metaKeyFocusDistanceUpper      = "Focus Distance Upper"
@@ -109,15 +110,18 @@ function CanonDelegates.getAfPoints(photo, metadata)
   local imageWidth
   local imageHeight
 
-  -- #TODO ATTENTION!!!
+  -- ATTENTION!!!
   -- Searching for ImageWidth/Height tags in a simplified listing output may result in unusable information!
-  if cameraModel == "canon eos 5d" then   -- For some reason for this camera, the AF Image Width/Height has to be replaced by Canon Image Width/Height
+  if cameraModel == "canon eos 5d" then
+    -- For some reason for this camera, the AF Image Width/Height has to be replaced by Canon Image Width/Height
     imageWidth  = ExifUtils.findFirstMatchingValue(metadata,{ metaKeyCanonImageWidth , metaKeyExifImageWidth  })
     imageHeight = ExifUtils.findFirstMatchingValue(metadata,{ metaKeyCanonImageHeight, metaKeyExifImageHeight })
   else
     imageWidth  = ExifUtils.findFirstMatchingValue(metadata,{ metaKeyAfImageWidth    , metaKeyExifImageWidth  })
     imageHeight = ExifUtils.findFirstMatchingValue(metadata,{ metaKeyAfImageHeight   , metaKeyExifImageHeight })
   end
+
+  -- Sanity check
   if imageWidth == nil or imageHeight == nil then
     Log.logError("Canon",
       string.format("Required image size tags '%s' / '%s' not found",
@@ -165,27 +169,41 @@ function CanonDelegates.getAfPoints(photo, metadata)
   afAreaXPositions = Utils.split(afAreaXPositions, " ")
   afAreaYPositions = Utils.split(afAreaYPositions, " ")
 
-  local afPointsSelected -- = ExifUtils.findFirstMatchingValue(metadata, { "AF Points Selected" }) DPP doesn't display these!
+  -- Get necessary AF Point information
+  -- Hint: ExifUtils filters '(none)' and returns nil instead.
+  local afPointsInFocus  = ExifUtils.findValue(metadata, metaKeyAfPointsInFocus)
+  local afPointsSelected = ExifUtils.findValue(metadata, metaKeyAfPointsSelected)
+
+  -- Valid AF Points is the decisive information whether AF Point
+  -- information is available to process or not.
+  local validAfPoints = tonumber(ExifUtils.findValue(metadata, metaKeyValidAfPoints))
+  if not validAfPoints or validAfPoints == 0 then
+    Log.logWarn("Canon",
+      string.format("Tag '%s' not found or contains no valid AF points", metaKeyValidAfPoints))
+    return nil
+  end
+
+  -- AFPointsInFocus: comma-separated, zero-based indexes of AF points in focus
+  if afPointsInFocus then
+    Log.logInfo("Canon",
+      string.format("Focus point tag '%s' found: '%s'", metaKeyAfPointsInFocus, afPointsInFocus))
+    afPointsInFocus = Utils.split(afPointsInFocus, ",")
+  else
+    afPointsInFocus = {}
+  end
+
+  -- AFPointsSelected: comma-separated, zero-based indexes of selected AF points
   if afPointsSelected then
+    Log.logInfo("Canon",
+      string.format("Focus point tag '%s' found: '%s'", metaKeyAfPointsSelected, afPointsSelected))
     afPointsSelected = Utils.split(afPointsSelected, ",")
   else
     afPointsSelected = {}
   end
 
-  local afPointsInFocus = ExifUtils.findValue(metadata, metaKeyAfPointsInFocus)
-  if afPointsInFocus then
-    afPointsInFocus = Utils.split(afPointsInFocus, ",")
-    Log.logInfo("Canon",
-      string.format("Focus point tag '%s' found: '%s'", metaKeyAfPointsInFocus, afPointsInFocus))
-  else
-    Log.logWarn("Canon", string.format("Focus point tag '%s' not found or empty", metaKeyAfPointsInFocus))
-    afPointsInFocus = {}
-  end
-
   local result = {
     pointTemplates = DefaultDelegates.pointTemplates,
-    points = {
-    }
+    points = {}
   }
 
   -- it seems Canon Point and Shoot cameras are reversed on the y-axis
@@ -199,9 +217,12 @@ function CanonDelegates.getAfPoints(photo, metadata)
     yDirection = 1
   end
 
-  -- Loop over all given focus points or positions
-  for key, _ in pairs(afAreaXPositions) do
-    local x = (imageWidth/2 + afAreaXPositions[key]) * xScale     -- On Canon, everything is referenced from the center,
+  -- Loop over all given focus point positions
+  for key, _ in ipairs(afAreaXPositions) do
+
+    -- Calculate the AF point coordinates and dimensions.
+    -- On Canon, everything is referenced from the center
+    local x = (imageWidth/2 + afAreaXPositions[key]) * xScale
     local y = (imageHeight/2 + (afAreaYPositions[key] * yDirection)) * yScale
     local width = 0.0
     local height = 0.0
@@ -211,43 +232,39 @@ function CanonDelegates.getAfPoints(photo, metadata)
       width = afPointWidths[key] * xScale
     end
     if afPointHeights[key] == nil then
-      height = afPointHeight * xScale
+      height = afPointHeight * yScale
     else
-      height = afPointHeights[key] * xScale
+      height = afPointHeights[key] * yScale
     end
 
-    local pointType
-    if (string.sub(cameraModel, 1, 11) ~= "canon eos r") then
-      -- we won't display the grid for mirrorless
-      pointType = DefaultDelegates.POINTTYPE_AF_INACTIVE
-    end
-    local isInFocus = Utils.arrayKeyOf(afPointsInFocus, tostring(key - 1)) ~= nil     -- 0 index based array by Canon
+    -- Determine the AF point type: in focus, selected, or inactive
+    local pointType  = DefaultDelegates.POINTTYPE_AF_INACTIVE
+    local isInFocus  = Utils.arrayKeyOf(afPointsInFocus,  tostring(key - 1)) ~= nil
     local isSelected = Utils.arrayKeyOf(afPointsSelected, tostring(key - 1)) ~= nil
     if isInFocus then
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
       FocusInfo.focusPointsDetected = true
-
-      Log.logInfo("Canon", string.format("Focus point detected at [x=%s, y=%s, w=%s, h=%s]",
+      Log.logInfo("Canon", string.format("AF point in focus detected at [x=%s, y=%s, w=%s, h=%s]",
         math.floor(x), math.floor(y), math.floor(width), math.floor(height)))
-
     elseif isSelected then
-      pointType = DefaultDelegates.POINTTYPE_AF_SELECTED    -- de facto not used in this code - DPP doesn't show them!
+      pointType = DefaultDelegates.POINTTYPE_AF_SELECTED
+      Log.logInfo("Canon", string.format("Selected AF point detected at [x=%s, y=%s, w=%s, h=%s]",
+        math.floor(x), math.floor(y), math.floor(width), math.floor(height)))
     end
 
-    if pointType then
-      if width > 0 and height > 0 then
-        table.insert(result.points, {
-          pointType = pointType,
-          x = x,
-          y = y,
-          width = width,
-          height = height
-        })
-      end
+    -- Add the AF point to the rendering table
+    if width > 0 and height > 0 then
+      table.insert(result.points, {
+        pointType = pointType,
+        x = x,
+        y = y,
+        width = width,
+        height = height
+      })
     end
   end
 
-  -- Let's see if an AFTrackingArea is given
+  -- Check whether AF Tracking Area is available
   local afTrackingArea = ExifUtils.findValue(metadata, metaKeyAfTrackingArea )
   if afTrackingArea then
     Log.logInfo("Canon",
@@ -307,7 +324,7 @@ local function addInfo(title, key, props, metadata)
       if (value == "3:2 (APS-C crop)") then
         FocusInfo.cropMode = true
         props[key] = "APS-C"
-      elseif (key == metaKeyAspectRatio) and (value == "3:2 (APS-H crop)") then
+      elseif value == "3:2 (APS-H crop)" then
         FocusInfo.cropMode = true
         props[key] = "APS-H"
       else
@@ -337,7 +354,6 @@ local function addInfo(title, key, props, metadata)
       -- only relevant for Servo AF modes
       props[key] = ExifUtils.metaValueNA
 
-    -- don't display the followong entries if they don't contain relevant information
     elseif key == metaKeyActionPriority and value == "Off" then
       props[key] = ExifUtils.metaValueNA
 
@@ -368,7 +384,16 @@ local function addInfo(title, key, props, metadata)
     -- compose the row to be added
     local result = FocusInfo.addRow(title, props[key])
 
-    -- check if the entry to be added has implicite followers (eg. Priority for AF modes)
+    -- in case of existing AF Tracking metadata, add 'AF Tracking' as a header
+    if key == metaKeyAfDetectedSubject then
+      return f:column {
+        fill = 1, spacing = 2,
+        addInfo("AF Tracking"),
+        result
+      }
+    end
+
+    -- check if the entry to be added has implicit followers (eg. Priority for AF modes)
     if (props[key] == metaValueOneShotAf) then
       return f:column{
         fill = 1, spacing = 2, result,
@@ -506,8 +531,6 @@ function CanonDelegates.getFocusInfo(_photo, props, metadata)
     addInfo("Eye Detection"            , metaKeyEyeDetection          , props, metadata),
     addInfo("AF Point Auto-Switching"  , metaKeyAfPointSwitching      , props, metadata),
     addInfo("Action Priority"          , metaKeyActionPriority        , props, metadata),
---  addInfo("Whole Area Tracking"      , metaKeyWholeAreaTracking     , props, metadata),
-    addInfo("AF Tracking"),
     addInfo("- Detected Subject"       , metaKeyAfDetectedSubject     , props, metadata),
     addInfo("- Detected Parts"         , metaKeyAfDetectedParts       , props, metadata),
     addInfo("- Tracking Target"        , metaKeyAfTrackingTarget      , props, metadata),
