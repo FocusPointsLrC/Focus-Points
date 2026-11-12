@@ -47,6 +47,15 @@
   * Face detection
   
 
+* Leica 
+  * SL3, SL3-S, SL3P, Q3, Q3 M, Q3 43, C-Lux, D-Lux, V-Lux
+  
+
+* Hasselblad
+  * X System: X2D II 100C, X2D 100C, X1D II 50C, X1D 50C
+  * V System: CFV 100C/907X, CFV II 50C/907X
+  
+
 * Pentax 
   * DSLR: all models with 11 or more autofocus points (from *istD in 2003 to K-3 III Mono in 2023)
   * Face detection
@@ -75,6 +84,7 @@ The Straightening function relies on the presence of the `RollAngle` tag in the 
 - Fuji (XT-5 and later models)<sup>1</sup>
 - Olympus/OM (EM-1/5/10 III and later models)
 - Panasonic (Lumix G6 and later models)
+- Leica (SL3, SL3-S, SL3P, Q3, Q3 M, Q3 43)
 - Pentax (K-7 and later models)<sup>2</sup>
 - Ricoh (GR III and later models)<sup>2</sup>
 
