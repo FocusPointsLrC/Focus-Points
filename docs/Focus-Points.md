@@ -17,7 +17,7 @@
 
 ### [Display of Focus Points](#3-display-of-focus-points)
 
-* Camera-maker specific sections for:<br> [Canon](#32-canon), [Nikon](#31-nikon), [Sony](#33-sony), [Fujifilm](#34-fujifilm), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Leica](#38-leica), [Hasselblad](#39-hasselblad), [Pentax](#310-pentax), [Ricoh](#311-ricoh), [Apple](#312-apple)
+* Camera-maker specific sections for:<br> [Canon](#31-canon), [Nikon](#32-nikon), [Sony](#33-sony), [Fujifilm](#34-fujifilm), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Leica](#38-leica), [Hasselblad](#39-hasselblad), [Pentax](#310-pentax), [Ricoh](#311-ricoh), [Apple](#312-apple)
 
 ### [Status Messages and Warnings](Troubleshooting_FAQ.md#status-messages-and-warnings)
 
@@ -799,7 +799,55 @@ Even if certain data is recorded by a camera manufacturer, this does not mean th
 
 The Focus Points plugin fully relies on what [ExifTool](https://exiftool.org/) is able to decode and display. Which in turn doesn't fall from the sky, but it's a collaborative effort by camera owners worlwide that are willing to contribute and [go where no man has gone before](https://exiftool.org/#boldly) and decode the unknown.
 
-## 3.1 Nikon
+
+## 3.1 Canon
+
+Supported features:
+
+|                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
+|:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
+|  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>      |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>      | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
+|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white     | User-selected AF point                                               |
+|       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow     | Subject part detected and tracked by the camera (Mirrorless)                             |
+| <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/>     | <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/>     |      gray       | Inactive AF point. Part of DSLR AF points but not used for the image |
+
+<sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+
+Canon focus point information in EXIF metadata always refers to an area within the frame. Focus point areas are specified by their coordinates (x,y, height, width). Therefore, for Canon focus points, you can select the color of the box, but not the size.
+
+Canon metadata does not include face or subject detection details, so you won't see any detection frames. This does not mean that this information is not present in the file - it just has not yet been decoded by the maintainers and active supporters of ExifTool.
+
+Unlike other manufacturers, Canon does not give a single value for the focus distance, but rather a pair of values for the lower and upper range.
+
+### 3.1.1 Canon DSLR
+
+Like Nikon, Canon DSLRs support both PDAF and CAF. The position and size of the PDAF focus points are determined by the individual sensor AF layout of the camera model.
+
+<img src="images/Canon 1.jpg" alt="Canon 1" style="width: 1000px;"/><br>
+5D Mark IV. PDAF-focused shot with Servo AF Preset "Case 1" and multiple focus points used.<br><br>
+
+<img src="images/Canon 2.jpg" alt="Canon 2" style="width: 1000px;"/><br>
+CAF-focused shot using the 'green' color for in-focus points for better visibility.<br><br>
+
+### 3.1.2 Canon Mirrorless
+
+As with Nikon, Canon mirrorless models feature a hybrid autofocus system. However, in terms of focusing information stored in EXIF, the cooperation of PDAF and CAF is transparent. You can find the x, y positions of the focus point area(s) used to focus the shot as well as their width and height always in the same format.
+
+<img src= "images/Canon 3.jpg" alt="Canon 3" style="width: 1000px;"/><br>
+R3. AI Servo AF with Case A preset and subject detection 'Animals'<br><br> 
+
+<img src= "images/Canon 5.jpg" alt="Canon 5" style="width: 1000px;"/><br>
+R5 Mark II. AI Servo AF with Case A preset and subject detection 'Auto'<br><br> 
+
+<img src= "images/Canon 6.jpg" alt="Canon 6" style="width: 1000px;"/><br>
+R1. AI Servo AF with Action Priority "On" and Sport Events "Basketball".<br><br> 
+
+<img src= "images/Canon 4.jpg" alt="Canon 4" style="width: 1000px;"/><br>
+R1. When capturing flat subjects, focus point display for Canon R-series can be funny sometimes. 
+
+<br>
+
+## 3.2 Nikon
 
 Supported features:
 
@@ -818,7 +866,7 @@ Nikon focus point information in EXIF metadata always refers to an area within t
 Nikon metadata does not include face or subject detection data, so you won't see any corresponding detection frames. This does not mean that this information is not present in the file - it just has not yet been decoded by the maintainers and active supporters of ExifTool.
 
 
-### 3.1.1 Nikon DSLR
+### 3.2.1 Nikon DSLR
 
 
 Nikon DSLRs typically have two autofocus systems. A high-performance phase-detection autofocus (PDAF) and a slower contrast autofocus when using Live View.
@@ -849,7 +897,7 @@ D500, Live View shot. In Contrast AF modes, the focus "point" is an area that va
 D780, Live View shot, with several of the sensor based 81 AF areas engaged. The primary AF area is indicated by a center dot.<br><br>
 
 
-### 3.1.2 Nikon Mirrorless
+### 3.2.2 Nikon Mirrorless
 
 Nikon's mirrorless cameras feature a hybrid autofocus system that uses both PDAF and CAF to achieve fast and accurate focusing. While earlier models like the Z6 produced a fair amount of images with PDAF results, these images become rare in modern cameras like the Z9, as CAF technology becomes more powerful.
 
@@ -868,53 +916,6 @@ Z7. The first Nikon mirrorless models tended to determine the focus point using 
 
 <br> 
 
-
-## 3.2 Canon
-
-Supported features:
-
-|                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
-|:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
-|  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>  |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>  | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
-|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white       | User-selected AF point                                                    |
-| <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/> | <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/> |      gray       | Inactive AF point. Part of DSLR AF points but not used for the image |
-
-<sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
-
-Canon focus point information in EXIF metadata always refers to an area within the frame. Focus point areas are specified by their coordinates (x,y, height, width). Therefore, for Canon focus points, you can select the color of the box, but not the size.
-
-Canon metadata does not include face or subject detection details, so you won't see any detection frames. This does not mean that this information is not present in the file - it just has not yet been decoded by the maintainers and active supporters of ExifTool.
-
-Unlike other manufacturers, Canon does not give a single value for the focus distance, but rather a pair of values for the lower and upper range.
-
-
-### 3.2.1 Canon DSLR
-
-Like Nikon, Canon DSLRs support both PDAF and CAF. The position and size of the PDAF focus points are determined by the individual sensor AF layout of the camera model.
-
-<img src="images/Canon 1.jpg" alt="Canon 1" style="width: 1000px;"/><br>
-5D Mark IV. PDAF-focused shot with Servo AF Preset "Case 1" and multiple focus points used.<br><br>
-
-<img src="images/Canon 2.jpg" alt="Canon 2" style="width: 1000px;"/><br>
-CAF-focused shot using the 'green' color for in-focus points for better visibility.<br><br>
-
-### 3.1.2 Canon Mirrorless
-
-As with Nikon, Canon mirrorless models feature a hybrid autofocus system. However, in terms of focusing information stored in EXIF, the cooperation of PDAF and CAF is transparent. You can find the x, y positions of the focus point area(s) used to focus the shot as well as their width and height always in the same format.
-
-<img src= "images/Canon 3.jpg" alt="Canon 3" style="width: 1000px;"/><br>
-R3. AI Servo AF with Case A preset and subject detection 'Animals'<br><br> 
-
-<img src= "images/Canon 5.jpg" alt="Canon 5" style="width: 1000px;"/><br>
-R5 Mark II. AI Servo AF with Case A preset and subject detection 'Auto'<br><br> 
-
-<img src= "images/Canon 6.jpg" alt="Canon 6" style="width: 1000px;"/><br>
-R1. AI Servo AF with Action Priority "On" and Sport Events "Basketball".<br><br> 
-
-<img src= "images/Canon 4.jpg" alt="Canon 4" style="width: 1000px;"/><br>
-R1. When capturing flat subjects, focus point display for Canon R-series can be funny sometimes. 
-
-<br>
 
 ## 3.3 Sony
 
