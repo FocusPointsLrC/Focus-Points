@@ -2,70 +2,24 @@
 
 This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages summarize whether the plugin was successful in detecting and visualising focus points. These messages can be success messages (green), warnings (orange) or error messages (red).
 
-* [No focus points recorded](#no-focus-points-recorded)
-* [Manual focus, no AF points recorded](#manual-focus-no-af-points-recorded)
-* [Focus point recorded in manual focus mode](#focus-point-recorded-in-manual-focus-mode)
-* [Focus info missing from file](#focus-info-missing-from-file)
+* [Focus achieved](#focus-achieved)
 * [Focus points outside cropped image area](#focus-points-outside-cropped-image-area)
 * [Focus points may be misaligned due to Transform](#focus-points-may-be-misaligned-due-to-transform-settings)
+* [Subject detected, but focus not achieved](#subject-detected-but-focus-not-achieved)
+* [Focus points selected, but focus not achieved](#focus-points-selected-but-focus-not-achieved)
+* [No focus points recorded](#no-focus-points-recorded)
+* [Focus point recorded in manual focus mode](#focus-point-recorded-in-manual-focus-mode)
+* [Manual focus, no AF points recorded](#manual-focus-no-af-points-recorded)
+* [Focus info missing from file](#focus-info-missing-from-file)
 * [Camera model not supported](#camera-model-not-supported)
 * [Camera maker not supported](#camera-maker-not-supported)
 * [No camera-specific metadata found](#no-camera-specific-metadata-found)
 * [Severe error encountered](#severe-error-encountered)
 
 
-### "No focus points recorded"
-The camera was set to use autofocus (AF) but did not focus when the image was captured. Information about "in focus" AF points is not available in the metadata; it was not recorded by the camera.
+### "Focus achieved"
 
-The exact reason for this behavior may depend on the specific camera model and the way the camera manufacturer has designed the AF system to work. Check the log file for details.
-
-A common potential reason for this situation is that the AF system has not completed its task.
-
-Take a look at the example below (Olympus camera). The shot was taken with "Release Priority", "AF Search" was "not ready". However, the shot looks sharp. Maybe the AF system just didn't finish fine-tuning the focus.
-
-<img src="images/Troubleshooting 1.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
-
-Log file:
-
-<img src="images/Troubleshooting 2.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
-
-
-### "Manual focus, no AF points recorded"
-This is a special but very typical case of "No focus points recorded". The photo was taken with manual focus (MF), so there is no autofocus (AF) information in the metadata.
-
-<img src="images/Troubleshooting 3.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
-
-
-<a id="focus-point-recorded-in-manual-focus-mode"></a>
-### "Focus point recorded in manual focus mode"
-
-Fujifilm cameras store focus information when using the manual focus mode (AF-M). 
-
-Unlike autofocus-determined focus points, manual focus points do not necessarily indicate the sharpest parts of an image. Instead, they **represent the center of the focus area** selected by the camera user (single point / zone / wide).
-
-When the photographer uses the selected focus area to focus the image and this area is small (single point), the displayed focus point will probably correspond to a sharp part of the image. Otherwise, the displayed focus point may end up over an unsharp part of the image.
-
-In manual focus mode, you need to recall the circumstances in which the image was captured in order to make sense of the focus point information.
-
-
-### "Focus info missing from file"
-
-The selected photo lacks the metadata needed to process and visualize focus information. This error message typically occurs when you try to view focus points for an image that was processed outside of Lightroom (for example, in Photoshop).
-
-Why is this happening?
-The plugin requires the metadata of original, out-of-camera JPGs or RAW files in order to work. Focus information, along with many other camera-specific settings, is stored in _makernotes_, a manufacturer-specific section of the EXIF metadata.
-Lightroom does not retain or even read makernotes when importing files. Therefore, if a separate file is created from the original image (e.g. by exporting to another application such as Photoshop), this information will not be present in the file and the plugin will not have the necessary inputs to work.
-
-
-For more details and concrete examples, see [Scope and Limitations](Focus-Points.md#1-scope-and-limitations).  
-
-For example, this image was imported into Lightroom as a RAW file and then edited in Photoshop. The re-imported TIFF file is missing the makernotes and focus information, so the plugin does not have the data it needs to work.
-
-<img src="images/Troubleshooting 6.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
-
-The log file reveals whether intact metadata is available or not by indicating which tag has not been found:
-
-<img src="images/Troubleshooting 7.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+to be added
 
 
 ### Focus points outside cropped image area
@@ -98,6 +52,70 @@ Transform operations change the geometry of the image content, so the focus poin
 The actual error depends on the type and degree of transformation. A small Transform adjustment might produce only a very small displacement, while a strong perspective correction can produce a substantial one.
 
 If precision of focus point display matters, you should always check this on a photo without Transform operations applied.
+
+
+### Subject detected, but focus not achieved
+
+to be added
+
+
+### Focus points selected, but focus not achieved
+
+to be added
+
+
+### "No focus points recorded"
+The camera was set to use autofocus (AF) but did not focus when the image was captured. Information about "in focus" AF points is not available in the metadata; it was not recorded by the camera.
+
+The exact reason for this behavior may depend on the specific camera model and the way the camera manufacturer has designed the AF system to work. Check the log file for details.
+
+A common potential reason for this situation is that the AF system has not completed its task.
+
+Take a look at the example below (Olympus camera). The shot was taken with "Release Priority", "AF Search" was "not ready". However, the shot looks sharp. Maybe the AF system just didn't finish fine-tuning the focus.
+
+<img src="images/Troubleshooting 1.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+Log file:
+
+<img src="images/Troubleshooting 2.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+
+<a id="focus-point-recorded-in-manual-focus-mode"></a>
+### "Focus point recorded in manual focus mode"
+
+Fujifilm cameras store focus information when using the manual focus mode (AF-M). 
+
+Unlike autofocus-determined focus points, manual focus points do not necessarily indicate the sharpest parts of an image. Instead, they **represent the center of the focus area** selected by the camera user (single point / zone / wide).
+
+When the photographer uses the selected focus area to focus the image and this area is small (single point), the displayed focus point will probably correspond to a sharp part of the image. Otherwise, the displayed focus point may end up over an unsharp part of the image.
+
+In manual focus mode, you need to recall the circumstances in which the image was captured in order to make sense of the focus point information.
+
+
+### "Manual focus, no AF points recorded"
+This is a special but very typical case of "No focus points recorded". The photo was taken with manual focus (MF), so there is no autofocus (AF) information in the metadata.
+
+<img src="images/Troubleshooting 3.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+
+### "Focus info missing from file"
+
+The selected photo lacks the metadata needed to process and visualize focus information. This error message typically occurs when you try to view focus points for an image that was processed outside of Lightroom (for example, in Photoshop).
+
+Why is this happening?
+The plugin requires the metadata of original, out-of-camera JPGs or RAW files in order to work. Focus information, along with many other camera-specific settings, is stored in _makernotes_, a manufacturer-specific section of the EXIF metadata.
+Lightroom does not retain or even read makernotes when importing files. Therefore, if a separate file is created from the original image (e.g. by exporting to another application such as Photoshop), this information will not be present in the file and the plugin will not have the necessary inputs to work.
+
+
+For more details and concrete examples, see [Scope and Limitations](Focus-Points.md#1-scope-and-limitations).  
+
+For example, this image was imported into Lightroom as a RAW file and then edited in Photoshop. The re-imported TIFF file is missing the makernotes and focus information, so the plugin does not have the data it needs to work.
+
+<img src="images/Troubleshooting 6.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
+
+The log file reveals whether intact metadata is available or not by indicating which tag has not been found:
+
+<img src="images/Troubleshooting 7.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
 
 
 ### "Camera model not supported"
