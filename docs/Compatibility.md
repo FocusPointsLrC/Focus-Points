@@ -1,4 +1,4 @@
-  # Compatibility
+# Compatibility
 
 ## Lightroom versions
 
