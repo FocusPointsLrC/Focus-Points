@@ -17,7 +17,7 @@ This document explains the various Focus Point Viewer messages displayed at the 
 * [Severe error encountered](#severe-error-encountered)
 
 
-### "Focus achieved"
+### Focus achieved
 
 to be added
 
