@@ -1,8 +1,8 @@
 # Understanding Focus Results
 
-## Success, Warning and Error Messages
+## Success, Warning, and Error Messages
 
-This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages summarize whether the plugin was successful in detecting and visualising focus points. These messages can be success messages (green), warnings (orange) or error messages (red).
+This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages indicate whether the plugin was successful in detecting and visualizing focus points.
 
 * [Focus achieved](#focus-achieved)
 * [Focus points outside cropped image area](#focus-points-outside-cropped-image-area)
@@ -25,24 +25,27 @@ Special topics:
 
 <br>
 
+**Important:** Focus Point Viewer visualizes information recorded by the camera. It does not independently determine whether the subject is sharp or whether the photograph is technically in focus. The displayed focus points and status messages should therefore be interpreted in the context of the camera's autofocus system and the circumstances in which the photo was taken.
+<br><br>
+
 ### "Focus achieved"
 
-Information about the active focus points has been detected in the photo metadata. When the shot was taken, the camera autofocus achieved focus for one or more autofocus points.
+Information about the active focus points has been detected in the photo metadata. When the shot was taken, the camera reported successful autofocus acquisition for one or more focus points.
 
-Depending on how metadata is recorded by a particular camera, 'Focus achieved' might or might NOT be displayed for shots taken with **Back-Button Focus** (BBF). For further information, see [Back Button Focus (BBF)](#back-button-focus-bbf).
+Depending on how a particular camera records its metadata, the "Focus achieved" message may or may not be displayed for shots taken using **Back-Button Focus** (BBF). For further information, see [Back-Button Focus (BBF)](#back-button-focus-bbf).
 
-If the photo has been taken using the **Focus and Recompose** technique, the displayed focus point does NOT correspond to the spot where the autofocus has focused. See  [Focus-and-Recompose](#focus-and-recompose) for further explanation.
+If the photo has been taken using the **Focus and Recompose** technique, the displayed focus point does NOT correspond to the spot where the autofocus has focused. In this case, the focus point display is misleading. See  [Focus and Recompose](#focus-and-recompose) for further explanation.
 
 <img src="images/Understanding 1.jpg" alt="Understanding 1" style="width: 1000px;"/>
 <br><br>
 
 ### "Focus points outside cropped image area"
 
-Active focus points have been detected, but they are invisible or partially invisible because they are located outside the cropped image area.
+Active focus points have been detected, but they are either partially or completely outside the visible cropped image area.
 
 **Note:** This message is not triggered by face or subject detection frames, only focus points. 
 
-Cropped image (focus point outside visible crop):
+**Example:** Cropped image (focus point outside visible crop):
 
 <img src="images/Understanding 2a.jpg" alt="Understanding 2a" style="width: 1000px;"/>
 
@@ -53,46 +56,45 @@ Original image with focus point:
 
 ### "Focus points may be misaligned due to Transform settings"
 
-The focus point information recorded by the camera refers to the original image. While the plugin can retain the original focus point location if the photo has been cropped, rotated, or flipped in Lightroom, this is not possible for photos to which Transform or Upright operations have been applied. As a result, the displayed focus point may not accurately match its actual position in the transformed image.
+The focus point information recorded by the camera refers to the original image. The plugin can correctly position focus points when the photo has been cropped, rotated, or flipped using Lightroom's Crop tool. However, it cannot compensate for Transform or Upright operations. As a result, the displayed focus points may no longer accurately correspond to their actual positions in the transformed image.
 
-This photo has been processed with Transform, Upright 'Auto'. Note that the frames for autofocus point and bird head detection are slightly off:
+**Example:** Original photo. Autofocus point and bird head detection is positioned on the bird's head:   
 
 <img src="images/Understanding 3a.jpg" alt="Understanding 3a" style="width: 1000px;"/>
 
-Transform operations change the geometry of the image content, so the focus point and subject detection frames may no longer be properly aligned with the subject features (such as the bird's body and head) that triggered autofocus:
+The photo has been processed with Transform, Upright 'Auto'. Transform operations change the geometry of the image content, so the focus point and subject detection frames may no longer be properly aligned with the subject features (such as the bird's body and head) that triggered autofocus:
 
 <img src="images/Understanding 3b.jpg" alt="Understanding 3b" style="width: 1000px;"/>
 
 The actual error depends on the type and degree of transformation. A small Transform adjustment might produce only a very small displacement, while a strong perspective correction can produce a substantial one.
 
-If precision of focus point display matters, you should always check this on a photo without Transform operations applied.
+If accurate focus point positioning is important, always check the photo with Transform operations disabled.
 <br><br>
 
 ### "Subject detected, but focus not achieved"
 
-The camera has detected a subject or a face but focus was not achieved.
+The camera has detected a subject or a face, but has not recorded information identifying which AF points, if any, were in focus when the shot was taken. This typically indicates that focus was not achieved.
 
-Information about AF points "in focus" is not available in the metadata; it was not recorded by the camera.
+The exact reason for this depends on the specific camera model and the way the camera manufacturer has designed the AF system to work.
 
-The exact reason for this behavior may depend on the specific camera model and the way the camera manufacturer has designed the AF system to work.
+One possible reason for this situation is that the AF system has not been able to complete its task. For example, the camera may have been set to "Release Priority", allowing the shutter to be released even though autofocus had not yet completed its task. 
 
-A common potential reason for this situation is that the AF system has not been able completed its task. For instance, if the shot was taken with "Release Priority" and the autofocus was "not ready" yet. 
-
+**Example:** A face has been detected but the `AF Search` tag in `Focus Information` shows `Not Ready`: 
 
 <img src="images/Understanding 4.jpg" alt="Understanding 4" style="width: 1000px;"/>
 <br><br>
 
 ### "Focus points selected, but focus not achieved"
 
-A focus point has been selected focus was not achieved.
+One or more focus points have been selected, but focus was not achieved.
 
 Information about AF points "in focus" is not available in the metadata; it was not recorded by the camera.
 
-The exact reason for this behavior may depend on the specific camera model and the way the camera manufacturer has designed the AF system to work.
+The camera has not recorded information identifying which AF points, if any, were in focus when the shot was taken.
 
-A common potential reason for this situation is that the AF system has not been able completed its task. For instance, if the shot was taken with "Release Priority" and the autofocus was "not ready" yet.
+One possible reason for this situation is that the AF system has not been able to complete its task. For example, the camera may have been set to "Release Priority", allowing the shutter to be released even though autofocus had not yet completed its task. 
 
-Another typical reason is that the photo has been taken using **Back-Button Focus.** Some cameras (e.g. Canon, OM System) record the focus point that was used to focus the shot (using the AF-button) as "selected focus point". Releasing the shutter button does not record any further focus points. If the camera has been moved between focusing and releasing the shutter button, the displayed selected focus point will NOT correspond to the spot where the autofocus has focused.  
+Another typical reason is that the photo was taken using **Back-Button Focus**. Some cameras (e.g., Canon and OM System) record the focus point used when the photographer presses the AF button as the "selected focus point". Releasing the shutter button does not necessarily record any additional focus information. If the camera has been moved between focusing and releasing the shutter button, the displayed selected focus point may no longer correspond to the actual location where autofocus was performed.
 
 <img src="images/Understanding 5.jpg" alt="Understanding 5" style="width: 1000px;"/>
 <br><br>
@@ -100,9 +102,9 @@ Another typical reason is that the photo has been taken using **Back-Button Focu
 
 ### "No focus points recorded"
 
-The camera has not recorded any focus points, neither selected ones nor such that are in focus.
+The camera has not recorded any information about focus points. The absence of this information typically means that focus was not achieved.
 
-to be added
+This is a more general case of the situations [Subject detected, but focus not achieved](#subject-detected-but-focus-not-achieved) and [Focus points selected, but focus not achieved](#focus-points-selected-but-focus-not-achieved). Not all cameras record information about detected subjects or the focus points selected when taking a shot.
 
 <img src="images/Understanding 6.jpg" alt="Understanding 6" style="width: 1000px;"/>
 <br><br>
@@ -111,11 +113,11 @@ to be added
 <a id="focus-point-recorded-in-manual-focus-mode"></a>
 ### "Focus point recorded in manual focus mode"
 
-Fujifilm cameras store focus information when using the manual focus mode (AF-M). 
+Fujifilm cameras can record focus information even when manual focus mode (AF-M) is selected. The same applies to Hasselblad cameras (MF).
 
-Unlike autofocus-determined focus points, manual focus points do not necessarily indicate the sharpest parts of an image. Instead, they **represent the center of the focus area** selected by the camera user (single point / zone / wide).
+Unlike autofocus-determined focus points, manual focus points do not necessarily indicate the sharpest parts of an image. Instead, they represent the center of the focus area selected by the photographer (Single Point, Zone, or Wide).
 
-When the photographer uses the selected focus area to focus the image and this area is small (single point), the displayed focus point will probably correspond to a sharp part of the image. Otherwise, the displayed focus point may end up over an unsharp part of the image.
+If the selected focus area is small (Single Point), the displayed focus point will probably correspond to a sharp part of the image. With larger focus areas, however, the displayed point may fall on an unsharp part of the image.
 
 In manual focus mode, you need to recall the circumstances in which the image was captured in order to make sense of the focus point information.
 
@@ -124,40 +126,38 @@ In manual focus mode, you need to recall the circumstances in which the image wa
 
 
 ### "Manual focus, no AF points recorded"
-This is a special but very typical case of "No focus points recorded". The photo was taken with manual focus (MF), so there is no autofocus (AF) information in the metadata.
+This is a special but very common case of "No focus points recorded". The photo was taken using manual focus (MF), so no autofocus (AF) information is available in the metadata.
 
-<img src="images/Understanding 8.jpg" alt="Understanding 7" style="width: 1000px;"/>
+<img src="images/Understanding 8.jpg" alt="Understanding 8" style="width: 1000px;"/>
 <br><br>
 
 
 ### "Focus info missing from file"
 
-The selected photo lacks the metadata needed to process and visualize focus information. This error message typically occurs when you try to view focus points for an image that was processed outside of Lightroom (for example, in Photoshop).
+Camera information is available, but the required original focus metadata is missing.
+
+The selected photo does not contain the original camera metadata needed to process and visualize focus information. This error message typically occurs when you try to view focus points for an image that was processed outside of Lightroom (for example, in Photoshop).
 
 Why is this happening?
-The plugin requires the metadata of original, out-of-camera JPGs or RAW files in order to work. Focus information, along with many other camera-specific settings, is stored in _makernotes_, a manufacturer-specific section of the EXIF metadata.
-Lightroom does not retain or even read makernotes when importing files. Therefore, if a separate file is created from the original image (e.g. by exporting to another application such as Photoshop), this information will not be present in the file and the plugin will not have the necessary inputs to work.
+The plugin requires the original camera metadata to process and visualize focus information. Much of this information, along with other camera-specific settings, is stored in the MakerNotes section of the EXIF metadata.
 
+Lightroom does not preserve the original MakerNotes when creating rendered files. Consequently, when an image is exported to another application such as Photoshop and subsequently re-imported into Lightroom as a TIFF, the original MakerNotes and the focus information they contain are generally no longer available. The plugin therefore lacks the information needed to visualize the focus points.
 
 For more details and concrete examples, see [Scope and Limitations](Focus-Points.md#1-scope-and-limitations).  
 
-For example, this image was imported into Lightroom as a RAW file and then edited in Photoshop. The re-imported TIFF file is missing the makernotes and focus information, so the plugin does not have the data it needs to work.
+For example, this image was imported into Lightroom as a RAW file and then edited in Photoshop. The re-imported TIFF file is missing the MakerNotes and focus information, so the plugin does not have the data it needs to work.
 
 <img src="images/Understanding 9.jpg" alt="Understanding 9" style="width: 1000px;"/>
-
-The log file reveals whether intact metadata is available or not by indicating which tag has not been found:
-
-<img src="images/Troubleshooting 7.jpg" alt="User Interface (Multi-image)" style="width: 800px;"/>
 <br><br>
 
 
 ### "Camera model not supported"
 
-The selected photo was taken by a camera that the plugin cannot handle.
+The selected photo was taken with a camera model that is not supported by the plugin.
 
-This message may be displayed for older camera models that do not use the same structures to store AF-related information as their successor models. It can also be displayed for newer models where the AF related information has not yet been decoded by ExifTool.
+This message may appear for older camera models that use different structures for storing AF-related information than their successors. It may also appear for newer models whose AF-related metadata has not yet been decoded by ExifTool.
 
-Example for the original Canon 1D from 2001:
+**Example:** Photo taken with the original Canon 1D from 2001:
 
 <img src="images/Understanding 10.jpg" alt="Understanding 10" style="width: 1000px;"/>
 <br><br>
@@ -165,9 +165,9 @@ Example for the original Canon 1D from 2001:
 
 ### "Camera maker not supported"
 
-The selected photo was taken with a camera from a manufacturer that the plugin cannot handle.
+The camera manufacturer is known, but its metadata format is not supported.
 
-While it is not difficult to add at least basic support for a camera brand, this requires that the relevant AF metadata be available. This means they have to be "known" by exifool, which is not the case for Leica, Hasselblad, Sigma, Samsung phones and others.
+Adding at least basic support for a camera manufacturer is often relatively straightforward, provided that the relevant AF metadata is available and can be decoded by ExifTool. This is not always the case, for example with some manufacturers such as Sigma and Samsung.
 
 <img src="images/Understanding 11.jpg" alt="Understanding 11" style="width: 1000px;"/>
 <br><br>
@@ -175,9 +175,11 @@ While it is not difficult to add at least basic support for a camera brand, this
 
 ### "No camera-specific metadata found"
 
-The selected photo does not include information about the camera used. The make and model of the camera are both unknown, as is usually the case when an image file is exported from Lightroom (or any other program) without metadata. 
+The camera make and model cannot be identified from the available metadata.
 
-Clearly, the plugin is unable to perform any actions on this photo other than display it.
+The selected photo does not contain information identifying the camera used. Both the camera make and model are unknown. This is typically the case when an image has been exported from Lightroom (or another application) without including camera metadata.
+
+**Example:** The plugin cannot process this photo and can only display it:
 
 <img src="images/Understanding 12.jpg" alt="Understanding 12" style="width: 1000px;"/>
 <br><br>
@@ -187,16 +189,38 @@ Clearly, the plugin is unable to perform any actions on this photo other than di
 
 This message is displayed when something serious and unexpected happens during the process of reading focus information from the metadata, processing it, and displaying the visualization elements.
 
-This can be anything from installation problems, unexpected metadata, or simply that the programmer did not handle a particular situation properly in the plugin code. The log file may give some indication of what the problem is, but usually it is not something a user can fix.
+Possible causes include installation problems, unexpected metadata, or situations that are not properly handled by the plugin code. The log file may give some indication of what the problem is, but usually it is not something a user can fix.
 
-If you encounter this problem and cannot fix it yourself, please go to the plugin home page on Github, sign up for a free account if you don't already have one, and [create a new issue](https://github.com/FocusPointsLrC/Focus-Points/issues) that describes the problem. This way you can help make the plugin better and more reliable!
+If you encounter this problem and cannot resolve it yourself, please visit the plugin's [GitHub issue tracker](https://github.com/FocusPointsLrC/Focus-Points/issues) and create a new issue describing the problem. You will need a free GitHub account to do so. Please include the plugin log file if possible, as it may help identify the cause of the error.
+<br><br>
 
+## Special Topics
 
-### Back Button Focus (BBF)
+### Back-Button Focus (BBF)
 
-to be added
+Back-Button Focus is a technique that separates autofocus activation from the shutter release. Instead of activating autofocus by half-pressing the shutter button, the photographer uses a separate button, usually located on the back of the camera, to initiate autofocus.
 
+The photographer presses the AF button to focus on the subject and then releases it. Pressing the shutter button to take the picture does not trigger autofocus again. This allows the photographer to lock focus and take one or more pictures without having to refocus each time.
+
+Depending on the camera manufacturer, the focus information recorded in the metadata may not reflect this sequence of events. Some cameras (e.g., Canon and OM System) record the focus point used when autofocus was activated, even if the shutter is released later without triggering autofocus again.
+
+Consequently, the displayed focus point may not correspond to the location where the subject was positioned when the picture was taken. Furthermore, depending on how the camera records focus information, the plugin may not be able to determine whether focus was successfully achieved.
+
+**Example:**
+
+<img src="images/Understanding 13.jpg" alt="Understanding 13" style="width: 1000px;"/>
+<br><br>
 
 ### Focus and Recompose
 
-to be added
+Focus and Recompose is a photographic technique in which the photographer first focuses on a subject and then moves the camera to change the composition before taking the picture.
+
+This is commonly done when using a single, centrally positioned autofocus point. The photographer places the focus point over the subject, activates autofocus (usually by half-pressing the shutter button or using Back-Button Focus), and holds focus while recomposing the image.
+
+The camera records the position of the autofocus point used to acquire focus. However, if the photographer subsequently recomposes the image, the subject may appear at a different position in the final photograph. The plugin displays the recorded AF point at its original position, which may no longer correspond to the subject's location.
+
+**Important:** Focus and Recompose can also affect actual focus accuracy. When the camera is rotated to recompose the image, the plane of focus changes its orientation relative to the subject. Depending on the subject distance, aperture, and amount of recomposition, this can result in the subject no longer being perfectly in focus.
+
+**Example:**
+
+<img src="images/Understanding 14.jpg" alt="Understanding 14" style="width: 1000px;"/>
