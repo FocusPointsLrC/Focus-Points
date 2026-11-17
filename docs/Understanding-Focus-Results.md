@@ -2,7 +2,7 @@
 
 ## Success, Warning, and Error Messages
 
-This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages indicate whether the plugin was successful in detecting and visualizing focus points.
+This document explains the various Focus Point Viewer messages displayed at the top of the `Focus Information` section. These messages indicate whether the plugin was successful in detecting and visualizing focus points:
 
 * [Focus achieved](#focus-achieved)
 * [Focus points outside cropped image area](#focus-points-outside-cropped-image-area)
@@ -22,6 +22,9 @@ Special topics:
 
 * [Back-Button Focus (BBF)](#back-button-focus-bbf)
 * [Focus and Recompose](#focus-and-recompose)
+
+Appendix:
+* [Overview of messages and their meanings](#overview-of-messages-and-their-meanings)
 
 <br>
 
@@ -138,7 +141,7 @@ These functions can help the photographer achieve focus at the selected location
 
 
 ### "Manual focus, no AF points recorded"
-This is a special but very common case of "No focus points recorded". The photo was taken using manual focus (MF), so no autofocus (AF) information is available in the metadata.
+This is a special but very common case of "No focus points recorded". The photo was taken using manual focus (MF), no autofocus (AF) information is available in the metadata.
 
 <img src="images/Understanding 8.jpg" alt="Understanding 8" style="width: 1000px;"/>
 <br><br>
@@ -236,3 +239,24 @@ The camera records the position of the autofocus point used to acquire focus. Ho
 **Example:**
 
 <img src="images/Understanding 14.jpg" alt="Understanding 14" style="width: 1000px;"/>
+<br><br>
+
+## Appendix 
+
+### Overview of messages and their meanings
+
+| Focus Result Message | Type | Meaning |
+|---|:-:|---|
+| **Focus achieved** | Success | The camera reported successful autofocus acquisition for one or more focus points. |
+| **Focus points outside cropped image area** | Warning | Active focus points are partially or completely outside the visible cropped image area. |
+| **Focus points may be misaligned due to Transform** | Warning | Transform or Upright operations may have changed the image geometry, causing focus points and subject detection frames to be incorrectly positioned. |
+| **Subject detected, but focus not achieved** | Warning | A subject or face was detected, but the camera did not record successful focus acquisition. |
+| **Focus points selected, but focus not achieved** | Warning | One or more focus points were selected, but the camera did not record successful focus acquisition. |
+| **No focus points recorded** | Warning | The camera did not record any focus point information. This typically means that focus was not achieved. |
+| **Focus point recorded in manual focus mode** | Warning | The camera recorded a focus area in manual focus mode. This may simply be an area selected for manual-focus assistance, not necessarily where the photographer actually focused. |
+| **Manual focus, no AF points recorded** | Warning | The photo was taken in manual focus mode, and no autofocus information is available in the metadata. |
+| **Focus info missing from file** | Error | The original camera metadata required to process and visualize focus information is missing. |
+| **Camera model not supported** | Error | The camera model is not supported by the plugin. |
+| **Camera maker not supported** | Error | The camera manufacturer is known, but its AF metadata format is not supported by the plugin. |
+| **No camera-specific metadata found** | Error | The camera make and model cannot be identified from the available metadata. |
+| **Severe error encountered** | Error | An unexpected error occurred while reading, processing, or displaying focus information. |
