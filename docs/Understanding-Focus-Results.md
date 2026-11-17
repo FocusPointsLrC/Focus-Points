@@ -110,16 +110,28 @@ This is a more general case of the situations [Subject detected, but focus not a
 <br><br>
 
 
-<a id="focus-point-recorded-in-manual-focus-mode"></a>
 ### "Focus point recorded in manual focus mode"
 
-Fujifilm cameras can record focus information even when manual focus mode (AF-M) is selected. The same applies to Hasselblad cameras (MF).
+Some cameras, including certain Fujifilm and Hasselblad models, record focus information even when manual focus mode is selected.
 
-Unlike autofocus-determined focus points, manual focus points do not necessarily indicate the sharpest parts of an image. Instead, they represent the center of the focus area selected by the photographer (Single Point, Zone, or Wide).
+Unlike autofocus-determined focus points, the focus point displayed for a photo taken in manual focus mode (AF-M for Fujifilm, MF for Hasselblad) does not necessarily indicate a sharp area of the image. Instead, it represents an area selected by the photographer that can be used with various manual-focus assistance functions.
 
-If the selected focus area is small (Single Point), the displayed focus point will probably correspond to a sharp part of the image. With larger focus areas, however, the displayed point may fall on an unsharp part of the image.
+Depending on the camera, the selected focus area can be used with functions such as:
 
-In manual focus mode, you need to recall the circumstances in which the image was captured in order to make sense of the focus point information.
+- Fujifilm: Focus Check<sup>1</sup> or Instant AF<sup>2</sup>.
+- Hasselblad: Auto Zoom<sup>1</sup> or Focus Indicator<sup>3</sup>.
+
+These functions can help the photographer achieve focus at the selected location, but this is not necessarily what happens. At least on Fujifilm cameras, the currently selected focus area is recorded regardless of whether the photographer actually used it to focus the image.
+
+**Important:** A focus point recorded in manual focus mode does not necessarily indicate where the photographer actually focused. It may simply represent the area selected for manual-focus assistance, regardless of whether that area was used to achieve focus.
+
+**In manual focus mode, you need to recall the circumstances in which the image was captured in order to make sense of the focus point information.**
+
+<sup>1</sup> **Focus magnifier:** The EVF or camera display automatically zooms in on the selected focus area when the focus ring is rotated in manual focus mode.
+
+<sup>2</sup> **Instant AF:** Fujifilm's Instant AF temporarily activates the autofocus system while the camera is in manual focus mode. By pressing a designated button (typically AF-ON or AE-L/AF-L), the camera performs autofocus on the selected subject and then returns to manual focus when the button is released.
+
+<sup>3</sup> **Focus Indicator:** The Hasselblad Focus Indicator appears in the EVF or on the camera display. It indicates whether the subject is in focus and, if not, which direction to turn the focus ring. Depending on the camera model, it may also provide visual or haptic confirmation when focus is achieved.
 
 <img src="images/Understanding 7.jpg" alt="Understanding 7" style="width: 1000px;"/>
 <br><br>
