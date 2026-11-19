@@ -1167,13 +1167,66 @@ Panasonic doesn't support a "focus distance" specification in the metadata, so t
 
 Supported features:
 
-|                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
-|:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
-|  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>  |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>  | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
+|                                       MAC                                       |                                         WIN                                         |       Color       | Meaning                                                                   |
+|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|:-----------------:|---------------------------------------------------------------------------|
+| <img src="images/af_infocusdot.png" alt="infocusdot" style="width: 20px;"/> | <img src="images/af_infocusdot_win.png" alt="infocusdot" style="width: 20px;"/> | red<sup>1,2</sup> | Active AF point. Focus location, pixel coordinates reported by the camera |
+|       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow       | Face or subject detected by the camera in this area                       |
 
 <sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+<sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).<br>
 
-Examples
+Although the plugin can display AF metadata for many Leica cameras dating back to the beginning of the century, only a few cameras are supported for focus point display:
+
+- Latest SL and Q series, with new firmware (Leica metadata)
+- Older C, C-Lux, V-Lux, D-Lux series (Panasonic metadata)
+
+The information available depends on the camera model.
+
+| Camera Model | Introduced | Focus Points | Focus Mode | AF Mode | Focus Range | AF Detection | Straighten | 
+|:-------------|:---------------:|:---------------------------:|:-------------------:|:----------------:|:--------------------:|:--------------------:|:--------------------:|
+| SL3-P        | 2026 | ✓³ | ✓ | ✓ | ✓ | ✓³ | ✓ |
+| SL3 / SL3-S    | 2024 | ✓² | ✓ | ✓ | ✓ | ✓² | ✓ |
+| Q3 / Q3M / Q3 43  | 2023 | ✓¹ | ✓ | ✓ | ✓ | ✓¹ | ✓ |
+| SL2-S        | 2020 | - | ✓ | ✓ | ✓ | - | - |
+| SL2          | 2019 | - | ✓ | ✓ | ✓ | - | - |
+| Q2           | 2019 | - | ✓ | ✓ | ✓ | - | - |
+| CL           | 2017 | - | ✓ | ✓ | ✓ | - | - |
+| TL2          | 2017 | - | ✓ | ✓ | ✓ | ✓| - |
+| TL           | 2016 | - | ✓ | ✓ | ✓ | - | - |
+| SL           | 2015 | - | ✓ | ✓ | ✓ | - | - |
+| Q            | 2015 | - | ✓ | ✓ | ✓ | - | - |
+| C⁴           | 2013 | ✓ | ✓ | ✓ | - | - | - |
+| C-Lux⁴       | 2006 | ✓ | ✓ | ✓ | - | - | - |
+| V-Lux⁴       | 2006 | ✓ | ✓ | ✓ | - | - | - |
+| D-Lux⁴       | 2003 | ✓ | ✓ | ✓ | - | - | - |
+
+
+**Legend:**
+
+✓ Supported<br>
+— Not supported<br>
+
+1. Starting with firmware version 4.1
+2. Starting with firmware version 4.2
+3. Starting with firmware version 4.2 
+4. Identical to Panasonic counterpart or based on a shared platform.
+
+**Focus Mode:** AF-S, AF-C, MF, etc.
+**AF Mode:** Spot, Field, Zone, Tracking, Face Detection, etc.
+
+Examples:
+
+<img src="images/Leica 1.jpg" alt="Leica 1" style="width: 1000px;"/>
+Q3 - Displaying all available information
+<br><br>
+
+<img src="images/Leica 2.jpg" alt="Leica 2" style="width: 1000px;"/>
+SL2-S - Displaying basic information (no focus points, Focus Mode, AF Mode)
+<br><br>
+
+<img src="images/Leica 3.jpg" alt="Leica 3" style="width: 750px;"/><br>
+The Leica D-Lux 8 shares a platform with the Lumix LX series, and therefore has a similar focus point display to Panasonic cameras. 
+<br>
 
 
 ## 3.9 Hasselblad
@@ -1186,7 +1239,77 @@ Supported features:
 
 <sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 
+The plugin supports displaying focus points and related autofocus information for the following Hasselblad cameras:
+
+- X2D II 100C
+- X2D 100C
+- CFV 100C/907X
+- X1D II 50C
+- X1D 50C
+- CFV II 50C/907X
+
+The available information varies by camera model.
+
+Image straightening is not supported because it is currently unclear whether Hasselblad cameras record RollAngle information and, if so, where this information is stored in the image metadata.
+
+| Camera Model | Introduced | Focus Points | Focus Mode¹ | Focus Point Mode² | MF Assist Status³ | Tracking Status⁴ | Subject Detection Status⁵ |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| X2D II 100C | 2025 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| CFV 100C/907X | 2024 | ✓ | ✓ | – | * | – | – |
+| X2D 100C | 2022 | ✓ | ✓ | – | * | – | – |
+| CFV II 50C/907X | 2020 | ✓ | ✓ | – | – | – | – |
+| X1D II 50C | 2019 | ✓ | ✓ | – | – | – | – |
+| X1D 50C | 2016 | ✓ | ✓ | – | – | – | – |
+
+**Legend:**
+
+✓ Supported<br>
+– Not supported<br>
+\* Insufficient test images to decode the information<br>
+
+¹ AF-S, AF-C, MF
+
+² Spot, Expanded Spot, Custom, Wide
+
+³ On, Off
+
+⁴ On, Off (Ready), On (Active)
+
+⁵ Subject Detected (the specific subject type selected – Human, Cat/Dog, or Vehicle – is not available in the metadata).
+<br>
+
 Examples
+
+
+<img src="images/Hasselblad 1.jpg" alt="Hasselblad 1" style="width: 1000px;"/>
+This photo, taken with the X2D II 100C, displays all the available focus information.
+<br><br>
+
+<img src="images/Hasselblad 5.jpg" alt="Hasselblad 5" style="width: 1000px;"/>
+This X2D II 100C photo was taken using manual focus. The displayed focus point corresponds to the area of the 'Focus Indicator' chosen by the photographer as MF Assist function. 
+<br><br>
+
+<img src="images/Hasselblad 6.jpg" alt="Hasselblad 6" style="width: 1000px;"/>
+CFV 100C/907X – basic information (focus point, focus mode)
+<br><br>
+
+<img src="images/Hasselblad 7.jpg" alt="Hasselblad 7" style="width: 1000px;"/>
+X2D 100C – basic information (focus point, focus mode)
+<br><br>
+
+<img src="images/Hasselblad 2.jpg" alt="Hasselblad 2" style="width: 1000px;"/>
+X1D II 50C – basic information (focus point, focus mode)
+<br><br>
+
+<img src="images/Hasselblad 3.jpg" alt="Hasselblad 3" style="width: 1000px;"/>
+This X2D II 100C photo was taken using manual focus. The displayed focus point corresponds to the area where MF Assist 'Auto Zoom' would be if enabled if selected. 
+
+<img src="images/Hasselblad 4.jpg" alt="Hasselblad 4" style="width: 1000px;"/>
+X1D – basic information (focus point, focus mode)
+<br><br>
+
+
+
 
 
 ## 3.10 Pentax

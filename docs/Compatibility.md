@@ -48,7 +48,9 @@
   
 
 * Leica 
-  * SL3, SL3-S, SL3P, Q3, Q3 M, Q3 43, C-Lux, D-Lux, V-Lux
+  * SL3, SL3-S, SL3P, Q3, Q3 M, Q3 43, C-Lux, D-Lux, V-Lux  
+    See 
+[Add Support for Leica](https://github.com/FocusPointsLrC/Focus-Points/issues/427) for details.
   
 
 * Hasselblad
