@@ -26,14 +26,14 @@
 local MogrifyUtils = {}
 
 -- Imported LR namespaces
-local LrDate          = import 'LrDate'
-local LrDialogs       = import 'LrDialogs'
-local LrExportSession = import 'LrExportSession'
-local LrFileUtils     = import 'LrFileUtils'
-local LrErrors        = import 'LrErrors'
-local LrPathUtils     = import 'LrPathUtils'
-local LrPrefs         = import 'LrPrefs'
-local LrTasks         = import 'LrTasks'
+local LrDate            = import 'LrDate'
+local LrDialogs         = import 'LrDialogs'
+local LrExportSession   = import 'LrExportSession'
+local LrFileUtils       = import 'LrFileUtils'
+local LrErrors          = import 'LrErrors'
+local LrPathUtils       = import 'LrPathUtils'
+local LrPrefs           = import 'LrPrefs'
+local LrTasks           = import 'LrTasks'
 
 -- Required Lua definitions
 local FocusPointPrefs   = require 'FocusPointPrefs'
@@ -73,7 +73,11 @@ local colorMap = {
 ------------------------------------------------------------------------------]]
 local function getImageFileName(photo)
 
-  local orgPath   = photo:getRawMetadata("path")
+  local ok, orgPath = LrTasks.pcall(photo.getRawMetadata, photo, "path")
+  if not ok or not orgPath then
+    return nil
+  end
+
   local leafName  = LrPathUtils.leafName( orgPath )
   local leafWOExt = LrPathUtils.removeExtension( leafName )
   local tempPath  = LrPathUtils.getStandardFilePath( "temp" )
@@ -89,13 +93,13 @@ end
 
   Create an ImageMagick script file containing all drawing commands. This avoids
   command-line length limitations when many focus points need to be rendered.
-  Returns the name of the temp file.
+  Returns the name of the temp script file or nil in case of errors
 ------------------------------------------------------------------------------]]
 local function createMagickScript(photo, params)
   local scriptName = Utils.getTempFileName()
   local imageFileName = getImageFileName(photo)
 
-  local success = pcall(function()
+  local success, _errorCode = pcall(function()
     local file = io.open(scriptName, "w")
     if file then
       file:write('-read \"' .. imageFileName .. '\"', "\n")
@@ -107,8 +111,7 @@ local function createMagickScript(photo, params)
   if not success then
     local errorText = 'FATAL error creating script file ' .. scriptName
     Log.logError('Mogrify', errorText)
-    LrErrors.throwUserError(
-      string.format("%s\n\n%s", Utils.getPhotoFileName(photo), errorText))
+    return nil
   end
   return scriptName
 end
@@ -122,26 +125,21 @@ end
   when performing drawing operations involving a large number of points.
   In case Mogrify reports an error (return code ~= 0) an error message is
   issued and the the processing of the current photo is stopped.
+  Returns true on success and false on failure.
 ------------------------------------------------------------------------------]]
 local function mogrifyExecute(photo, params)
 
   local scriptName = createMagickScript(photo, params)
+  if not scriptName then return false end
+
   local cmdline    = '\"' .. mogrifyPath .. '\"' .. ' -script ' .. '\"' .. scriptName .. '\"'
 
   Log.logDebug("Mogrify", cmdline )
   local rc = LrTasks.execute( '\"' .. cmdline .. '\"' )
 
-  -- Avoid Windows process queue saturation
-  if WIN_ENV then
-      LrTasks.sleep(0.02)
-      LrTasks.yield()
-  end
-
   if rc ~= 0 then
     Log.logError("Mogrify", 'Error calling: ' .. cmdline .. ", return code " .. rc)
-    LrErrors.throwUserError(string.format(
-     "%s\n\nFATAL error calling 'mogrify.exe' (rc=%s)\nPlease check logfile",
-      Utils.getPhotoFileName(photo), rc))
+    return false
   end
 
   local prefs = LrPrefs.prefsForPlugin( nil )
@@ -152,8 +150,8 @@ local function mogrifyExecute(photo, params)
     end
   end
 
+  return true
 end
-
 
 --[[----------------------------------------------------------------------------
   public string filename, string mode, string errorText
@@ -168,7 +166,12 @@ end
   For modal dialog operation, a preview image is retrieved and written to disk.
   Note that requestJpegThumbnail() treats the size as a minimum value and that the image on disk
   may be larger than this. Any deviations will be corrected in the Mogrify step.
-  If the preview does not become available after a certain timeout, the image will be created using Export.
+
+  #TODO - Rephrase comment
+  In 'Second Screen' mode, the preview approach does not work because requestJpegThumbnail is unreliable.
+  When in Develop mode, the preview image is usually blurry, or Lightroom Classic might not be able to
+  to create one. Instead, an exported image using LrExportSession will be used. This takes slightly longer, but
+  it delivers a reliable result.
 ------------------------------------------------------------------------------]]
 
 local function writeToDisk(photo, xSize, ySize)
@@ -190,13 +193,21 @@ function exportPreview(photo, xSize, ySize)
   -- appears to be stuck between different rendering systems.
   local MIN_SIZE      = 250
 
-  local previewFileName, thumbName = getImageFileName(photo)
   local prefs     = LrPrefs.prefsForPlugin(nil)
   local fallback  = prefs.previewFallback
   local timeout   = prefs.previewTimeout
   local thumbRequest
   local callbackReceived
+  local previewAbandoned = false
   local errorText
+
+  local previewFileName, thumbName = getImageFileName(photo)
+  if not previewFileName then
+    -- getImageFileName can return w/o result if the current file has been deleted in Second Screen mode
+    errorText = "Internal error: Preview cannot be obtained for a deleted photo."
+    Log.logWarn("Mogrify", errorText)
+    return nil, FocusPointPrefs.displayModePreview, errorText
+  end
 
   local function getJpegDimensions(data)
     -- Helper function to retrieve the dimensions of the image returned by requestJpegThumbnail()
@@ -324,6 +335,10 @@ function exportPreview(photo, xSize, ySize)
   while not previewReady do
     callbackReceived = false
     thumbRequest = photo:requestJpegThumbnail(xSize, ySize, function(data, errorMsg)
+      -- A timeout may already have started an export to the same filename.
+      -- Ignore a late thumbnail callback so it cannot overwrite the export.
+      if previewAbandoned then return end
+
       --[[
         Request a JPEG thumbnail of the current photo.
         Two different situations exist:
@@ -398,17 +413,18 @@ function exportPreview(photo, xSize, ySize)
     end)
 
     while not callbackReceived do
-      if fallback and timeoutReached(startTime, timeout) then
+      if fallback and timeoutReached(startTime, timeout) or timeoutReached(startTime, RETRY_TIMEOUT) then
         Log.logInfo("Mogrify", string.format(
           "Preview timeout reached after %.1f seconds. Using Export.",
           LrDate.currentTime() - startTime))
+        previewAbandoned = true
         return exportPhoto(photo, xSize, ySize)
       end
       LrTasks.sleep(POLL_INTERVAL)
     end
 
     -- The callback has been received and handled. Release the object and the memory allocated to it.
-     thumbRequest = nil
+    thumbRequest = nil
 
     if previewReady then
       return previewFileName, FocusPointPrefs.displayModePreview, errorText
@@ -426,12 +442,16 @@ function exportPreview(photo, xSize, ySize)
         LrTasks.sleep(POLL_INTERVAL)
       end
       if timeoutReached(startTime, RETRY_TIMEOUT) then
+        return exportPhoto(photo, xSize, ySize)
+--[[ @TODO Remove later - behavior changed in V4 PRE 5: return exported image instead of error message
+
         errorText = string.format(
           "Preview could not be obtained within the maximum waiting time of %.1f seconds",
           RETRY_TIMEOUT)
         Log.logInfo("Mogrify", errorText)
         previewReady = true  -- not really, but this is required to make the progress indicator disappear
         return nil, FocusPointPrefs.displayModePreview, errorText
+--]]
       end
     end
   end
@@ -442,7 +462,15 @@ function exportPhoto(photo, xSize, ySize)
   -- Same input and output parameters as the calling function
 
   local tempPath  = LrPathUtils.getStandardFilePath( "temp" )
+
   local exportFileName  = getImageFileName(photo)
+  if not exportFileName then
+    -- getImageFileName can return w/o result if the current file has been deleted in Second Screen mode
+    local errorText = "Internal error: Image of deleted photo cannot be exported."
+    Log.logWarn("Mogrify", errorText)
+    return nil, FocusPointPrefs.displayModeExport, errorText
+  end
+
   local exportSettings = {
     LR_collisionHandling            = 'overwrite',
     LR_export_destinationType       = 'specificFolder',
@@ -622,7 +650,9 @@ function MogrifyUtils.drawFocusPoints(photo, focuspointsTable)
   if params ~= nil then
     params = resizeParams .. params .. jpegQuality
     Log.logInfo("Mogrify", "Resizing image, drawing focus points and visualization frames")
-    mogrifyExecute(photo, params, true)
+    if not mogrifyExecute(photo, params, true) then
+      Log.logError("Mogrify", "Errors occured. No markings applied")
+    end
   else
     Log.logInfo("Mogrify", "Nothing to draw - no focus points or visualization frames found")
   end

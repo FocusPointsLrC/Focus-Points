@@ -77,9 +77,9 @@ function AppleDelegates.getAfPoints(photo, metadata)
     }
   }
 
-  FocusInfo.focusPointsDetected = ExifUtils.decodeXmpMWGRegions(result, metadata)
+  FocusInfo.focusPointsInFocus = ExifUtils.decodeXmpMWGRegions(result, metadata)
 
-  if not FocusInfo.focusPointsDetected then
+  if not FocusInfo.focusPointsInFocus then
     -- Only we we don't have a focus area yet - avoid double focus frames!
 
     -- For Apple iPhone, these three tags need to be present to calculate proper focus point:
@@ -134,7 +134,7 @@ function AppleDelegates.getAfPoints(photo, metadata)
             string.format("Focus point detected at [x=%s, y=%s, w=%s, h=%s]",
             math.floor(x), math.floor(y), math.floor(w), math.floor(h)))
 
-          FocusInfo.focusPointsDetected = true
+          FocusInfo.focusPointsInFocus = true
 
         else
           Log.logWarn("Apple",

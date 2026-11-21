@@ -68,7 +68,7 @@ function PointsRendererFactory.createRenderer(photo)
     cameraModel = "unknown"
     Log.logError("PointsRendererFactory", "Unknown camera make / model")
   else
-    cameraMake = string.lower(cameraMake)
+    cameraMake  = string.lower(cameraMake)
     cameraModel = string.lower(cameraModel)
   end
 
@@ -76,31 +76,25 @@ function PointsRendererFactory.createRenderer(photo)
   Log.logInfo("PointsRendererFactory", "Camera Make: " .. cameraMake)
   Log.logInfo("PointsRendererFactory", "Camera Model: " .. cameraModel)
 
-  -- normalize the camera names. Pentax can be called multiple things
-  if (string.find(cameraMake, "ricoh imaging company", 1, true)
-          or (string.find(cameraMake, "pentax", 1, true) and cameraMake ~= "pentax")
-          -- since K-3, tested with K-3, K-1, K-1 Mark II. cameraMake is too unspecific, therefor we test against cameraModel as well
-          or (string.find(cameraMake, "ricoh", 1, true))) then
+  -- Pentax / Ricoh
+  if string.find(cameraModel, "ricoh gr", 1, true) then
+    cameraMake = "ricoh"
+    mapped = true
+  elseif string.find(cameraMake, "ricoh",  1, true)
+      or string.find(cameraMake, "pentax", 1, true) then
     cameraMake = "pentax"
     mapped = true
   end
 
   -- Nikon
   if (string.find(cameraMake, "nikon", 1, true)) then
-    cameraMake = "nikon corporation"
+    cameraMake = "nikon"
     -- some cameras have the same mapping as other camera
     -- check the cameraModel and switch it to a known map if it's a duplicate
     local duplicateModel = NikonDuplicates[cameraModel]
     if (duplicateModel ~= nil) then
       cameraModel = duplicateModel
     end
-    mapped = true
-  end
-
-  -- Olympus and OM Digital share the same exact makernotes structures
-  if string.find(cameraMake, "om digital solutions", 1, true)
-  or string.find(cameraMake, "olympus", 1, true) then
-    cameraMake = "olympus"
     mapped = true
   end
 
@@ -141,7 +135,7 @@ function PointsRendererFactory.createRenderer(photo)
     DefaultPointRenderer.funcGetShootingInfo = FujifilmDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = FujifilmDelegates.getFocusInfo
 
-  elseif (cameraMake == "nikon corporation"  ) then
+  elseif (cameraMake == "nikon"  ) then
     DefaultPointRenderer.funcModelSupported  = NikonDelegates.modelSupported
     DefaultPointRenderer.funcMakerNotesFound = NikonDelegates.makerNotesFound
     DefaultPointRenderer.funcManualFocusUsed = NikonDelegates.manualFocusUsed
@@ -150,7 +144,8 @@ function PointsRendererFactory.createRenderer(photo)
     DefaultPointRenderer.funcGetShootingInfo = NikonDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = NikonDelegates.getFocusInfo
 
-  elseif (cameraMake == "olympus") then
+  elseif (cameraMake == "olympus")
+      or (cameraMake == "om digital solutions") then
     DefaultPointRenderer.funcModelSupported  = OlympusDelegates.modelSupported
     DefaultPointRenderer.funcMakerNotesFound = OlympusDelegates.makerNotesFound
     DefaultPointRenderer.funcManualFocusUsed = OlympusDelegates.manualFocusUsed
@@ -188,7 +183,8 @@ function PointsRendererFactory.createRenderer(photo)
     DefaultPointRenderer.funcGetShootingInfo = LeicaDelegates.getShootingInfo
     DefaultPointRenderer.funcGetFocusInfo    = LeicaDelegates.getFocusInfo
 
-  elseif (cameraMake == "pentax") then
+  elseif (cameraMake == "pentax")
+      or (cameraMake == "ricoh") then
     DefaultPointRenderer.funcModelSupported  = PentaxDelegates.modelSupported
     DefaultPointRenderer.funcMakerNotesFound = PentaxDelegates.makerNotesFound
     DefaultPointRenderer.funcManualFocusUsed = PentaxDelegates.manualFocusUsed

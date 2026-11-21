@@ -83,6 +83,9 @@ local metaKeyAfSPriority             = { "AF-S Priority Sel", "AF-S Priority Sel
 -- Image and Camera Settings relevant tags
 local metaKeyCropHiSpeed             = "Crop Hi Speed"
 local metaKeyShootingMode            = "Shooting Mode"
+local metaKeyBurstShotNumber         = "Burst Shot Number"
+
+
 
 -- Forward references
 local getPDAfPoints, getCAfPoints, applyPDAfCrop, applyCAFCrop,
@@ -138,7 +141,7 @@ function getCAfPoints(metadata)
   Log.logInfo("Nikon", string.format("Focus point detected at [x=%s, y=%s, w=%s, h=%s]",
     afAreaXPosition, afAreaYPosition, afAreaWidth, afAreaHeight))
 
-  FocusInfo.focusPointsDetected = true
+  FocusInfo.focusPointsInFocus = true
   local result = {
     pointTemplates = DefaultDelegates.pointTemplates,
     points = {
@@ -303,7 +306,7 @@ function getPDAfPoints(metadata)
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
     end
     if addFocusPointsToResult(result, pointType, primaryPoint) then
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
     else
       return nil
     end
@@ -312,7 +315,7 @@ function getPDAfPoints(metadata)
   -- Add the active focus points
   if focusPointsTable then
     if addFocusPointsToResult(result, DefaultDelegates.POINTTYPE_AF_FOCUS_BOX, focusPointsTable) then
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
     else
       return nil
     end
@@ -497,6 +500,8 @@ local function addInfo(title, key, props, metadata)
       props[key] = ExifUtils.metaValueNA
     elseif (key == metaKeyCropHiSpeed) then
       props[key] = getCropType(value)
+--  elseif key == metaKeyBurstShotNumber and tonumber(value) < 1 then
+--    props[key] = ExifUtils.metaValueNA
     else
       props[key] = value
     end
@@ -528,6 +533,11 @@ local function addInfo(title, key, props, metadata)
       return f:column{
         fill = 1, spacing = 2, result,
         addInfo("AF-S Priority", afPriorityKey, props, metadata) }
+
+    elseif (key == metaKeyShootingMode) and props[key]:find("Continuous", 1, true) then
+      return f:column{
+        fill = 1, spacing = 2, result,
+        addInfo("Burst Shot Number"  , metaKeyBurstShotNumber , props, metadata) }
 
     else
       -- add row as composed
@@ -573,9 +583,9 @@ end
 
 --[[----------------------------------------------------------------------------
   public boolean
-  manualFocusUsed(table photo, table metadata)
+  makerNotesFound(table photo, table metadata)
 
-  Indicate whether the photo was taken using manual focus.
+  Check if the metadata for the current photo includes a 'Makernotes' section.
 ------------------------------------------------------------------------------]]
 function NikonDelegates.manualFocusUsed(_photo, metadata)
   local focusMode = ExifUtils.findValue(metadata, metaKeyFocusMode)

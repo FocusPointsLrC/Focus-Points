@@ -62,8 +62,8 @@ return {
       major      = 3,
       minor      = 5,
       revision   = 0,
-      build      = 9000,
-      display    = "3.5 (pre)",
+      build      = 1000,
+      display    = "3.5",
       -- custom additions:
       channel    = "release",
       branch     = "master",

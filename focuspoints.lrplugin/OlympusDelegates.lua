@@ -81,7 +81,6 @@ local metaKeyDriveMode                = "Drive Mode"
 local metaKeyStackedImage             = "Stacked Image Custom"
 local metaKeyImageStabilization       = "Image Stabilization"
 local metaKeyDigitalZoomRatio         = "Digital Zoom Ratio"
-local metaKeyBodyFirmwareVersion      = "Body Firmware Version"
 
 -- Relevant metadata values
 local metaKeyAfPointSelectedPattern   = "%((%d+)%%,(%d+)"
@@ -196,6 +195,7 @@ function getOMDSAfPoints(photo, metadata)
           1.2, -- scale slightly bigger to avoid potential overlap with focus frame
           DefaultDelegates.POINTTYPE_FACE, "Subject detected")
         hasSubjectDetectArea = true
+        FocusInfo.subjectOrFaceDetected = true
       end
 
       if subjectDetectDetail[3] ~= "0" and subjectDetectDetail[4] ~= "0" then
@@ -205,6 +205,7 @@ function getOMDSAfPoints(photo, metadata)
           1.2, -- scale slightly bigger to avoid potential overlap with focus frame
           DefaultDelegates.POINTTYPE_FACE, "Subject detail detected")
         hasSubjectDetectDetail = true
+        FocusInfo.subjectOrFaceDetected = true
       end
     else
       Log.logWarn("Olympus",
@@ -255,13 +256,15 @@ function getOMDSAfPoints(photo, metadata)
           addFrame(afFrameSize[1], afFrameSize[2],
                    afSelectedArea[1], afSelectedArea[2],afSelectedArea[3], afSelectedArea[4], scale,
                    DefaultDelegates.POINTTYPE_AF_SELECTED, "Selected AF area")
+          FocusInfo.focusPointsSelected = true
         end
       elseif not hasSubjectDetectArea then
         -- use AFSelectArea as supplementary subject detect information
         if afSelectedArea[3] ~= "0" and afSelectedArea[4] ~= "0" then
           addFrame(afFrameSize[1], afFrameSize[2],
                    afSelectedArea[1], afSelectedArea[2],afSelectedArea[3], afSelectedArea[4], scale,
-             DefaultDelegates.POINTTYPE_FACE, "Subject detected")
+                   DefaultDelegates.POINTTYPE_FACE, "Subject detected")
+          FocusInfo.subjectOrFaceDetected = true
         end
       else
       end
@@ -272,12 +275,12 @@ function getOMDSAfPoints(photo, metadata)
       addFrame(afFrameSize[1], afFrameSize[2],
                afFocusArea[1], afFocusArea[2], afFocusArea[3], afFocusArea[4], 1,
                DefaultDelegates.POINTTYPE_AF_FOCUS_BOX, "Focus area")
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
     end
   end
 
   -- if FocusArea is empty, fall back to the old Olympus method - AfPointSelected
-  if not FocusInfo.focusPointsDetected then
+  if not FocusInfo.focusPointsInFocus then
 
     local focusPoint = findValue(metadata, metaKeyAfPointSelected)
     if focusPoint and (focusPoint ~= "") and (focusPoint ~= "0 0") and (focusPoint ~= "undef undef undef undef") then
@@ -291,7 +294,7 @@ function getOMDSAfPoints(photo, metadata)
       local y = math.floor(tonumber(orgPhotoHeight) * tonumber(focusY))
 
       Log.logInfo("Olympus", string.format("Focus point detected at [x=%s, y=%s]", x, y))
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
 
       -- return the focus point, visualized according to the plugin settings
       local point = DefaultPointRenderer.createFocusFrame(x, y)
@@ -374,7 +377,7 @@ function getOlympusAfPoints(photo, metadata)
 
     Log.logInfo("Olympus", string.format("Focus point detected at [x=%s, y=%s]", x, y))
 
-    FocusInfo.focusPointsDetected = true
+    FocusInfo.focusPointsInFocus = true
 
     -- return the focus point, visualized according to the plugin settings
     pointsTable = DefaultPointRenderer.createFocusFrame(x, y)
@@ -418,7 +421,7 @@ function getOlympusAfPoints(photo, metadata)
 
             if (xTL < xBR) and (yTL < yBR) then
 
-              FocusInfo.focusPointsDetected = true
+              FocusInfo.focusPointsInFocus = true
               Log.logInfo("Olympus", string.format(
                "Focus area detected at [x1=%s, y1=%s, x2=%s, y2=%s]", xTL, yTL,xBR, yBR))
 
@@ -451,7 +454,7 @@ function getOlympusAfPoints(photo, metadata)
   end
 
   -- If not focus points have been found, check status of AF operations
-  if not FocusInfo.focusPointsDetected then
+  if not FocusInfo.focusPointsInFocus then
     local afSearch = findValue(metadata, metaKeyAfSearch)
     if afSearch and afSearch ~= "Ready" then
       Log.logWarn("Olympus", "Autofocus operations not successful, no confirmation received (green light or beep)")
@@ -541,6 +544,7 @@ function addFaces(photo, metadata, pointsTable)
               width  = w,
               height = h,
             })
+            FocusInfo.subjectOrFaceDetected = true
           end
         end
       end
@@ -832,7 +836,6 @@ function OlympusDelegates.getShootingInfo(_photo, props, metadata)
     addInfo("Drive Mode",            metaKeyDriveMode,           props, metadata),
     addInfo("Image Stabilization",   metaKeyImageStabilization,  props, metadata),
     addInfo("Stacked Image",         metaKeyStackedImage,        props, metadata),
-    addInfo("Body Firmware Version", metaKeyBodyFirmwareVersion, props, metadata),
   }
   return shootingInfo
 end

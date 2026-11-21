@@ -219,7 +219,7 @@ function HasselbladDelegates.getAfPoints(photo, metadata)
   Log.logInfo("Hasselblad",
     string.format("Focus point detected at [x=%s, y=%s, w=%s, h=%s]", imgX, imgY, boxW, boxH))
 
-  FocusInfo.focusPointsDetected = true
+  FocusInfo.focusPointsInFocus = true
 
   result = DefaultPointRenderer.createFocusFrame(imgX, imgY, boxW, boxH)
 

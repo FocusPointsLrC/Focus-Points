@@ -254,11 +254,12 @@ function getK3iiiAfPoints(photo, metadata)
     elseif (afAreaStatus == 11) or (afAreaStatus == 27) then
       -- user-selected point not in focus
       pointType = DefaultDelegates.POINTTYPE_AF_SELECTED
+      FocusInfo.focusPointsSelected = true
 
     elseif (afAreaStatus == 7) or (afAreaStatus == 15) or (afAreaStatus == 31) then
       -- area in focus
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
 
     else
       Log.logError("Pentax",string.format(
@@ -332,13 +333,14 @@ function getK3iiiAfPoints(photo, metadata)
               width  = faceWidth,
               height = faceHeight,
             })
+            FocusInfo.subjectOrFaceDetected = true
           end
         end
       end
     end
   end
 
-  if not FocusInfo.focusPointsDetected then
+  if not FocusInfo.focusPointsInFocus then
     Log.logWarn("Pentax",string.format(
       "Tag '%s' does not contain any in-focus points/areas", metaKeyAfInfoK3III))
   end
@@ -447,12 +449,13 @@ end
                        Utils.arrayKeyOf(afPointSelected, key)  ~= nil
     if isInFocus and isSelected then
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
     elseif isInFocus then
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
     elseif isSelected then
       pointType = DefaultDelegates.POINTTYPE_AF_SELECTED
+      FocusInfo.focusPointsSelected = true
     end
 
     -- Insert the focus point in the table used for rendering
@@ -520,7 +523,6 @@ function getAfPointsContrast(photo, metadata)
         local afAreaWidth     = faces[f][2][1] * imageSize[1] / faceDetectSize[1]
         local afAreaHeight    = faces[f][2][2] * imageSize[2] / faceDetectSize[2]
 
-        FocusInfo.focusPointsDetected = true
         -- face detection frame
         if afAreaWidth > 0 and afAreaHeight > 0 then
           table.insert(result.points, {
@@ -530,6 +532,7 @@ function getAfPointsContrast(photo, metadata)
             width = afAreaWidth,
             height = afAreaHeight
           })
+          FocusInfo.subjectOrFaceDetected = true
           -- focus frame
           table.insert(result.points, {
             pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX,
@@ -538,6 +541,7 @@ function getAfPointsContrast(photo, metadata)
             width = afAreaWidth * 0.9,
             height = afAreaHeight  * 0.9
           })
+          FocusInfo.focusPointsInFocus = true
         end
       else
         Log.logError("Pentax", string.format(
@@ -607,9 +611,10 @@ function getAfPointsContrast(photo, metadata)
         local afPointType
         if cafPointsInFocusTable and Utils.arrayKeyOf(cafPointsInFocusTable, value) then
           afPointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
-          FocusInfo.focusPointsDetected = true
+          FocusInfo.focusPointsInFocus = true
         else
           afPointType = DefaultDelegates.POINTTYPE_AF_SELECTED
+          FocusInfo.focusPointsSelected = true
         end
 
         if (afAreaWidth ~= 0) and (afAreaHeight ~= 0) then
@@ -641,6 +646,7 @@ function getAfPointsContrast(photo, metadata)
             width = afAreaWidth * 1.03,
             height = afAreaHeight * 1.03,
           })
+          FocusInfo.focusPointsSelected = true
         end
       end
 
@@ -654,7 +660,6 @@ function getAfPointsContrast(photo, metadata)
 
       -- draw frame corresponding to CAF area as point in focus
       if (afAreaWidth ~= 0) and (afAreaHeight ~= 0) then
-        FocusInfo.focusPointsDetected = true
         if afAreaWidth > 0 and afAreaHeight > 0 then
           table.insert(result.points, {
             pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX,
@@ -663,6 +668,7 @@ function getAfPointsContrast(photo, metadata)
             width = afAreaWidth,
             height = afAreaHeight
           })
+          FocusInfo.focusPointsInFocus = true
         end
       end
     end

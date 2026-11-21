@@ -132,7 +132,7 @@ function FujifilmDelegates.getAfPoints(photo, metadata)
   Log.logInfo("Fujifilm", "AF points detected at [" .. math.floor(x * xScale) .. ", " .. math.floor(y * yScale) .. "]")
 
   -- the only real focus point is this - the below code just checks for visualization frames
-  FocusInfo.focusPointsDetected = true
+  FocusInfo.focusPointsInFocus = true
   local result = DefaultPointRenderer.createFocusFrame(x*xScale, y*yScale)
 
   -- Let see if we have detected faces
@@ -155,6 +155,7 @@ function FujifilmDelegates.getAfPoints(photo, metadata)
             width = math.abs(x1 - x2),
             height = math.abs(y1 - y2)
           })
+          FocusInfo.subjectOrFaceDetected = true
         end
       end
     end
@@ -184,6 +185,7 @@ function FujifilmDelegates.getAfPoints(photo, metadata)
           width = math.abs(x1 - x2),
           height = math.abs(y1 - y2)
         })
+        FocusInfo.subjectOrFaceDetected = true
       end
     end
   end

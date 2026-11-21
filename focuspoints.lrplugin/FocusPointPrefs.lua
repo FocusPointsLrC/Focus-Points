@@ -102,10 +102,27 @@ local versionFileFoundUrl
 local latestVersionUrl
 
 -- URL definitions for accessing documents from the UI
-FocusPointPrefs.urlUserManual       = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
-FocusPointPrefs.urlTroubleShooting  = "https://focuspointslrc.github.io/Focus-Points/docs/Troubleshooting_FAQ.html"
-FocusPointPrefs.urlkbdShortcuts     = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
-FocusPointPrefs.urlFAQ              = "https://focuspointslrc.github.io/Focus-Points/docs/V4-FAQ.html"
+FocusPointPrefs.urlUserManual         = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html"
+FocusPointPrefs.urlCompatibility      = "https://focuspointslrc.github.io/Focus-Points/docs/Compatibility.html"
+FocusPointPrefs.urlHelpOnFocusResults = "https://focuspointslrc.github.io/Focus-Points/docs/Understanding-Focus-Results.html"
+FocusPointPrefs.urlkbdShortcuts       = "https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#keyboard-shortcuts"
+FocusPointPrefs.urlNewFeatures        = "https://focuspointslrc.github.io/Focus-Points/docs/V4-New-Features.html"
+FocusPointPrefs.urlFAQ                = "https://focuspointslrc.github.io/Focus-Points/docs/V4-FAQ.html"
+FocusPointPrefs.makerSections = {
+  ["canon"]                = "#31-canon",
+  ["nikon"]                = "#32-nikon",
+  ["sony"]                 = "#33-sony",
+  ["fujifilm"]             = "#34-fujifilm",
+  ["olympus"]              = "#35-olympus",
+  ["om digital solutions"] = "#36-om-system",
+  ["panasonic"]            = "#37-panasonic",
+  ["leica"]                = "#38-leica",
+  ["hasselblad"]           = "#39-hasselblad",
+  ["pentax"]               = "#310-pentax",
+  ["ricoh"]                = "#311-ricoh",
+  ["apple"]                = "#312-apple"
+}
+
 -- URL definitions for clickForHelp
 local urlHelpOnScreenScaling        = FocusPointPrefs.urlUserManual  .. "#screen-scaling"
 local urlHelpOnStraightenControls   = FocusPointPrefs.urlUserManual  .. "#enable-controls-for-straightening"
@@ -121,23 +138,24 @@ local urlHelpOnStraighteningOptions = FocusPointPrefs.urlUserManual  .. "#straig
 FocusPointPrefs.urlKofi             = "https://ko-fi.com/focuspoints"
 
 -- Keyboard shortcut definitions
-FocusPointPrefs.kbdShortcutsSizeDown        = "<"
-FocusPointPrefs.kbdShortcutsSizeUp          = ">"
-FocusPointPrefs.kbdShortcutsPrev            = "-"
-FocusPointPrefs.kbdShortcutsNext            = " +"
-FocusPointPrefs.kbdShortcutsPick            = "p"
-FocusPointPrefs.kbdShortcutsUnflag          = "u"
-FocusPointPrefs.kbdShortcutsReject          = "x"
-FocusPointPrefs.kbdShortcutsPickNext        = "P"
-FocusPointPrefs.kbdShortcutsUnflagNext      = "U"
-FocusPointPrefs.kbdShortcutsRejectNext      = "X"
-FocusPointPrefs.kbdShortcutsStraighten      = "sS"
-FocusPointPrefs.kbdShortcutsStraightenReset = "rR"
-FocusPointPrefs.kbdShortcutsCheckLog        = "lL"
-FocusPointPrefs.kbdShortcutsTroubleShooting = "?hH"
-FocusPointPrefs.kbdShortcutsHelp            = "kK"
-FocusPointPrefs.kbdShortcutsUserManual      = "mM"
-FocusPointPrefs.kbdShortcutsClose           = "cC"
+FocusPointPrefs.kbdShortcutsSizeDown           = "<"
+FocusPointPrefs.kbdShortcutsSizeUp             = ">"
+FocusPointPrefs.kbdShortcutsPrev               = "-"
+FocusPointPrefs.kbdShortcutsNext               = " +"
+FocusPointPrefs.kbdShortcutsPick               = "p"
+FocusPointPrefs.kbdShortcutsUnflag             = "u"
+FocusPointPrefs.kbdShortcutsReject             = "x"
+FocusPointPrefs.kbdShortcutsPickNext           = "P"
+FocusPointPrefs.kbdShortcutsUnflagNext         = "U"
+FocusPointPrefs.kbdShortcutsRejectNext         = "X"
+FocusPointPrefs.kbdShortcutsStraighten         = "sS"
+FocusPointPrefs.kbdShortcutsStraightenReset    = "rR"
+FocusPointPrefs.kbdShortcutsCheckLog           = "lL"
+FocusPointPrefs.kbdShortcutsHelpOnFocusResults = "?fF"
+FocusPointPrefs.kbdShortcutsHelpOnShortcuts    = "kK"
+FocusPointPrefs.kbdShortcutsHelpFAQ            = "hH"
+FocusPointPrefs.kbdShortcutsUserManual         = "mM"
+FocusPointPrefs.kbdShortcutsClose              = "cC"
 
 -- Local variables -------------------------------------------------------------
 
@@ -613,7 +631,7 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
           value = bind("screenScaling"),
           width_in_chars = dropDownWidth,
           items = {
-            { title = "Auto", value = 0    },
+            { title = "Auto", value = 0    },   -- for later use when floating dialog can automatically resize
             { title = "100%", value = 1.0  },
             { title = "125%", value = 0.8  },
             { title = "150%", value = 0.67 },
@@ -704,19 +722,24 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               { title = "Off", value = false },
             },
           },
-          f:static_text {
-            title = "Preview Image: Use Export Image if no preview becomes available within"
+          f:row {
+            spacing = 0,
+            f:static_text {
+              title = "Preview Image: Use Export Image if no preview becomes available within"
+            },
+            f:edit_field {
+              value = bind("previewTimeout"),
+              width_in_chars = 3,
+              min = 0,
+              max = 10,
+              alignment = "center",
+              precision = 1,
+            },
+            f:static_text {
+              title = "  seconds",
+            },
           },
-          f:edit_field {
-            value = bind("previewTimeout"),
-            width_in_chars = 3,
-            min = 0,
-            max = 10,
-            precision = 1,
-          },
-          f:static_text {
-            title = "seconds",
-          },
+          f:spacer { fill_horizontal = 1 },
           clickForHelp( urlHelpOnPerformanceControl ),
         },
         f:row {
@@ -731,18 +754,22 @@ function FocusPointPrefs.genSectionsForBottomOfDialog( f )
               { title = "Off", value = false },
             },
           },
-          f:static_text {
-            title = "Preview Image: Show progress notification after "
-          },
-          f:edit_field {
-            value = bind("previewProgressDelay"),
-            width_in_chars = 3,
-            min = 0,
-            max = 10,
-            precision = 1,
-          },
-          f:static_text {
-            title = "seconds",
+          f:row {
+            spacing = 0,
+            f:static_text {
+              title = "Preview Image: Show progress notification after"
+            },
+            f:edit_field {
+              value = bind("previewProgressDelay"),
+              width_in_chars = 3,
+              min = 0,
+              max = 10,
+              alignment = "center",
+              precision = 1,
+            },
+            f:static_text {
+              title = "  seconds",
+            },
           },
         },
       }
