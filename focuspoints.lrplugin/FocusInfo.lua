@@ -590,7 +590,7 @@ local function addInfo(title, key, photo, props, metadata)
           value = value:gsub("^Firmware ", "")
         else
           value = ExifUtils.findValue(metadata, metaKeySoftware)
-          if value and value:match("Adobe") or value:match("DxO") then
+          if value and (value:match("Adobe") or value:match("DxO")) then
             -- External Software can overwrite the original 'Software' value containing the firmware version
             -- in this case this entry shall not be displayed
             value = nil
