@@ -172,6 +172,8 @@ The selected photo was taken with a camera model that is not supported by the pl
 
 This message may appear for older camera models that use different structures for storing AF-related information than their successors. It may also appear for newer models whose AF-related metadata has not yet been decoded by ExifTool.
 
+Please refer to the [list of supported camera brands and models](Compatibility.md#cameras-that-support-display-of-autofocus-points).
+
 **Example:** Photo taken with the original Canon 1D from 2001:
 
 <img src="images/Understanding 10.jpg" alt="Understanding 10" style="width: 1000px;"/>
@@ -183,6 +185,8 @@ This message may appear for older camera models that use different structures fo
 The camera manufacturer is known, but its metadata format is not supported.
 
 Adding at least basic support for a camera manufacturer is often relatively straightforward, provided that the relevant AF metadata is available and can be decoded by ExifTool. This is not always the case, for example with some manufacturers such as Sigma and Samsung.
+
+Please refer to the [list of supported camera brands and models](Compatibility.md#cameras-that-support-display-of-autofocus-points).
 
 <img src="images/Understanding 11.jpg" alt="Understanding 11" style="width: 1000px;"/>
 <br><br>

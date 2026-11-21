@@ -439,7 +439,8 @@ To simplify operation of the plugin, keyboard shortcuts are supported. These sho
 | Downsize Window by one size                 | `<`                |
 | Upsize Window by one size                   | `>`                |
 | Open User Manual                            | `M`                |
-| Open Troubleshooting Information (Help)     | `?`, `H`           |
+| Open Frequently Asked Questions (FAQ)       | `H`                |
+| Understanding Focus Results                 | `?`, `F`           |
 | Check Log                                   | `L`                |
 | Close                                       | `C `               |
 
