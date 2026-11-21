@@ -526,7 +526,7 @@ local function showFocusPoint()
 
           --------------------------------------------------------------------------------------
           -- Parse character and perform designated operation if it is a shortcut
-          -- Basic operations: Next, Previous, User Manual, Troubleshooting, Check Log, Close
+          -- Basic operations: Next, Previous, User Manual, Help on Focus Results, Check Log, Close
           --------------------------------------------------------------------------------------
           -- Next image
           if string.find(FocusPointPrefs.kbdShortcutsNext, char, 1, true) then
@@ -575,16 +575,21 @@ local function showFocusPoint()
 --        and MAC_ENV then  -- to test test MAC behaviour on WIN
             prefs.displayMode = FocusPointPrefs.displayModeExport
             displayModeAction(view)
+          -- Open user manual
           elseif string.find(FocusPointPrefs.kbdShortcutsUserManual, char, 1, true) then
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlUserManual) end)
             return true  -- done
-          -- Keyboard shortcuts overview
-          elseif string.find(FocusPointPrefs.kbdShortcutsHelp, char, 1, true) then
+          -- Open FAQ
+          elseif string.find(FocusPointPrefs.kbdShortcutsHelpFAQ, char, 1, true) then
+            LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlFAQ) end)
+            return true  -- done
+          -- Help on keyboard shortcuts
+          elseif string.find(FocusPointPrefs.kbdShortcutsHelpOnShortcuts, char, 1, true) then
             LrTasks.startAsyncTask(function() LrHttp.openUrlInBrowser(FocusPointPrefs.urlkbdShortcuts) end)
             return true  -- done
-          -- Troubleshooting
-          elseif string.find(FocusPointPrefs.kbdShortcutsTroubleShooting, char, 1, true) then
-            FocusInfo.openTroubleShooting()
+          -- Help on focus results
+          elseif string.find(FocusPointPrefs.kbdShortcutsHelpOnFocusResults, char, 1, true) then
+            FocusInfo.openHelpOnFocusResults()
             return true  -- done
           -- Check log
           elseif string.find(FocusPointPrefs.kbdShortcutsCheckLog, char, 1, true) then
@@ -617,7 +622,8 @@ local function showFocusPoint()
           spacing = 0,
           kbdShortcutInputField(),
           f:static_text{
-            title = " <- Input for",
+            title = "  <- Input for",
+            tooltip = "Place the cursor in this field to enable keyboard shortcuts",
             font  = "<system/small>",
           },
           f:static_text {
@@ -643,6 +649,7 @@ local function showFocusPoint()
         spacing = 0,
         f:static_text {
           title = "What's new? " .. utfLinkSymbol,
+          tooltip = "Open description of new features in V4",
           text_color = LrColor(0, 0.25, 1),
           immediate = true,
           mouse_down = function()
@@ -654,6 +661,7 @@ local function showFocusPoint()
         f:spacer { width = 16 },
         f:static_text {
           title = "Need help? " .. utfLinkSymbol,
+          tooltip = "Open the FAQ - Frequently Asked Questions (H)",
           text_color = LrColor(0, 0.25, 1),
           immediate = true,
           mouse_down = function()
@@ -674,6 +682,8 @@ local function showFocusPoint()
         spacing = 0,
         f:static_text {
           title = "Display mode:",
+          tooltip = "Select how Focus Point Viewer obtains and displays the photo.\n" ..
+                    "Each mode offers a different balance of speed, image quality, and reliability.",
           font  = "<system/small>",
         },
 
@@ -681,7 +691,9 @@ local function showFocusPoint()
 
         f:radio_button {
           title = "Direct",
-          tooltip = "Direct View (D)",
+          tooltip = "Direct View (D)\n" ..
+                    "Displays the photo directly through Lightroom's Develop rendering engine.\n" ..
+                    "Reflects Lightroom edits in real time.",
           font  = "<system/small>",
           bind_to_object = prefs,
           value = bind("displayMode"),
@@ -693,6 +705,9 @@ local function showFocusPoint()
 
         f:radio_button {
           title = "Preview",
+          tooltip = "Preview Image (V)\n" ..
+                    "Uses an existing preview from Lightroom's preview cache.\n" ..
+                    "Fast, but depends on preview availability and refresh timing.",
           font  = "<system/small>",
           bind_to_object = prefs,
           value = bind("displayMode"),
@@ -706,6 +721,9 @@ local function showFocusPoint()
 
         f:radio_button {
           title = "Export",
+          tooltip = "Export Image (E)\n" ..
+                    "Uses Lightroom's Export feature to create a JPEG image.\n" ..
+                    "Slower, but provides reliable and consistent results.",
           font  = "<system/small>",
           bind_to_object = prefs,
           value = bind("displayMode"),
@@ -724,7 +742,7 @@ local function showFocusPoint()
         spacing = 0,     -- removes uniform spacing; we control it manually
         f:push_button {
           title = buttonPreviousImage,
-          tooltip = "Load previous image from selection (-, <)",
+          tooltip = "Load previous image from selection (-)",
           enabled = #selectedPhotos > 1 or not LR5,
           action = function(button)
             -- Prevent multiple executions - known LrC SDK quirk!

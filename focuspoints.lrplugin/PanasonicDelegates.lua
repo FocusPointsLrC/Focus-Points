@@ -112,7 +112,7 @@ function PanasonicDelegates.getAfPoints(photo, metadata)
 
   Log.logInfo("Panasonic", string.format("Focus point detected at [x=%s, y=%s]", x, y))
 
-  FocusInfo.focusPointsDetected = true
+  FocusInfo.focusPointsInFocus = true
 
   -- Let's see if AF area size is given
   local afAreaSize = ExifUtils.findValue(metadata, metaKeyAFAreaSize)
@@ -166,6 +166,7 @@ function PanasonicDelegates.getAfPoints(photo, metadata)
             width  = w,
             height = h,
           })
+          FocusInfo.subjectOrFaceDetected = true
         end
     end
   end

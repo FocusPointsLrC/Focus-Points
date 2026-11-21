@@ -28,10 +28,12 @@ local FocusInfo = {}
 local LrColor              = import  'LrColor'
 local LrHttp               = import  'LrHttp'
 local LrPrefs              = import  'LrPrefs'
+local LrStringUtils        = import  'LrStringUtils'
 local LrTasks              = import  'LrTasks'
 local LrView               = import  'LrView'
 
 -- Required Lua definitions
+local DefaultDelegates     = require 'DefaultDelegates'
 local ExifUtils            = require 'ExifUtils'
 local FocusPointPrefs      = require 'FocusPointPrefs'
 local Log                  = require 'Log'
@@ -45,7 +47,7 @@ FocusInfo.cameraMakerSupported      = false
 FocusInfo.cameraModelSupported      = false
 FocusInfo.makerNotesFound           = false
 FocusInfo.manualFocusUsed           = false
-FocusInfo.focusPointsDetected       = false
+FocusInfo.focusPointsInFocus        = false
 FocusInfo.focusPointsNotVisible     = false
 FocusInfo.severeErrorEncountered    = false
 
@@ -62,58 +64,80 @@ FocusInfo.cropMode                  = false
 local statusFocusPointsDetected     =   1
 local statusFocusPointsNotVisible   =   2
 local statusFocusPointsMisaligned   =   3
-local statusNoFocusPointsRecorded   =   4
-local statusMfFocusPointsRecorded   =   5
-local statusManualFocusUsed         =   6
+local statusSubjectDetected         =   4
+local statusFocusPointsSelected     =   5
+local statusNoFocusPointsRecorded   =   6
+local statusMfFocusPointsRecorded   =   7
+local statusManualFocusUsed         =   8
 -- Error codes (there will be only a summary message no details in Focus Information)
-local statusError                   =   7
-local statusMakerNotesNotFound      =   7
-local statusModelNotSupported       =   8
-local statusMakerNotSupported       =   9
-local statusMissingMetadata         =  10
-local statusSevereErrorEncountered  =  11
+local statusError                   =   9
+local statusMakerNotesNotFound      =   9
+local statusModelNotSupported       =  10
+local statusMakerNotSupported       =  11
+local statusMissingMetadata         =  12
+local statusSevereErrorEncountered  =  13
 local status = {
-    {  message = "Focus points detected",
+    {  message = "Focus achieved",
        color   = LrColor(0, 0.66, 0),
-       tooltip = "Metadata information about focus points is found and visualized." ,
-       link    = "" },
+       tooltip = "Metadata information about AF points in focus is found and visualized." ,
+       link    = "#focus-achieved" },
+
     {  message = "Focus points outside cropped image area",
        color   = LrColor("orange"),
        tooltip = "Focus points detected but not all of them can be displayed in cropped image" ,
        link    = "#focus-points-outside-cropped-image-area" },
+
     {  message = "Focus points may be misaligned due to Transform",
        color   = LrColor("orange"),
        tooltip = "Focus points may be displayed inaccurately because the photo has been transformed." ,
        link    = "#focus-points-may-be-misaligned-due-to-transform-settings" },
+
+    {  message = "Subject detected, but focus not achieved",
+       color   = LrColor("orange"),
+       tooltip = "Metadata information about detected subjects is found and visualized." ,
+       link    = "#subject-detected-but-focus-not-achieved" },
+
+    {  message = "Focus points selected, but focus not achieved",
+       color   = LrColor("orange"),
+       tooltip = "Metadata information about selected AF points is found and visualized." ,
+       link    = "#focus-points-selected-but-focus-not-achieved" },
+
     {  message = "No focus points recorded",
        color   = LrColor("orange"),
-       tooltip = "Camera has not recorded information on points in focus." ,
+       tooltip = "Camera has not recorded information on points in focus or selected focus points." ,
        link    = "#no-focus-points-recorded" },
+
     {  message = "Focus point recorded in manual focus mode",
        color   = LrColor("orange"),
        tooltip = "The photo was taken in manual focus mode and focus point information was recorded in the metadata. " ..
                  "Attention: the displayed focus point may differ from the point in the image that is actually sharpest!",
        link    = "#focus-point-recorded-in-manual-focus-mode" },
+
     {  message = "Manual focus, no AF points recorded",
        color   = LrColor("orange"),
        tooltip = "The photo was taken with manual focus (MF), there is no autofocus (AF) information in the metadata.",
        link    = "#manual-focus-no-af-points-recorded" },
+
     {  message = "Focus info missing from file",
        tooltip = "The photo lacks the metadata needed to process and visualize focus information." ,
        color   = LrColor("red"),
        link    = "#focus-info-missing-from-file" },
+
     {  message = "Camera model not supported",
        color   = LrColor("red"),
        tooltip = "The photo was taken by a camera that the plugin cannot handle." ,
        link    = "#camera-model-not-supported" },
+
     {  message = "Camera maker not supported",
        color   = LrColor("red"),
        tooltip = "The photo was taken with a camera from a manufacturer that the plugin cannot handle.",
        link    = "#camera-maker-not-supported" },
+
     {  message = "No camera-specific metadata found",
        color   = LrColor("red"),
        tooltip = "The photo lacks camera-specific metadata.",
        link    = "#no-camera-specific-metadata-found" },
+
     {  message = "Severe error encountered",
        color   = LrColor("red"),
        tooltip = "Something unexpected happened. Check log file." ,
@@ -134,6 +158,8 @@ local metaKeyExposure               = "exposure"
 local metaKeyIsoSpeedRating         = "isoSpeedRating"
 
 -- Keywords for retrieving language-dependent items from English EXIF metadata
+local metaKeySoftware               = "Software"
+local metaKeyCanonSoftware          = "Canon Firmware Version"
 local metaKeyExposureBias           = "Exposure Compensation"
 local metaKeyExposureProgram        = "Exposure Program"
 local metaKeyMeteringMode           = "Metering Mode FP"
@@ -151,9 +177,11 @@ local utfEllipsis   = string.char(0xE2, 0x80, 0xA6)
   Reset variables that control certain aspects of the info section generation
 ------------------------------------------------------------------------------]]
 function FocusInfo.initialize()
-  FocusInfo.focusPointsDetected    = false
+  FocusInfo.focusPointsInFocus     = false
+  FocusInfo.focusPointsSelected    = false
   FocusInfo.focusPointsInvisible   = false
   FocusInfo.focusPointsMisaligned  = false
+  FocusInfo.subjectOrFaceDetected  = false
   FocusInfo.severeErrorEncountered = false
   FocusInfo.cropMode               = false
 end
@@ -209,6 +237,64 @@ end
 function FocusInfo.addSeparator()
   local f = LrView.osFactory()
   return f:separator{ fill_horizontal = 1 }
+end
+
+--[[----------------------------------------------------------------------------
+  private table row
+  addMake(key, value)
+
+  Creates a view container for another row to be added to the current section
+------------------------------------------------------------------------------]]
+local function addMake(key, value)
+
+  local f = LrView.osFactory()
+  local urlMake, tooltip, text_color
+
+  if key and key ~= "" then
+
+    local makerSection = FocusPointPrefs.makerSections[string.lower(DefaultDelegates.cameraMake or "")]
+    if makerSection then
+      -- camera maker is supported, create link to the User Manual section
+      urlMake = FocusPointPrefs.urlUserManual .. makerSection
+      tooltip = "Open Camera-maker specific section in User Manual"
+      text_color = LrColor(0, 0.25, 1)
+    else
+      -- camera maker is not supported, create link to the Compatibility section
+      urlMake = FocusPointPrefs.urlCompatibility
+      tooltip = "Camera-maker not supported. Open Compatibility list"
+      text_color = LrColor("red")
+    end
+
+    return f:row {
+      f:static_text {
+        title = key,
+        font = "<system>",
+        alignment = "left",
+        mouse_down = function()
+          return true
+        end,
+        mouse_up = function()
+          return true
+        end,
+      },
+      f:spacer { fill_horizontal = 1 },
+      f:static_text {
+        title = value .. utfLinkSymbol,
+        font  = "<system>",
+        alignment = "right",
+        tooltip = tooltip,
+        text_color = text_color,
+        immediate = true,
+        mouse_down = function()
+          LrTasks.startAsyncTask(function()
+            LrHttp.openUrlInBrowser(urlMake)
+          end)
+        end,
+      },
+    }
+  else
+    return FocusInfo.emptyRow()
+  end
 end
 
 --[[----------------------------------------------------------------------------
@@ -290,12 +376,14 @@ local function getStatusCode()
   elseif not FocusInfo.cameraModelSupported   then statusCode = statusModelNotSupported
   elseif not FocusInfo.makerNotesFound        then statusCode = statusMakerNotesNotFound
   elseif     FocusInfo.focusPointsInvisible   then statusCode = statusFocusPointsNotVisible
-  elseif     FocusInfo.focusPointsDetected
+  elseif     FocusInfo.focusPointsInFocus
          and FocusInfo.manualFocusUsed        then statusCode = statusMfFocusPointsRecorded
-  elseif     FocusInfo.focusPointsDetected
+  elseif     FocusInfo.focusPointsInFocus
          and FocusInfo.focusPointsMisaligned  then statusCode = statusFocusPointsMisaligned
-  elseif     FocusInfo.focusPointsDetected    then statusCode = statusFocusPointsDetected
+  elseif     FocusInfo.focusPointsInFocus     then statusCode = statusFocusPointsDetected
   elseif     FocusInfo.manualFocusUsed        then statusCode = statusManualFocusUsed
+  elseif     FocusInfo.subjectOrFaceDetected  then statusCode = statusSubjectDetected
+  elseif     FocusInfo.focusPointsSelected    then statusCode = statusFocusPointsSelected
   else                                             statusCode = statusNoFocusPointsRecorded
   end
   return statusCode
@@ -303,20 +391,17 @@ end
 
 --[[----------------------------------------------------------------------------
   public void
-  openTroubleShooting(int statusCode)
+  openHelpOnFocusResults(int statusCode)
 
-  Opens 'Troubleshooting' section of the user manual in case statusCode
-  represents an error or a warning.
+  Opens the 'Understanding-Focus-Results' document at the section given by statusCode
 ------------------------------------------------------------------------------]]
-function FocusInfo.openTroubleShooting(statusCode)
+function FocusInfo.openHelpOnFocusResults(statusCode)
   if not statusCode then
     statusCode = getStatusCode()
   end
-  if statusCode > statusFocusPointsDetected then
-    LrTasks.startAsyncTask(function()
-      LrHttp.openUrlInBrowser(FocusPointPrefs.urlTroubleShooting .. status[statusCode].link)
-    end)
-  end
+  LrTasks.startAsyncTask(function()
+    LrHttp.openUrlInBrowser(FocusPointPrefs.urlHelpOnFocusResults .. status[statusCode].link)
+  end)
 end
 
 --[[----------------------------------------------------------------------------
@@ -326,8 +411,8 @@ end
   Returns a view element containing a message stating whether or not focus points
   have been found, and whether or not errors have occurred.
   Error messages will be red, warnings will be orange and success messages will be green.
-  If errors or warnings occur, the message text will include a clickable link
-  to the relevant section in the troubleshooting part of the user manual.
+  The message text will include a clickable link to the relevant section in the
+  'Understanding-Focus-Results' document.
 ------------------------------------------------------------------------------]]
 local function statusMessage(statusCode)
   local f = LrView.osFactory()
@@ -349,17 +434,17 @@ local function statusMessage(statusCode)
         title      = status[statusCode].message,
         text_color = status[statusCode].color,
         tooltip    = status[statusCode].tooltip
-                     .. "\nClick " .. utfLinkSymbol .. " to open troubleshooting information or press '?'",
+                     .. "\nClick " .. utfLinkSymbol .. " to open 'Understanding Focus Results' or press '?'",
         mouse_down = function() return true end,
         mouse_up   = function() return true end,
       },
       f:static_text {
         title = utfLinkSymbol,
         text_color = LrColor(0, 0.25, 1),
-        tooltip = "Open troubleshooting information (?)",
+        tooltip = "Open 'Understanding Focus Results' (?)",
         immediate = true,
         mouse_down = function()
-          FocusInfo.openTroubleShooting(statusCode)
+          FocusInfo.openHelpOnFocusResults(statusCode)
         end,
       },
     }
@@ -498,6 +583,19 @@ local function addInfo(title, key, photo, props, metadata)
         if value then
           value = value .. " EV"
         end
+      elseif key == metaKeySoftware then
+        -- Unlike other makers, Canon does not store the firmware version in EXIF 'Software' but in MakerNotes
+        value = ExifUtils.findValue(metadata, metaKeyCanonSoftware)
+        if value then
+          value = value:gsub("^Firmware ", "")
+        else
+          value = ExifUtils.findValue(metadata, metaKeySoftware)
+          if value and (value:match("Adobe") or value:match("DxO")) then
+            -- External Software can overwrite the original 'Software' value containing the firmware version
+            -- in this case this entry shall not be displayed
+            value = nil
+          end
+        end
       else
         value = ExifUtils.findValue(metadata, key)
       end
@@ -510,7 +608,7 @@ local function addInfo(title, key, photo, props, metadata)
     if (value ~= nil) then
       props[key] = value
     else
-      props[key] = ExifUtils.metaValueNA
+      props[key] = LrStringUtils.trimWhitespace(ExifUtils.metaValueNA)
     end
   end
 
@@ -528,8 +626,12 @@ local function addInfo(title, key, photo, props, metadata)
     return FocusInfo.emptyRow()
   end
 
-  -- Return the row to be added
-  return FocusInfo.addRow(title, props[key])
+  if title == "Make" then
+    return addMake(title, props[key])
+  else
+    -- Return the row to be added
+    return FocusInfo.addRow(title, props[key])
+  end
 end
 
 --[[----------------------------------------------------------------------------
@@ -581,6 +683,7 @@ function FocusInfo.createInfoView(photo, props, metadata, funcGetImageInfo, func
               f:column {fill = 1, fill_vertical = 0, spacing = 2,
                   addInfo("Make"                   , metaKeyCameraMake         , photo, props),
                   addInfo("Model"                  , metaKeyCameraModel        , photo, props),
+                  addInfo("Software"               , metaKeySoftware           , photo, props, metadata),
                   addInfo("Lens"                   , metaKeyLens               , photo, props),
                   addInfo("Focal Length"           , metaKeyFocalLength        , photo, props),
                   addInfo("FL Equivalent Crop Mode", metaKeyFocalLength35mm    , photo, props),

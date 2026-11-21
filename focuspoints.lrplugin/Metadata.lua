@@ -26,6 +26,7 @@ local Metadata = {}
 
 -- Imported LR namespaces
 local LrApplication     = import  'LrApplication'
+local LrDialogs         = import  'LrDialogs'
 local LrFunctionContext = import  'LrFunctionContext'
 local LrPrefs           = import  'LrPrefs'
 local LrStringUtils     = import  'LrStringUtils'

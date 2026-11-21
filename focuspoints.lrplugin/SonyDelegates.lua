@@ -139,7 +139,7 @@ function SonyDelegates.getAfPoints(photo, metadata)
         local x = fpX + (orgPhotoWidth  - fpW) / 2
         local y = fpY + (orgPhotoHeight - fpH) / 2
 
-        FocusInfo.focusPointsDetected = true
+        FocusInfo.focusPointsInFocus = true
 
         local focusFrameSize = ExifUtils.findValue(metadata, metaKeyAfFocusFrameSize)
         if focusFrameSize then
@@ -210,10 +210,10 @@ function SonyDelegates.getAfPoints(photo, metadata)
                 local pdafPointSize = orgPhotoWidth * 0.039/2  -- #TODO is 0.039/2 be different for other models?
                 Log.logInfo("Sony", "PDAF scaled point at [" .. math.floor(x) .. ", " .. math.floor(x) .. "]")
 
-                if not FocusInfo.focusPointsDetected then
+                if not FocusInfo.focusPointsInFocus then
                   -- this is actually the focus point!
                   Log.logInfo("Sony", "Focus location at [" .. math.ceil(x * xScale) .. ", " .. math.floor(y * yScale) .. "]")
-                  FocusInfo.focusPointsDetected = true
+                  FocusInfo.focusPointsInFocus = true
                   result = {
                     pointTemplates = DefaultDelegates.pointTemplates,
                     points = {
@@ -267,14 +267,17 @@ function SonyDelegates.getAfPoints(photo, metadata)
           width  = w,
           height = h,
         }
+
         if result then
           table.insert(result.points, face)
+          FocusInfo.focusPointsInFocus = true
         else
           -- an image can have detected face but no focus point!
           result = {
             pointTemplates = DefaultDelegates.pointTemplates,
             points = { face }
           }
+          FocusInfo.subjectOrFaceDetected = true
         end
       end
     end

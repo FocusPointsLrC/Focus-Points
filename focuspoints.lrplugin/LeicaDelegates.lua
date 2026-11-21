@@ -94,7 +94,6 @@ local metaKeyHyperfocalDist   = "Hyperfocal Distance"
 
 -- Image and Shooting Information relevant tags
 local metaKeyFilmMode         = "Film Mode"
-local metaKeySoftware         = "Software"
 
 -- Relevant metadata values
 local metaValAfSpotField       = "Spot/Field"
@@ -153,7 +152,7 @@ function LeicaDelegates.getAfPoints(photo, metadata)
 
   Log.logInfo("Leica", string.format("Focus point at [x=%d, y=%d]", x, y))
 
-  FocusInfo.focusPointsDetected = true
+  FocusInfo.focusPointsInFocus = true
 
   return DefaultPointRenderer.createFocusFrame(x, y)
 end
@@ -253,10 +252,6 @@ local function addInfo(title, key, props, metadata)
     }
   elseif key == metaKeyFilmMode and props[key]:match("^%s*$") then
     -- empty (all blanks) FilmModes tag won't be displayed
-    return FocusInfo.emptyRow()
-  elseif key == metaKeySoftware and props[key]:match("Adobe") then
-    -- Adobe Software can overwrite the original 'Software' value containing the firmware version
-    -- In this case, the information will not be printed
     return FocusInfo.emptyRow()
   else
     -- add row as composed
@@ -367,7 +362,6 @@ function LeicaDelegates.getShootingInfo(_photo, props, metadata)
     fill = 1,
     spacing = 2,
     addInfo("Film Mode",             metaKeyFilmMode, props, metadata),
-    addInfo("Body Firmware Version", metaKeySoftware, props, metadata),
   }
   return shootingInfo
 end

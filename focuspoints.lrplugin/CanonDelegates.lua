@@ -243,14 +243,16 @@ function CanonDelegates.getAfPoints(photo, metadata)
     local isSelected = Utils.arrayKeyOf(afPointsSelected, tostring(key - 1)) ~= nil
     if isInFocus then
       pointType = DefaultDelegates.POINTTYPE_AF_FOCUS_BOX
-      FocusInfo.focusPointsDetected = true
+      FocusInfo.focusPointsInFocus = true
       Log.logInfo("Canon", string.format("AF point in focus detected at [x=%s, y=%s, w=%s, h=%s]",
         math.floor(x), math.floor(y), math.floor(width), math.floor(height)))
     elseif isSelected then
       pointType = DefaultDelegates.POINTTYPE_AF_SELECTED
+      FocusInfo.focusPointsSelected = true
       Log.logInfo("Canon", string.format("Selected AF point detected at [x=%s, y=%s, w=%s, h=%s]",
         math.floor(x), math.floor(y), math.floor(width), math.floor(height)))
     end
+
 
     -- Add the AF point to the rendering table
     if width > 0 and height > 0 then
@@ -281,6 +283,7 @@ function CanonDelegates.getAfPoints(photo, metadata)
         width = w,
         height = h
       })
+      FocusInfo.subjectOrFaceDetected = true
     else
       Log.logError("Canon", "Invalid AFTrackingArea content, should be 'x y width height'")
     end
