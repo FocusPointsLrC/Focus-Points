@@ -82,7 +82,7 @@ local function showMetadata()
 --      if debug then Debug.pauseIfAsked() end
 
         -- Read metadata from image file.
-        local metadata = ExifUtils.readMetadata(targetPhoto, true)
+        local metadata, metadataFileName = ExifUtils.readMetadata(targetPhoto, true)
         if metadata then
 
           metadata = ExifUtils.filterInput(metadata)
@@ -95,15 +95,15 @@ local function showMetadata()
             targetPhoto, column1, column2, column3, column1Length, column2Length, column3Length, numLines)
 
           -- Check whether dialog has been left by pressing "Open as text"
-          local metadataFileName = ExifUtils.getMetadataFileName()
           if result == "other" then
             -- if so, open metadata file in default application (and keep it)
             Utils.openFileInApp(metadataFileName)
           else
             -- otherwise remove the temp file
-            ExifUtils.cleanup()
+            ExifUtils.cleanup(metadataFileName)
           end
         else
+          ExifUtils.cleanup(metadataFileName)
           LrDialogs.message(
             "Error reading metadata from image file", targetPhoto:getRawMetadata("path"), "critical")
         end

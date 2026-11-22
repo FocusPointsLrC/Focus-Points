@@ -244,7 +244,6 @@ end
 ------------------------------------------------------------------------------]]
 function DefaultPointRenderer.cleanup()
   LrTasks.yield()
-  ExifUtils.cleanup()
   if WIN_ENV then
     MogrifyUtils.cleanup()
   end

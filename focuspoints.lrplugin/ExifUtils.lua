@@ -51,8 +51,6 @@ exiftoolWindows          = LrPathUtils.child(exiftoolWindows, "exiftool.exe")
 
 local exiftoolConfigFile = LrPathUtils.child( _PLUGIN.path, "ExifTool.config" )
 
-local metadataFileName   = Utils.getTempFileName()
-
 --[[----------------------------------------------------------------------------
   public string
   findValue(table metadata, string key)
@@ -174,7 +172,9 @@ end
   Returns the name of the temporary file used to store the output of ExifTool.
 ------------------------------------------------------------------------------]]
 function ExifUtils.getMetadataFileName()
-  return metadataFileName
+  -- Kept for compatibility with callers that need the most recent metadata
+  -- output file. Prefer the filename returned by readMetadata() when possible.
+  return ExifUtils.lastMetadataFileName
 end
 
 --[[----------------------------------------------------------------------------
@@ -196,7 +196,7 @@ end
   metadata from the photo's image file and write the output to a text file.
   Returns the command line string and the name of the output file.
 ------------------------------------------------------------------------------]]
-local function getExifCmd(targetPhoto, includeGroupNames)
+local function getExifCmd(targetPhoto, includeGroupNames, metadataFileName)
   local path = targetPhoto:getRawMetadata("path")
   local singleQuoteWrap = '\'"\'"\''
   local focusPointOptions = '-a -u -sort --XMP-crs:all --XMP-crss:all'
@@ -239,17 +239,22 @@ end
   Returns the output as string or nil in case of error
 ------------------------------------------------------------------------------]]
 function ExifUtils.readMetadata(targetPhoto, includeGroupNames)
-  local cmd, outputFileName = getExifCmd(targetPhoto, includeGroupNames)
+  -- Each invocation needs its own output file: Lightroom may run multiple
+  -- plugin tasks at once, and a shared file can be overwritten or deleted by
+  -- another metadata read.
+  local metadataFileName = Utils.getTempFileName()
+  ExifUtils.lastMetadataFileName = metadataFileName
+  local cmd, outputFileName = getExifCmd(targetPhoto, includeGroupNames, metadataFileName)
   local rc = LrTasks.execute(cmd)
 
   if rc ~= 0 then
     -- something went wrong
     local errorText = "FATAL error: unable to read photo metadata (ExifTool rc=" .. rc .. ")"
     Log.logError("ExifUtils", errorText)
-    return nil
+    return nil, outputFileName
   else
     local fileInfo = LrFileUtils.readFile(outputFileName)
-    return fileInfo
+    return fileInfo, outputFileName
   end
 end
 
@@ -260,8 +265,9 @@ end
   Transforms the output of readMetadata() and returns a key/value table
 ------------------------------------------------------------------------------]]
 function ExifUtils.readMetadataAsTable(targetPhoto)
-  local metadata = ExifUtils.readMetadata(targetPhoto, false)
+  local metadata, outputFileName = ExifUtils.readMetadata(targetPhoto, false)
   if metadata == nil then
+    ExifUtils.cleanup(outputFileName)
     return nil
   end
 
@@ -281,6 +287,7 @@ function ExifUtils.readMetadataAsTable(targetPhoto)
     ExifUtils.findValue(parsedTable, ExifUtils.metaKeyExifToolVersion), numEntries)
   )
 
+  ExifUtils.cleanup(outputFileName)
   return parsedTable
 end
 
@@ -290,12 +297,13 @@ end
 
   Delete the temporary file (metadata output file created by ExifTool)
 ------------------------------------------------------------------------------]]
-function ExifUtils.cleanup()
-  if LrFileUtils.exists(metadataFileName) then
-    local _, errorMsg = LrFileUtils.delete( metadataFileName )
+function ExifUtils.cleanup(fileName)
+  if not fileName then return end
+  if LrFileUtils.exists(fileName) then
+    local _, errorMsg = LrFileUtils.delete(fileName)
     if errorMsg ~= nil then
       Log.logWarn("ExifUtils",
-        string.format("Error deleting metadata temp file %s: %s",  metadataFileName, errorMsg))
+        string.format("Error deleting metadata temp file %s: %s", fileName, errorMsg))
     end
   end
 end
