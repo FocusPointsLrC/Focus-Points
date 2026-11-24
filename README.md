@@ -43,7 +43,7 @@ Focus Points is not compatible with Lightroom Desktop or Camera RAW. It is based
 
 Focus Points supports cameras from
 
-**Canon • Nikon • Sony • Fuji • Olympus • OM System • Panasonic • Leica • Hasselblad • Pentax • Ricoh • Apple**
+**[Canon](docs/Focus-Points.md#31-canon) • [Nikon](docs/Focus-Points.md#32-nikon) • [Sony](docs/Focus-Points.md#33-sony) • [Fuji](docs/Focus-Points.md#34-fujifilm) • [Olympus](docs/Focus-Points.md#35-olympus) • [OM System](docs/Focus-Points.md#36-om-system) • [Panasonic](docs/Focus-Points.md#37-panasonic) • [Leica](docs/Focus-Points.md#38-leica) • [Hasselblad](docs/Focus-Points.md#39-hasselblad) • [Pentax](docs/Focus-Points.md#310-pentax) • [Ricoh](docs/Focus-Points.md#311-ricoh) • [Apple](docs/Focus-Points.md#312-apple)**
 
 The [level of support](https://focuspointslrc.github.io/Focus-Points/docs/Focus-Points.html#1-scope-and-limitations) depends on the information recorded by each camera model. Please refer to the [compatibility list](docs/Compatibility.md) to check if your camera is supported.
 
