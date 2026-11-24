@@ -1,4 +1,4 @@
-### Current stable release: [V3.4.5 updated October 30, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.4.5) • Preview: [V4 PRE 4](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v4_pre4) ("The Next Level")
+### Current stable release: [V3.5 updated Nov 22, 2026](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v3.5) • Pre-release: [V4 PRE 5](https://github.com/FocusPointsLrC/Focus-Points/releases/tag/v4_pre5) ("The Next Level")
 
 <img src="docs/images/ReadMe 1.jpg" alt="Focus Points for Lightroom Classic" style="width:1000px;"/>
 
@@ -59,7 +59,7 @@ The documentation is organized by purpose.
 | 🚀&nbsp;[**Quick&nbsp;Setup&nbsp;Guide**](docs/V4-Quick-Setup-Guide.md)                  | Get started in minutes. Recommended settings, display modes, and the fastest way to configure Focus Points for your workflow.
 | ▶️ &nbsp;[**Video Tutorial**](https://youtu.be/1MucW5MCdnI) | Watch [Olivier Rocq's](https://www.olivier-rocq.com/) complete walkthrough of Focus Points, covering installation, configuration, and everyday use. Original video in French. Choose your language in Youtube video settings, audio track. 
 | ❓&nbsp;[**FAQ**](docs/V4-FAQ.md)                                                         | Answers to common questions about installation, supported cameras, performance, and everyday usage.
-| ⚠️&nbsp;[**Messages&nbsp;and&nbsp;Warnings**](docs/Troubleshooting_FAQ.md)           | Understand autofocus analysis results, status messages, and warnings.
+| ⚠️&nbsp;[**Messages&nbsp;and&nbsp;Warnings**](docs/Understanding-Focus-Results.md)           | Understand autofocus analysis results, status messages, and warnings.
 | 📝&nbsp;[**Release&nbsp;Notes**](https://github.com/FocusPointsLrC/Focus-Points/releases) | Latest versions with new features, bug fixes and compatibility changes  
 | 💬&nbsp;[**Discussions**](https://github.com/FocusPointsLrC/Focus-Points/discussions)    | Questions, ideas and feedback from the community. 
 
