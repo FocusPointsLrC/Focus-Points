@@ -26,14 +26,14 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
     <img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
     _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
 
-   1. Set your preferred plugin window size.<br><br> 
-      1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)
+   1. Set your preferred plugin window size.<br> 
+      1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)<br>
       1. While the `Screen Scaling` setting can be used to normalize the plugin window size, the `Size of plugin window` setting can be used to define its dimensions. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the Lightroom application window. [↗](Focus-Points.md#size-of-plugin-window)  
        You can also change the plugin window size later by using `<` and `>` keyboard shortcuts to make it bigger or smaller.<br><br>
-   1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br><br>
-      1. If you want to use Focus Point Viewer in your image culling process, you can use these controls to tag images. If you don't, you can set it to `Off`, which will make the control bar look less cluttered.
+   1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
+      1. If you want to use Focus Point Viewer in your image culling process, you can use these controls to tag images. If you don't, you can set it to `Off`, which will make the control bar look less cluttered.<br>
       1. If you also want to use them, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br> 
-   1. `Preview Image` performance settings [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br><br>
+   1. `Preview Image` performance settings [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
       On Windows, the time to open Focus Point Viewer largely depends on whether a preview of the selected photo is available in Lightroom. If a preview is available, it can be obtained instantly. Otherwise, it can take several seconds for the plugin window to appear. <br>
    You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
 
