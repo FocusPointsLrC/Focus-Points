@@ -19,8 +19,8 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 ## Setup on Windows
 
-1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br><br>
-1. Optional: Configure a keyboard shortcut [↗](Focus-Points.md#windows) to launch Focus Point Viewer.<br><br>
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
+1. Optional: Configure a keyboard shortcut [↗](Focus-Points.md#windows) to launch Focus Point Viewer.<br>
 1. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `Screen Scaling` and `User Interface` sections:<br><br>
     <img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
