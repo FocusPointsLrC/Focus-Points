@@ -35,7 +35,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
       2. If you also want to use them, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br> 
    1. `Preview Image` performance settings [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
       On Windows, the time to open Focus Point Viewer largely depends on whether a preview of the selected photo is available in Lightroom. If a preview is available, it can be obtained instantly. Otherwise, it can take several seconds for the plugin window to appear. <br>
-   You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br><br>
+   You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
 
 2. **That's it! You're ready to use Focus Point Viewer.**<br> 
    You can start it either by pressing the hotkey `NumPad *` (if configured in step 2) or by selecting `File → Plug-in Extras → Show Focus Point`.
@@ -46,8 +46,8 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 The macOS version has fewer settings than the Windows version. The plugin does not depend on an OS display scaling factor. It uses the `Direct View` display mode, so there is no need to handle `Preview Image`. [↗](V4-New-Features.md#2-display-modes)
 
-1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br><br>
-2. Optional: Assign a shortcut to run the plugin [↗](Focus-Points.md#macos)<br><br>
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
+2. Optional: Assign a shortcut to run the plugin [↗](Focus-Points.md#macos)<br>
 3. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><br><img src="images/Quick%20Setup%20V3x%20MAC.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
     _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
@@ -70,9 +70,9 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 ## Setup on Windows
 
-1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br><br>
-1. Load the AutoHotkey companion script [↗](V4-New-Features.md#6-autohotkey-companion-script-for-windows) to work around current Lightroom SDK limitations and provide a smoother experience in the `Follow` and `Interactive` modes.<br><br>
-1. Optional: Configure a keyboard shortcut [↗](Focus-Points.md#windows) to launch Focus Point Viewer.<br><br>
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
+1. Load the AutoHotkey companion script [↗](V4-New-Features.md#6-autohotkey-companion-script-for-windows) to work around current Lightroom SDK limitations and provide a smoother experience in the `Follow` and `Interactive` modes.<br>
+1. Optional: Configure a keyboard shortcut [↗](Focus-Points.md#windows) to launch Focus Point Viewer.<br>
 1. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `Screen Scaling` and `User Interface` sections:<br><br>
     <img src="images/Quick%20Setup%20V4%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
@@ -106,8 +106,8 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 The macOS version currently requires less configuration because some V4 features are still under development or limited by the Lightroom SDK.
 
-1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br><br>
-1. Optional: Assign a shortcut to run the plugin [↗](Focus-Points.md#macos)<br><br>
+1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
+1. Optional: Assign a shortcut to run the plugin [↗](Focus-Points.md#macos)<br>
 1. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `User Interface` section:<br><br><img src="images/Quick%20Setup%20V4%20MAC.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
      _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
