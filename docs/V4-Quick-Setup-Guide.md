@@ -117,14 +117,14 @@ The macOS version currently requires less configuration because some V4 features
        Set it to `Off` to use the plugin in its legacy mode, as in previous versions, where Lightroom could not be used while the plugin was open.<br>
        1. Currently, `Interactive` is the recommended mode for macOS. Current Lightroom SDK limitations affect the usability of `Follow` mode because each time the plugin window is refreshed (closed and reopened), it becomes the active window and takes focus away from Lightroom, interrupting ongoing operations. [↗](V4-New-Features.md#2-focus-point-viewer-always-becomes-the-active-window-when-opened)
         If the `Follow` workflow is important to you, please vote for the linked Adobe bug report. Community votes help increase its visibility.<br>
-       1. Select the aspect ratio used in Second Screen mode.<br>   
+       1. Select the aspect ratio used in Second Screen mode.<br><br>   
    1. Set your preferred plugin window size.<br>
        1. If you have a multiple-display setup and you want to run the plugin on another display than Lightroom, use the `Second Screen display` setting to select the display.<br>
-       1. Use the `Size of plugin window` slider to define the dimensions of the plugin window. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the selected display in Lightroom. [↗](Focus-Points.md#size-of-plugin-window)<br>
+       1. Use the `Size of plugin window` slider to define the dimensions of the plugin window. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the selected display in Lightroom. [↗](Focus-Points.md#size-of-plugin-window)<br><br>
 
    1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
       1. These controls were originally introduced because Lightroom could not be accessed while Focus Point Viewer was open. This is normally not required in second screen mode. You can set it to `Off`, which will make the control bar look less cluttered.<br>
-      1. If you also want to use these controls in Second Screen mode, select your keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br>
+      1. If you also want to use these controls in Second Screen mode, select your keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br>
       
    **Note:** V4 PRE 5 only supports `Direct View` on macOS. With the addition of `Preview Image` and `Export Image` in an upcoming pre-release, the `Display mode` settings and the `Preview Image` performance control settings will also become available on macOS.<br>
 
