@@ -24,7 +24,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 1. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `Screen Scaling` and `User Interface` sections:<br><br>
     <img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
-    _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
+    _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br>
  
    1. Set your preferred plugin window size. 
       1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)
@@ -54,7 +54,7 @@ The macOS version has fewer settings than the Windows version. The plugin does n
 
    1. `Controls for flagging, rating and coloring a photo` [↗](Focus-Points.md#enable-controls-for-tagging)<br>
       1. If you want to use Focus Point Viewer in your image culling process, you can use these controls to tag images. If you don't, you can set it to `Off`, which will make the control bar look less cluttered.
-      2. If you also want to use them, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout.  [↗](Focus-Points.md#keyboard-layout)<br><br>  
+      2. If you also want to use them, select your keyboard layout. This is required because the Shift-0..9 key combinations usually produce codes that depend on the keyboard layout.  [↗](Focus-Points.md#keyboard-layout)<br>  
 
 4. **That's it! You're ready to use Focus Point Viewer.**<br> 
    You can start it either by pressing the hotkey you configured in step 2 or by selecting `File → Plug-in Extras → Show Focus Point`.
@@ -96,7 +96,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
       1. If you also want to use these controls in Second Screen mode, select your keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br> 
    1. `Preview Image` performance settings [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
       In `Preview Image` display mode, the time required to display a photo largely depends on whether a preview of the selected photo is available in Lightroom. If a preview is available, it can be obtained almost instantly. Otherwise, it can take several seconds for the image to become available. <br>
-   You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br><br>
+   You can control how long to wait for a preview. If Lightroom cannot provide one within the given time frame, `Export Image` is used instead. If you are not satisfied with the results produced by the default setting of 0.5 seconds, the user manual provides detailed information on how to determine the best value for your setup. [↗](Focus-Points.md#how-to-reduce-long-wait-times-when-opening-the-plugin-window-on-windows)<br>
 1. **That's it! You're ready to use Focus Point Viewer.**<br> 
    You can start it either by pressing the hotkey `NumPad *` (if configured in step 3) or by selecting `File → Plug-in Extras → Show Focus Point`.
 
@@ -127,7 +127,7 @@ The macOS version currently requires less configuration because some V4 features
       1. These controls were originally introduced because Lightroom could not be accessed while Focus Point Viewer was open. This is normally not required in second screen mode. You can set it to `Off`, which will make the control bar look less cluttered.
       1. If you also want to use these controls in Second Screen mode, select your keyboard layout. [↗](Focus-Points.md#keyboard-layout)<br><br>
       
-   **Note:** V4 PRE 5 only supports `Direct View` on macOS. With the addition of `Preview Image` and `Export Image` in an upcoming pre-release, the `Display mode` settings and the `Preview Image` performance control settings will also become available on macOS.<br><br>
+   **Note:** V4 PRE 5 only supports `Direct View` on macOS. With the addition of `Preview Image` and `Export Image` in an upcoming pre-release, the `Display mode` settings and the `Preview Image` performance control settings will also become available on macOS.<br>
 
 1. **That's it! You're ready to use Focus Point Viewer.**<br>
    You can start it either by pressing the hotkey you configured in step 2 or by selecting `File → Plug-in Extras → Show Focus Point`.
