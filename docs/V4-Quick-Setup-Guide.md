@@ -26,7 +26,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
     <img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
     _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
 
-   1. Set your preferred plugin window size. 
+   1. Set your preferred plugin window size.<br> 
       1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)
       2. While the `Screen Scaling` setting can be used to normalize the plugin window size, the `Size of plugin window` setting can be used to define its dimensions. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the Lightroom application window. [↗](Focus-Points.md#size-of-plugin-window)  
        You can also change the plugin window size later by using `<` and `>` keyboard shortcuts to make it bigger or smaller.<br><br>
@@ -87,7 +87,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
       1. In `Interactive` mode, `Preview Image` is generally the recommended display mode. The use of `Direct View` is currently impaired by a Lightroom SDK limitation. [↗](V4-New-Features.md#5-direct-view-corner-icons-do-not-seamlessly-blend-with-the-photo-when-used-on-windows)
       1. In `Follow` mode, you may consider `Direct View`, particularly if you are not interested in viewing every photo but only specific ones. `Direct View` is fast and runs entirely in-memory. `Preview Image` involves disk operations that may slightly impair the user experience in Lightroom.  
       When you want to inspect a particular photo, you can temporarily switch the display mode to update the image. [↗](V4-New-Features.md#21-changing-the-active-display-mode-on-the-fly)<br><br> 
-   1. Set your preferred plugin window size. 
+   1. Set your preferred plugin window size.<br>
        1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)
        1. If you have a multiple-display setup and you want to run the plugin on another display than Lightroom, use the `Second Screen display` setting to select the display.
        1. While the `Screen Scaling` setting can be used to normalize the plugin window size, the `Size of plugin window` slider can be used to define its dimensions. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the selected display in Lightroom. [↗](Focus-Points.md#size-of-plugin-window)<br><br>
