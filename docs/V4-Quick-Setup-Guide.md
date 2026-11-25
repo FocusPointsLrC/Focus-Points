@@ -13,11 +13,11 @@
 Focus Point Viewer works well with its default settings. This guide only covers the few options you may want to adjust before using the plugin.
 
 Some steps are specific to the operating system (OS) you are running.   
-To keep things simple, there are separate sections for **[Windows](#setup-on-windows)** and **[macOS](#setup-on-macos)**.
+To keep things simple, there are separate sections for **[Windows](#v3-setup-on-windows)** and **[macOS](#v3-setup-on-macos)**.
 
 <br>
 
-## Setup on Windows
+## V3 Setup on Windows
 
 1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
 1. Optional: Configure a keyboard shortcut [↗](Focus-Points.md#windows) to launch Focus Point Viewer.<br>
@@ -42,7 +42,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 <br>
 
-## Setup on macOS
+## V3 Setup on macOS
 
 The macOS version has fewer settings than the Windows version. The plugin does not depend on an OS display scaling factor. It uses the `Direct View` display mode, so there is no need to handle `Preview Image`. [↗](V4-New-Features.md#2-display-modes)
 
@@ -66,9 +66,9 @@ The macOS version has fewer settings than the Windows version. The plugin does n
 This guide helps you configure the main new features introduced in V4, particularly Second Screen mode and the available display modes.
 
 Some steps are specific to the operating system (OS) you are running.   
-To keep things simple, there are separate sections for **[Windows](#setup-on-windows)** and **[macOS](#setup-on-macos)**.
+To keep things simple, there are separate sections for **[Windows](#v4-setup-on-windows)** and **[macOS](#v4-setup-on-macos)**.
 
-## Setup on Windows
+## V4 Setup on Windows
 
 1. Download and install the plugin [↗](Focus-Points.md#21-installation)<br>
 1. Load the AutoHotkey companion script [↗](V4-New-Features.md#6-autohotkey-companion-script-for-windows) to work around current Lightroom SDK limitations and provide a smoother experience in the `Follow` and `Interactive` modes.<br>
@@ -102,7 +102,7 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 
 <br>
 
-## Setup on macOS
+## V4 Setup on macOS
 
 The macOS version currently requires less configuration because some V4 features are still under development or limited by the Lightroom SDK.
 
