@@ -24,8 +24,8 @@ To keep things simple, there are separate sections for **[Windows](#setup-on-win
 1. Configure plugin settings:<br>
    Select `Focus Point Viewer` from the list of installed plugins (_Library → File → Plug-in Manager_) and check the `Screen Scaling` and `User Interface` sections:<br><br>
     <img src="images/Quick%20Setup%20V3x%20WIN.jpg" alt="Second Screen 1" style="width: 600px;"/><br>
-    _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br>
- 
+    _The highlighted settings are the only ones that normally require attention. All other settings can safely remain at their defaults._<br><br>
+
    1. Set your preferred plugin window size. 
       1. If you are using the Windows Display Settings to scale your display, you can use the `Screen Scaling` setting to apply the same or a similar setting for the plugin window. Otherwise the plugin window may exceed the dimensions of your screen. [↗](Focus-Points.md#screen-scaling)
       2. While the `Screen Scaling` setting can be used to normalize the plugin window size, the `Size of plugin window` setting can be used to define its dimensions. There are eleven sizes to choose from, ranging from `4XL` (90%) down to `XS` (40%). The percentage determines the size of the displayed photo relative to the dimensions of the Lightroom application window. [↗](Focus-Points.md#size-of-plugin-window)  
