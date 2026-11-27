@@ -8,7 +8,7 @@
 
 *  [Installation](#21-installation)
 *  [Focus Point Viewer](#22-focus-point-viewer)<br>
-   - [User Interface](#user-interface), [User Messages](#user-messages), [Plugin Status](#plugin-status), [Keyboard Shortcuts](#keyboard-shortcuts) 
+   - [Photo View](#photo-view), [Info View](#info-view), [Navigation Controls](#navigation-controls), [Flagging Controls](#flagging-controls), [Straightening Control](#straightening-control), [User Messages](#user-messages), [Plugin Status](#plugin-status), [Keyboard Shortcuts](#keyboard-shortcuts) 
 *  [Metadata Viewer](#23-metadata-viewer)
 *  [Straighten Images](#24-straighten-images)
    - [Operation](#operation), [Customization](#customization), [Keyboard Shortcut](#keyboard-shortcut), [General Remarks](#general-remarks) 
@@ -19,7 +19,7 @@
 
 * Camera-maker specific sections for:<br> [Canon](#31-canon), [Nikon](#32-nikon), [Sony](#33-sony), [Fujifilm](#34-fujifilm), [Olympus](#35-olympus), [OM System](#36-om-system),  [Panasonic](#37-panasonic), [Leica](#38-leica), [Hasselblad](#39-hasselblad), [Pentax](#310-pentax), [Ricoh](#311-ricoh), [Apple](#312-apple)
 
-### [Status Messages and Warnings](Troubleshooting_FAQ.md#status-messages-and-warnings)
+### [Status Messages and Warnings](Understanding-Focus-Results.md)
 
 ### [Compatibility](Compatibility.md)
 
@@ -37,62 +37,71 @@
 
 # 1. Scope and Limitations
 
-A plugin for Lightroom Classic<sup>1</sup> on Windows and macOS: 
-- Show which focus point was active when the picture was taken <sup>2</sup>
-- Display user-selected autofocus points/area <sup>3,4</sup>
-- Visualize faces and subjects detected by the camera <sup>3,5</sup>
-- Tagging (flagging, rating and coloring) of photos within the plugin UI <sup>7</sup>
-- Display and search (EXIF) metadata of the selected image 
-- Straighten Images by applying compensation for camera roll angle<sup>3,6,7</sup>
+Focus Points is a plugin for Adobe Lightroom Classic<sup>1</sup> on Windows and macOS. It allows you to:
 
-<sup>1</sup> LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fujifilm, Olympus/OM, Panasonic, Pentax, Ricoh, Apple.<br>
+- See which autofocus point was used when a photograph was taken<sup>2</sup>.
+- Review user-selected autofocus points and areas<sup>3,4</sup>.
+- Visualize faces and subjects detected by the camera<sup>3,5</sup>.
+- Inspect and search image metadata, including camera-specific information.
+- Rate, flag and label photographs directly within the plugin interface<sup>7</sup>.
+- Straighten photographs using the camera's recorded roll angle<sup>3,6,7</sup>.
+
+<sup>1</sup> Focus Points is compatible with Lightroom Classic, LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
+&nbsp;&nbsp;&nbsp;LR5.7 does not support tagging photos within the plugin UI or straightening images by applying compensation for camera roll angle.<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fujifilm, Olympus/OM, Panasonic, Leica, Pentax, Ricoh, Apple.<br>
 &nbsp;&nbsp;&nbsp;Check the [list of supported cameras](Compatibility.md#cameras-that-support-display-of-autofocus-points) to see if your camera is supported.<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
 <sup>5</sup> Currently supported for Fujifilm, OM System (subjects, faces) and Sony, Olympus, Pentax (faces).<br> 
-<sup>6</sup> Currently supported for Canon, Nikon, Fujifilm, Olympus/OM, Panasonic, Pentax, Ricoh.<br>
+<sup>6</sup> Currently supported for Canon, Nikon, Fujifilm, Olympus/OM, Panasonic, Leica, Pentax, Ricoh.<br>
 <sup>7</sup> Not for LR5.<br>
 
+Feature availability depends on the camera model and the information recorded in the image metadata. Not every camera supports every feature.
 
-To understand how to use this plugin and how to interpret the results, **it is recommended that you read chapters 1, 2 and the part of chapter 3 that applies to your camera**.
+For a detailed overview, see the [camera compatibility list](Compatibility.md).
+
+**If you are new to Focus Points, it is recommended that you read chapters 1 and 2, followed by the section in chapter 3 that applies to your camera.**
 <br>
 <br>
 
 ### Principle of operation
 
-The plugin uses [ExifTool](https://exiftool.org/) to retrieve metadata from image files. Autofocus related information is extracted from the metadata and processed to detect and visualize focus points, faces and subjects. For this to work, the plugin needs an image file that contains camera manufacturer specific metadata information (_makernotes_), written by the camera to each JPG or RAW file. The plugin will not be able to show focus points for image files that do not contain makernotes data.
+Focus Points uses [ExifTool](https://exiftool.org/) to retrieve metadata directly from image files. Autofocus-related information is extracted and processed to identify and visualize focus points, faces and subjects detected by the camera.
+
+For this to work, the original image file (or a derivative that preserves the relevant metadata) must contain the camera manufacturer's proprietary metadata, commonly referred to as *MakerNotes*. These records contain camera-specific information that is essential for displaying autofocus information.
 
 <u>Note:</u> ExifTool is part of the plugin package and does not need to be installed separately.
 
-As the plugin operates within Lightroom, it is important to note that Lightroom does not read the maker notes information when importing files. More precisely, this information is not visible or accessible in Lightroom, except in a few cases. 
+Although Focus Points operates within Lightroom Classic, it cannot retrieve camera-specific MakerNotes information from the Lightroom catalog. This information is generally not exposed through the Lightroom SDK.
 
-When the plugin is run on a selected photo, it uses ExifTool to process the underlying image file. When Lightroom exports a photo as a JPEG or TIFF file to be edited in an external application, a new image file is created that lacks the maker notes data. Therefore, any image re-imported from that application will lack this essential information for the plugin to work.
+When a photograph is sent to an external editor using Lightroom's *Edit In* command, Lightroom typically creates an intermediate JPEG or TIFF file. Such files generally do not retain the original camera-specific MakerNotes required for autofocus analysis.
 
-**Examples of when focus points are not displayed:**
+Consequently, photographs returned from external editors may no longer contain the information needed to display focus points.
+
+**Examples of image files for which focus point information is unavailable:**
 - Photo edited in Photoshop and returned as PSD or TIF
 - Photo transferred as TIFF/JPG to a 3rd party editor (`Photo → Edit In`) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
 - DNG files created by Lightroom's Photo Merge (HDR, Panorama)
 - Photos exported to disk that have been re-imported in Lightroom
 - Smart Preview but the original image file is not present 
 
-For external applications launched from within Lightroom that use a RAW file as input (typically invoked from the 'Plug-in Extras' menu), the plugin may work on the file that is imported into Lightroom if the application leaves the original file's makernotes intact. This is because, in this case, Lightroom only passes on the name of the image file, not the file itself. 
+External applications launched from Lightroom that use the original RAW file as input (typically through the *Plug-in Extras* menu) may preserve the information required by Focus Points.
+
+In this case, Lightroom passes the image file's path to the external application rather than creating and passing a new image file. If the application leaves the original MakerNotes intact, Focus Points can still access the required information.
 
 <span id="supported-dng-files"></span>
-**Examples, for which focus point display may work on image files created based on original RAW files:**
+**Examples of DNG files that may retain the required camera metadata:**
 
 - DNG files converted from RAW by Adobe's DNG Converter (standalone app, or inside Lightroom)
 - DNG files created by DxO PhotoLab, Luminar Neo, Topaz Photo AI
 - DNG files created by Lightroom's Enhance feature, e.g. AI Denoise (prior to LrC 14.4)
 
-Note that this may depend on the specific camera make/model.<br> 
-E.g. for Fujifilm DNG files the plugin will not be able to display focus points.
+Whether autofocus information is available depends on the camera model and the metadata preserved during conversion. For example, focus point information is not available in Fujifilm DNG files.
 
+**Situations where focus point information may be misleading:**
 
-**Cases where the Focus Points plugin may not be able to display meaningful information:**
-
-* <u>Focus and Pan, Recompose</u>: The shot was taken by focusing on the main subject and then panning the camera to get the desired composition. The focus point recorded by the camera does not `move` with the focused subject during recomposition, but maintains its original position.
-* <u>Back button Focus</u>: This is similar to Recompose because the underlying principle is the same. In addition, the camera may not even record a focus point (depending on the make/model).
+* <u>[Focus and Recompose](Understanding-Focus-Results.md#focus-and-recompose)</u>: When you focus on your subject and then recompose by moving the camera, the recorded focus point generally reflects its original position when focus was acquired. It does not move with the subject during recomposition. 
+* <u>[Back-Button Focus](Understanding-Focus-Results.md#back-button-focus-bbf)</u>: This is similar to Focus and Recompose because the underlying principle is the same. 
 
 <br>
 
@@ -102,48 +111,50 @@ This section will explain how to install, configure, and use the plugin.
 
 ## 2.1 Installation
 
-### 2.1.2 Compact Instructions
+### Quick Installation
 
-1. Download the plugin Focus-Points-[Version].zip
+1. Download the latest [Focus Points release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest).
 
+2. Extract the downloaded ZIP file. You will find a folder named `focuspoints.lrplugin`.
 
-2. If you’re **upgrading from a previous version** of Focus Points, 
-   - exit Lightroom
-   - delete the existing focuspoints.lrplugin folder 
-   - replace it with the new one extracted from the downloaded .zip
-   - restart Lightroom and you’re done.
+3. **New installation:** Move the `focuspoints.lrplugin` folder to a location of your choice.
 
+   **Updating an existing installation:**
+   - Close Lightroom Classic.
+   - Remove or rename the existing `focuspoints.lrplugin` folder.
+   - Move the new `focuspoints.lrplugin` folder to the same location.
 
-3. If this is a **new installation**,
-   - extract the folder focuspoints.lrplugin from the downloaded .zip
-   - move it to a location of your choice.
+4. Open Lightroom Classic and select `File → Plug-in Manager`.
 
-
-4. In Lightroom, do File > Plug-in Manager.
+5. Click `Add`, browse to the `focuspoints.lrplugin` folder and select it.<br>On Windows, click `Select Folder`; on macOS, click `Add Plug-in`.
 
 
-5. Click Add, browse and select the focuspoints.lrplugin folder, and click Select Folder (Windows) or Add Plug-in (Mac OS).
 
+### Detailed Instructions
 
-### 2.1.3 Detailed Instructions
 1. Download the [latest release](https://github.com/FocusPointsLrC/Focus-Points/releases/latest) of the plugin package.<br>
 A file named `Focus-Points-[plugin_version].zip` will be downloaded to your computer.
 
 
 2. Unzip the downloaded file. Inside the extracted content locate the plugin folder `focuspoints.lrplugin`.<br>
-_MAC users_: According to your macOS settings the zip file will be automatically unzipped.
+On macOS, the ZIP file is usually extracted automatically, depending on your system settings.
 
 
-3. Find the folder where you keep your Lightroom plugins.<br> If you don't know where this is, open Lightroom, go to `File → Plug-in Manager` and click `Add`. This will open a "Select Folder" dialog in Lightroom's default folder for plugins. 
+3. Find the folder where you want to keep your Lightroom plugins.<br>
+If you don't already have a dedicated folder for your plugins, you can use Lightroom Classic's default plug-in location:
 
+   1. Open Lightroom Classic and go to `File → Plug-in Manager`.
+   2. Click `Add`.
 
-4. To **update an existing installation**, first remove the folder containing the version of the plugin you want to update. You can delete the folder or rename it, for example, `to focuspoints.lrplugin.303` (for version 3.03). This allows you to easily revert to the previous version if the update causes issues.<br>
-<u>Note</u>: It is necessary to remove the plugin folder at OS level because deleting a plugin in Lightroom's Plug-in Manager only removes it from Lightroom's list of known plugins. The plugin folder and its contents on disk remain as they are.<br>
-Important: Copying the downloaded files over those in the existing folder is not recommended!
+   The folder-selection dialog opens at Lightroom Classic's default plug-in location. You can use this location or navigate to another folder of your choice.<br>
+   You can also create a separate folder for your Lightroom plugins, for example, `Documents\Lightroom Plugins` (Windows) or a folder in your user account on macOS.<br><br>
+
+4. To **update an existing installation**, first remove or rename the folder containing the previous version of Focus Points. This must be done at the operating system level. Removing a plugin through Lightroom's Plug-in Manager only removes it from Lightroom's list of installed plugins; the actual files remain on disk.<br>
+ Renaming the folder rather than deleting it allows you to revert to the previous version if the update causes problems.<br>
+**Important:** Copying the downloaded files over those in the existing folder is not recommended!
 
 
 5. Move the downloaded plugin folder `focuspoints.lrplugin` to the folder where you keep your Lightroom plugins.<br> 
-_MAC users_: if you have to navigate into the content of the `adobe lightroom classic.app`, use the control-click and choose  `show package content`.
 
 
 6. Open Lightroom and go to `File → Plug-in Manager`.<br>
@@ -151,7 +162,7 @@ _MAC users_: if you have to navigate into the content of the `adobe lightroom cl
 _Windows_: Click the `Add` button and select the plugin.<br>
 _MAC_: In case of you'd copied the plugin to the default LR-plugin location, the new plugin is already listed - activate it. Otherwise, click on the `Add` button and select the plugin.<br>
 **Update installation**:<br>
-Select the plug-in and click `Reload plug-in` (only applies if Lightroom is open during the installation of the update.)
+If Lightroom Classic was left running while the plugin files were replaced, select Focus Points in Plug-in Manager and click `Reload Plug-in`.
 
 
 Once the plugin has been installed, choose one or more photos and select:
@@ -164,7 +175,7 @@ Develop module:<br>
 
 See [How to use a keyboard shortcut to run the plugin](#how-to-use-a-keyboard-shortcut-to-run-the-plugin) to learn how to invoke the plugin using a hotkey.
 
-If you have never used Lightroom plugins before and are looking for some basic information, a video tutorial would be a good place to start. For example, [Plugin Installation (5:16)](https://www.youtube.com/watch?app=desktop&v=dxB4eVcNPuU) or [How to Install & Remove Lightroom Plug-ins (11:30)](https://www.youtube.com/watch?v=DFFA8nKBsJw). 
+If you have never used Lightroom plugins before and are looking for some basic information, a video tutorial would be a good place to start. For example, [How to Install & Remove Lightroom Plug-ins (11:30)](https://www.youtube.com/watch?v=DFFA8nKBsJw). 
 
 <br>
 
@@ -172,24 +183,28 @@ If you have never used Lightroom plugins before and are looking for some basic i
 Once the plugin is installed, you can run it with one or more photos selected:
 
 Library module:<br>
-`Library → Plug-in Extras → Focus Point`
+`Library → Plug-in Extras → Show Focus Point`
 
 Develop module:<br>
-`File → Plug-in Extras → Focus Point`
+`File → Plug-in Extras → Show Focus Point`
 
 ### User Interface
 
-The user interface is divided into three main areas. On the left is the Photo View (1), which shows visualized focus points and detected elements. On the right is the Info View (2+3), a side-by-side view of information that may be useful for evaluating the photo in terms of focus results. The controls for navigating,  flagging and straighten images and are located at the bottom of the window (4+5+6).
+The Focus Point Viewer window is divided into three main areas:
+
+- **Photo View (1)** on the left displays the photo with visualized autofocus points, detected faces and subjects, and other relevant information.
+- **Info View (2+3)** on the right displays image, shooting and focus information that can help you evaluate the photo and its focus results.
+- **Control Bar (4+5+6)** at the bottom provides controls for navigating between photos, flagging and rating images, and straightening them.
 
 <img src="images/User%20Interface.jpg" alt="User Interface" style="width: 1000px;"/>
 
-The Focus Point Viewer window cannot be resized dynamically. However, you can customize the size of the window using the [Size of plugin window](#size-of-plugin-window) setting. There are six options to choose from, ranging from 3XL to S. This setting corresponds to 90% (3XL) downto 40% (S), in increments of 10% of the size of the Lightroom application window and it refers to the dimensions of the photo view. 
-The info view and the bottom row of user controls are not included in this percentage. The space allocated to these areas is in addition to the size setting.
+The window cannot be resized dynamically. However, you can customize its size using the [Size of plugin window](#size-of-plugin-window) setting or using `<` and `>` keyboard shortcuts. 
 
-Click on the following links for more detailed information:
+For more detailed information, see the following sections:
 
 1. [Photo View](#photo-view)
 2. [Info View](#info-view)
+3. [User Messages](#user-messages)
 3. [Plugin Status](#plugin-status)
 4. [Navigation Controls](#navigation-controls)
 5. [Flagging Controls](#flagging-controls)
@@ -201,62 +216,70 @@ Click on the following links for more detailed information:
 
 ### Photo View
 
-The plugin uses colors to visualize autofocus points, detected faces, subjects and details. This means that the respective area is highlighted by a rectangular marker:<br>
+The plugin uses different colors and shapes to visualize autofocus (AF) points, detected faces and subjects, and the camera's crop area. These elements are highlighted by markers displayed over the photo:<br>
 
 <img src="images/BasicOperation1.jpg" alt="BasicOperation1" style="width: 1000px;"/>
 
-This overview shows which elements are supported by the plugin, and the shapes and colors used to visualize them. On Windows, the rectangular marker is a solid frame. On macOS, the frame is indicated by corner symbols*.
+The table below summarizes the elements the plugin can display and the corresponding marker shapes and colors. On Windows, markers are displayed as solid frames; on macOS, they are displayed using corner markers*.
 
 |                                       MAC                                       |                                         WIN                                         |       Color       | Meaning                                                                               |
 |:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|:-----------------:|---------------------------------------------------------------------------------------|
-|    <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>    |    <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>    |  red<sup>1</sup>  | Active AF point. Focus area, dimensions reported by the camera                        |
-| <img src="images/af_infocusdot.png" alt="infocusdot" style="width: 20px;"/> | <img src="images/af_infocusdot_win.png" alt="infocusdot" style="width: 20px;"/> | red<sup>1,2</sup> | Active AF point. Focus location<sup>3</sup>, pixel coordinates reported by the camera |
+|    <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>    |    <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>    |  red<sup>1</sup>  | Active AF point — focus area, using the dimensions reported by the camera                        |
+| <img src="images/af_infocusdot.png" alt="infocusdot" style="width: 20px;"/> | <img src="images/af_infocusdot_win.png" alt="infocusdot" style="width: 20px;"/> | red<sup>1,2</sup> | Active AF point — focus location<sup>3</sup>, using pixel coordinates reported by the camera |
 |   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white       | User-selected AF point                                                                |
-|   <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/>   |   <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/>   |       gray        | Inactive AF point. Part of DSLR AF points but not used for the image<sup>3</sup>      |
-|       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow       | Face or subject detected by the camera in this area                                   |
-|       <img src="images/af_crop.png" alt="crop" style="width: 20px;"/>       |       <img src="images/af_crop_win.png" alt="crop" style="width: 20px;"/>       |       black       | Part of the image that is used by the camera in 'crop mode'                           |
+|   <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/>   |   <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/>   |       gray        | Inactive AF point — part of the DSLR AF point array, but not used for the image<sup>3</sup>      |
+|       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow       | Face or subject detected by the camera                                  |
+|       <img src="images/af_crop.png" alt="crop" style="width: 20px;"/>       |       <img src="images/af_crop_win.png" alt="crop" style="width: 20px;"/>       |       black       | Area of the image used by the camera in crop mode                           |
 
-<sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
-<sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).<br>
-<sup>3</sup> The meaning may vary depending on the camera manufacturer. See the camera-specific chapters for a detailed explanation.
+<sup>1</sup> The color of active AF points can be changed to red, green, or blue in [Viewing Options](#viewing-options).<br>
+<sup>2</sup> The shape and size of focus-pixel markers can be configured in [Viewing Options](#viewing-options).<br>
+<sup>3</sup>  The meaning may vary depending on the camera manufacturer. See the camera-specific chapters for details.
 
 
-\* Tech Note: Windows and macOS use different rendering implementations, so the display of focus points and other elements looks different on each operating system. On macOS, focus points and face/object detection and cropping frames are indicated only by the corners, while on Windows, all frames have solid lines. This is due to the fact that the Lightroom SDK methods for overlaying information (frame corners and center points) on an image work on macOS but not on Windows. On Windows, this is done by ImageMagick (mogrify), which draws rectangles with solid lines.
+\* *Technical note:* Windows and macOS use different methods to render overlays, which is why the display of focus points and other elements differs between the two platforms. On macOS, markers for focus points, face and subject detection, and crop areas are displayed using corner markers. On Windows, all markers are displayed as solid frames.
 
-Availability of the same method(s) on both platforms (ideally chosen by the user) would be desirable, but this is challenging and requires significant effort.
+This difference is due to limitations of the Lightroom SDK: its overlay methods work on macOS but not on Windows. On Windows, the plugin uses ImageMagick (`mogrify`) to draw the markers.
+
+Providing the same rendering method on both platforms, ideally with a user-selectable option, is planned for V4. However, this depends on an Adobe fix and on finding a practical way to integrate ImageMagick into the macOS version. Both aspects are still being investigated. 
+
 
 ### Info View
 
-The text pane right to the photo view comprises three groups:
+The text pane to the right of the Photo View is divided into three sections:
+
 - Image Information
 - Shooting Information
 - Focus Information
 
-Image information and Shooting information are largely taken from the Lightroom catalog, so this information is available for every photo. Depending on the availability of information in the makernotes, these two sections may be expanded to include various camera-specific information such as crop mode, drive mode, shot number, etc., which may be useful in the context of evaluating focus results.
+Image Information and Shooting Information are largely based on data from the Lightroom catalog and are therefore generally available for every photo. Depending on the information available in the camera's MakerNotes, these sections may also include various camera-specific details, such as crop mode, drive mode, shot number, etc. This information can be useful when evaluating focus results.
 
-Focus information is only available for photos for which the corresponding image file contains complete metadata. See [Scope and Limitations](#1-scope-and-limitations) for more detailed information.
+Focus Information is only available if the original image file contains the metadata required by the plugin. See [Scope and Limitations](#1-scope-and-limitations) for more details.
 
-Two buttons at the bottom of the window allow you to move forward and backward through a series of photos, if more than one was selected in Lightroom when the plugin was launched. In case the plugin was launched on a single photo, the buttons are inactive.
+Two buttons at the bottom of the window allow you to move forward and backward through the selected photos. These buttons are inactive if the plugin was launched with only one photo selected in Lightroom.
 
-A link to the User Guide (this document) provides quick and easy access to the operating instructions.
+A link to this User Manual provides quick access to the operating instructions.
 
-The window can be closed by clicking `Exit` or pressing \<Enter> or \<Esc> or \<Space>.
-<br>
+You can close the window by clicking `Exit` or pressing `Enter`, `Esc`, or `Space`.
 
 #### Focus Distance, Depth of Field, Hyperfocal Distance
 
-Most camera makers include subject or focus distance information in makernotes. Sony, Fujifilm and Pentax do not, so this section is not relevant to images taken with their cameras.
+Most camera makers include subject or focus distance information in their MakerNotes. Sony, Fujifilm, and Pentax do not, so this section is not relevant for photos taken with their cameras.
 
-ExifTool uses the focus distance information to calculate the depth of field (DoF), which can be helpful in assessing whether the lens is stopped down enough to capture a subject "acceptably sharp", i.e. whether the desired portion of the subject is "in focus". ExifTool also calculates the hyperfocal distance, which can be helpful in determining if the autofocus is set at the correct distance for photos that should be sharp from front to back (e.g. landscapes).
+ExifTool uses the focus distance information to calculate the depth of field (DoF). This can help you assess whether the lens was stopped down sufficiently to capture the desired portion of the subject acceptably sharply—that is, whether it is within the zone of focus.
 
-Note that the accuracy of focus distance values is limited. Cameras are not designed to measure distances. The values given in the EXIF data are byproducts of the focusing process, derived from control information to move the lens to a certain distance. Such focus step counts can be approximated as a distance. The degree of inaccuracy, and therefore the usefulness of this data, depends on several aspects. Typically, focus distance values are less accurate at short focal lengths. Also, this information is likely to be inaccurate under extreme conditions (macro or infinity). Finally, the equipment also plays a role.
+ExifTool also calculates the hyperfocal distance. This can help you determine whether the autofocus was set to the appropriate distance for photos that should be sharp from front to back, such as landscapes.
 
-Technical note: ExifTool creates pseudo tags `DepthOfField` and `HyperfocalDistance` which can be seen in ExifTool output. For calculation of DoF it uses the standard circle of confusion parameter for the respective sensor. In this context, the term “sharpness” refers to the ability of the human eye to recognize and resolve details when an image is viewed at full size, i.e. not enlarged, also known as “pixel peeping”.
+Note that focus distance values are not highly accurate. Cameras are not designed to measure distances. The values recorded in the EXIF data are byproducts of the focusing process, derived from control information used to move the lens to a certain distance. The number of focus steps can be translated into an approximate distance, but the accuracy—and therefore the usefulness—of this information depends on several factors.
+
+Typically, focus distance values are less accurate at short focal lengths. They are also likely to be inaccurate under extreme conditions, such as macro photography or focusing at infinity. The equipment itself also plays a role.
+
+**Technical note:** ExifTool creates the pseudo tags `DepthOfField` and `HyperfocalDistance`, which can be seen in the ExifTool output. For its DoF calculation, it uses the standard circle of confusion value for the respective sensor. In this context, the term “sharpness” refers to the ability of the human eye to recognize and resolve details when an image is viewed at full size, i.e., not enlarged. This is also known as “pixel peeping”.
 
 <img src="images/BasicOperation5.jpg" alt="Basic Operation 5" style="width: 1000px;"/>
 
-Example: DoF in this capture is only ~2 cm, so with the chosen aperture of f/1.8 the eyes will be outside the sharp zone if the shot is focused on the front whiskers.
-<br>
+Example: The DoF in this capture is only about 2 cm. With the chosen aperture of f/1.8, the eyes will therefore be outside the zone of sharpness if the shot is focused on the front whiskers.
+
+
 
 ### User Messages
 
@@ -808,11 +831,12 @@ Supported features:
 |                                     MAC                                     |                                       WIN                                       |      Color      | Meaning                                                              |
 |:---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------:|----------------------------------------------------------------------|
 |  <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>      |  <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>      | red<sup>1</sup> | Active AF point. Focus area, dimensions reported by the camera       |
-|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white     | User-selected AF point                                               |
+|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white     | User-selected AF point<sup>2</sup>                                                |
 |       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow     | Subject part detected and tracked by the camera (Mirrorless)                             |
 | <img src="images/af_inactive.png" alt="inactive" style="width: 20px;"/>     | <img src="images/af_inactive_win.png" alt="inactive" style="width: 20px;"/>     |      gray       | Inactive AF point. Part of DSLR AF points but not used for the image |
 
 <sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
+<sup>2</sup> User-selected AF point will be displayed for shots taken with Back-Button Focus (BBF)
 
 Canon focus point information in EXIF metadata always refers to an area within the frame. Focus point areas are specified by their coordinates (x,y, height, width). Therefore, for Canon focus points, you can select the color of the box, but not the size.
 
@@ -1048,11 +1072,12 @@ Supported features:
 |:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|:-----------------:|---------------------------------------------------------------------------|
 |    <img src="images/af_infocus.png" alt="infocus" style="width: 20px;"/>    |    <img src="images/af_infocus_win.png" alt="infocus" style="width: 20px;"/>    |  red<sup>1</sup>  | Active AF point. Focus area, dimensions reported by the camera            |
 | <img src="images/af_infocusdot.png" alt="infocusdot" style="width: 20px;"/> | <img src="images/af_infocusdot_win.png" alt="infocusdot" style="width: 20px;"/> | red<sup>1,2</sup> | Active AF point. Focus location, pixel coordinates reported by the camera |
-|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white       | User-selected AF point                                                    |
+|   <img src="images/af_selected.png" alt="selected" style="width: 29px;"/>   |   <img src="images/af_selected_win.png" alt="selected" style="width: 29px;"/>   |       white       | User-selected AF point<sup>3</sup>                                                    |
 |       <img src="images/af_face.png" alt="face" style="width: 20px;"/>       |       <img src="images/af_face_win.png" alt="face" style="width: 20px;"/>       |      yellow       | Face, subject or detail detected by the camera in this area               |
 
 <sup>1</sup> Active AF point color can be chosen from red, green, blue in [Viewing Options](#viewing-options).<br>
 <sup>2</sup> 'Focus-pixel' shape and size can be chosen from different options (small box or medium/large with center dot) in [Viewing Options](#viewing-options).<br>
+<sup>3</sup> User-selected AF point will be displayed for shots taken with Back-Button Focus (BBF)
 
 OM System has its own chapter in this user documentation. This is mainly because previously unknown metadata tags have been identified and decoded: `AFSelection`, `AFFocusArea` and `SubjectDetectionArea`.
 
