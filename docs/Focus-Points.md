@@ -47,8 +47,7 @@ Focus Points is a plugin for Adobe Lightroom Classic<sup>1</sup> on Windows and 
 - Straighten photographs using the camera's recorded roll angle<sup>3,6,7</sup>.
 
 <sup>1</sup> Focus Points is compatible with Lightroom Classic, LR5.7 and LR6 perpetual licenses and LrC subscriptions.<br>
-&nbsp;&nbsp;&nbsp;LR5.7 does not support tagging photos within the plugin UI or straightening images by applying compensation for camera roll angle.<br>
-<sup>2</sup> For Canon, Nikon, Sony, Fujifilm, Olympus/OM, Panasonic, Leica, Pentax, Ricoh, Apple.<br>
+<sup>2</sup> For Canon, Nikon, Sony, Fujifilm, Olympus/OM, Panasonic, Leica, Hasselblad, Pentax, Ricoh, Apple.<br>
 &nbsp;&nbsp;&nbsp;Check the [list of supported cameras](Compatibility.md#cameras-that-support-display-of-autofocus-points) to see if your camera is supported.<br>
 <sup>3</sup> Depending on the presence of metadata.<br> 
 <sup>4</sup> Currently supported for Pentax and OM System.<br> 
@@ -80,7 +79,7 @@ Consequently, photographs returned from external editors may no longer contain t
 
 **Examples of image files for which focus point information is unavailable:**
 - Photo edited in Photoshop and returned as PSD or TIF
-- Photo transferred as TIFF/JPG to a 3rd party editor (`Photo → Edit In`) and returned as TIF,<br> e.g. Topaz, NIK, Photomatix
+- Photo transferred as TIFF/JPG to a 3rd party editor (`Photo → Edit In`) and returned as TIF, e.g. Topaz, NIK, Photomatix
 - DNG files created by Lightroom's Photo Merge (HDR, Panorama)
 - Photos exported to disk that have been re-imported in Lightroom
 - Smart Preview but the original image file is not present 
@@ -100,8 +99,8 @@ Whether autofocus information is available depends on the camera model and the m
 
 **Situations where focus point information may be misleading:**
 
-* <u>[Focus and Recompose](Understanding-Focus-Results.md#focus-and-recompose)</u>: When you focus on your subject and then recompose by moving the camera, the recorded focus point generally reflects its original position when focus was acquired. It does not move with the subject during recomposition. 
-* <u>[Back-Button Focus](Understanding-Focus-Results.md#back-button-focus-bbf)</u>: This is similar to Focus and Recompose because the underlying principle is the same. 
+* [Focus and Recompose](Understanding-Focus-Results.md#focus-and-recompose)<br>When you focus on your subject and then recompose by moving the camera, the recorded focus point generally reflects its original position when focus was acquired. It does not move with the subject during recomposition. 
+* [Back-Button Focus](Understanding-Focus-Results.md#back-button-focus-bbf)<br>This is similar to Focus and Recompose because the underlying principle is the same. 
 
 <br>
 
